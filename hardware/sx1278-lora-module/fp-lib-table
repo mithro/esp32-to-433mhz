@@ -1,0 +1,4 @@
+(fp_lib_table
+  (version 7)
+  (lib (name "LoRaModule")(type "KiCad")(uri "${KIPRJMOD}/footprints/LoRaModule.pretty")(options "")(descr "SX1278 LoRa module form-factor board"))
+)
