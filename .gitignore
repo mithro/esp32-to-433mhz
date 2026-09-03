@@ -18,3 +18,6 @@ gerbers/
 __pycache__/
 *.pyc
 .venv/
+
+# Playwright MCP scratch output
+.playwright-mcp/
