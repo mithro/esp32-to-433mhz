@@ -82,21 +82,20 @@ footprints here were generated from scratch and follow the physical board.
 
 The 16-pin castellated 433 MHz SX1278 module sold as "SX1278 LoRa 433MHz
 Wireless Module (PXL1276-D01)" with a spring antenna. It is a derivative of
-the NiceRF LoRa1276/LoRa1278 layout with two extra pins.
+the NiceRF LoRa1276/LoRa1278 layout.
 
-All values in millimetres, viewed from the component side with the 13-pad
-edge on the left.
+All values in millimetres, viewed from the component side with the 12-pad
+row on the left edge and pin 1 at the top.
 
 | Feature | Value |
 | --- | --- |
 | Board outline | 17.0 (top/bottom edges) x 16.5 (left/right edges) |
-| Pad pitch | 1.27 |
-| Left edge | 12 keyhole pads (pins 1-12), first pad 0.72 from the top, plus a castellation-only pad (pin 13) flush with the bottom corner (0.53 from it) |
-| Bottom edge | 1 castellation-only pad (pin 14), 2.7 from the left edge |
-| Right edge | 2 keyhole pads: pin 16 (ANT) 1.27 and pin 15 (DIO5) 2.54 from the top |
-| Keyhole pads | 0.60 through-hole 1.0 in from the edge plus a 0.60 half-hole on the edge |
-| Castellation-only pads | 0.60 half-hole on the edge, no inboard hole |
-| Pad copper | 1.05 wide oval from the edge to 1.5 into the board |
+| Left edge | 12 keyhole pads (pins 1-12) at 1.27 pitch, first hole 1.2 from the top corner |
+| Bottom edge | 2 castellation-only notches: DIO4 (pin 13) 1.25 and DIO5 (pin 14) 2.7 from the left corner |
+| Right edge | 2 keyhole pads: ANT (pin 16) 1.4 and GND (pin 15) 2.8 from the top corner |
+| Keyhole pads, left row | 0.60 through-hole 1.2 in from the edge, 0.60 half-hole on the edge, 1.05 wide copper reaching 1.85 in |
+| Keyhole pads, right edge | as above but hole 0.9 in from the edge, copper reaching 1.7 in |
+| Notches | 0.60 half-hole on the edge, 0.8 wide copper reaching 0.55 in, no inboard hole |
 | Board thickness | 1.0 (assumed) |
 
 Pin names (J1), numbered counter-clockwise from the top-left:
@@ -106,37 +105,37 @@ Pin names (J1), numbered counter-clockwise from the top-left:
 | 1 | GND | 9 | NSS |
 | 2 | DIO1 | 10 | DIO0 |
 | 3 | DIO2 | 11 | REST (reset) |
-| 4 | DIO3 | 12 | REST (reset) |
-| 5 | VCC (3.3 V) | 13 | GND |
-| 6 | MISO | 14 | DIO4 |
-| 7 | MOSI | 15 | DIO5 |
+| 4 | DIO3 | 12 | GND |
+| 5 | VCC (3.3 V) | 13 | DIO4 |
+| 6 | MISO | 14 | DIO5 |
+| 7 | MOSI | 15 | GND |
 | 8 | SCK | 16 | ANT |
 
-The two GND pins and the two REST pins are joined by short tracks. Approximate
-positions of the SX1278 and its crystal are drawn on `F.Fab`.
+The three GND pins are joined by tracks (the original uses a ground plane).
+Approximate positions of the SX1278 and its crystal are drawn on `F.Fab`.
 
 Sources and accuracy:
 
 * Seller PDF for the "SX1278 LoRa 433MHz Wireless Module (PXL1276-D01)":
-  module size 17 mm x 16.5 mm; seller pin table for the 16 pin names.
-* No manufacturer drawing was found for this 16-pin variant. The pad layout
-  was measured from a perspective-rectified product photo: 12 pads at 1.27 mm
-  pitch (measured 1.26) down one edge starting about 0.75 mm from the top,
-  a pad at the bottom corner of that edge, one around the corner (measured
-  2.7 +/- 0.2 from the corner) and two pads on the opposite edge. Pad
-  positions are therefore accurate to roughly +/-0.2 mm; the pitch, pin count
-  and outline are solid.
-* Close-up photos show the 12 left-edge pads and the two right-edge pads are
-  keyholes like the SuperMini's: a plated through-hole about 1.0 mm in from
-  the edge plus a half-hole castellation on the edge, joined by an oval. The
-  two corner pads (pins 13 and 14) are plain castellations without an inboard
-  hole. The
+  module size 17 mm x 16.5 mm.
+* Seller pinout photo (top-down with dimension lines) for the pin names in
+  physical order: GND DIO1 DIO2 DIO3 VCC MISO MOSI SCK NSS DIO0 REST GND
+  along the row, DIO4 and DIO5 at the adjacent corner, ANT and GND at the
+  opposite corner. The seller's pin table lists REST twice, which shifts its
+  last four entries by one; the photo was followed.
+* No manufacturer drawing was found for this variant. Pad positions were
+  measured in pixels from the top-down pinout photo and a perspective-
+  rectified product photo; both give the 12-pad row a 1.27 mm pitch on the
+  16.5 mm edge (the pinout photo's dimension labels appear to have the two
+  sides swapped). Positions are accurate to roughly +/-0.15 mm; the pitch,
+  pin count and outline are solid.
+* Close-up photos show the 12 row pads and the two ANT/GND pads are keyholes
+  like the SuperMini's (a plated through-hole plus a half-hole castellation on
+  the edge, joined by an oval), while DIO4 and DIO5 are plain castellations
+  without an inboard hole. The
   [NiceRF LoRa127X datasheet](https://makerhero.com/img/files/download/LoRa127X-Module-Datasheet.pdf)
-  mechanical drawing shows the same construction for this family (1.5 mm pad
-  length, 1.27 mm pitch, 0.6 mm holes), which supplied the hole size.
-* The direction of the pin numbering (pin 1 at the top-left, ANT at the
-  top-right) follows the NiceRF layout and the position of the RF matching
-  parts in the photo; confirm against a physical module before ordering.
+  mechanical drawing shows the same construction for this family and
+  supplied the 0.6 mm hole size.
 
 ## CC1101 E07-M1101D-SMA
 
