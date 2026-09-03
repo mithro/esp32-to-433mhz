@@ -26,6 +26,13 @@ jobs:
 
       - uses: actions/checkout@v4
 
+      - name: Give kicad-cli the stock global library tables
+        # A fresh container has no KiCad user config; ERC then warns that the
+        # (embedded) symbols' library is not configured.
+        run: |
+          mkdir -p "$HOME/.config/kicad/9.0"
+          cp /usr/share/kicad/template/sym-lib-table /usr/share/kicad/template/fp-lib-table "$HOME/.config/kicad/9.0/"
+
       - name: Regenerate the boards and check they match the commit
         run: |
           git config --global --add safe.directory "$GITHUB_WORKSPACE"
