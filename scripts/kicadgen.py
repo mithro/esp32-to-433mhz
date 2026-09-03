@@ -15,6 +15,7 @@ Model:
 
 from __future__ import annotations
 
+import os
 import pathlib
 import re
 import textwrap
@@ -22,7 +23,11 @@ import uuid
 from dataclasses import dataclass, field
 
 NS = uuid.UUID("7a3c5f2e-1b0d-4e8a-9c6f-2d4b8a1e5c30")
-KICAD_SHARE = pathlib.Path("/snap/kicad/current/usr/share/kicad")
+KICAD_SHARE = pathlib.Path(os.environ.get("KICAD_SHARE") or next(
+    (p for p in ("/snap/kicad/current/usr/share/kicad", "/usr/share/kicad") if pathlib.Path(p).is_dir()),
+    "/usr/share/kicad",
+))
+REV = "0"  # board revision written to every title block (release packages are named rev<REV>)
 
 
 def uid(key: str) -> str:
@@ -345,6 +350,72 @@ class Via:
 
 
 @dataclass
+class Zone:
+    """A copper pour (net != "") or a keepout area (net == "")."""
+
+    net: str
+    layers: tuple[str, ...]
+    name: str
+    points: list[tuple[float, float]]  # absolute board coordinates, closed polygon
+    clearance: float = 0.3
+    min_thickness: float = 0.25
+    keepout_tracks: bool = False  # keepout areas only
+    keepout_pour: bool = True
+    fills: str = ""  # (filled_polygon ...) blocks inserted by scripts/fill_zones.py
+
+    def sexpr(self, key: str, net_id: int) -> str:
+        pts = "\n".join(f"\t\t\t\t(xy {fmt(x)} {fmt(y)})" for x, y in self.points)
+        layer = f'(layer "{self.layers[0]}")' if len(self.layers) == 1 else "(layers " + " ".join(f'"{l}"' for l in self.layers) + ")"
+        if self.net:
+            body = f"""\
+\t\t(connect_pads
+\t\t\t(clearance {fmt(self.clearance)})
+\t\t)
+\t\t(min_thickness {fmt(self.min_thickness)})
+\t\t(filled_areas_thickness no)
+\t\t(fill yes
+\t\t\t(thermal_gap 0.5)
+\t\t\t(thermal_bridge_width 0.5)
+\t\t)
+"""
+        else:
+            allow = lambda b: "not_allowed" if b else "allowed"  # noqa: E731
+            body = f"""\
+\t\t(connect_pads
+\t\t\t(clearance 0)
+\t\t)
+\t\t(min_thickness {fmt(self.min_thickness)})
+\t\t(filled_areas_thickness no)
+\t\t(keepout
+\t\t\t(tracks {allow(self.keepout_tracks)})
+\t\t\t(vias {allow(self.keepout_tracks)})
+\t\t\t(pads allowed)
+\t\t\t(copperpour {allow(self.keepout_pour)})
+\t\t\t(footprints allowed)
+\t\t)
+\t\t(fill
+\t\t\t(thermal_gap 0.5)
+\t\t\t(thermal_bridge_width 0.5)
+\t\t)
+"""
+        return f"""\
+\t(zone
+\t\t(net {net_id})
+\t\t(net_name "{self.net}")
+\t\t{layer}
+\t\t(uuid "{uid(f'pcb:zone:{key}')}")
+\t\t(name "{self.name}")
+\t\t(hatch edge 0.5)
+{body}\t\t(polygon
+\t\t\t(pts
+{pts}
+\t\t\t)
+\t\t)
+{self.fills}\t)
+"""
+
+
+@dataclass
 class Design:
     project: str
     title: str
@@ -358,6 +429,7 @@ class Design:
     graphics: list[str] = field(default_factory=list)
     tracks: list[Track] = field(default_factory=list)
     vias: list[Via] = field(default_factory=list)
+    zones: list[Zone] = field(default_factory=list)
     castellated_refs: list[str] = field(default_factory=list)
     sch_note: str = ""
 
@@ -402,6 +474,7 @@ class Design:
         body += "".join(self.graphics)
         body += "".join(t.sexpr(f"{t.net}:{t.layer}:{i}", nets[t.net]) for i, t in enumerate(self.tracks))
         body += "".join(v.sexpr(f"{v.net}:{i}", nets[v.net]) for i, v in enumerate(self.vias))
+        body += "".join(z.sexpr(z.name, nets[z.net] if z.net else 0) for z in self.zones)
         core = self.thickness - 0.07 - 0.02
         return f"""\
 (kicad_pcb
@@ -415,7 +488,7 @@ class Design:
 	(paper "A4")
 	(title_block
 		(title "{self.title}")
-		(rev "1")
+		(rev "{REV}")
 		(comment 1 "{self.comment}")
 	)
 	(layers
@@ -677,7 +750,7 @@ class Design:
 	(paper "A4")
 	(title_block
 		(title "{self.title}")
-		(rev "1")
+		(rev "{REV}")
 		(comment 1 "{self.comment}")
 	)
 	(lib_symbols

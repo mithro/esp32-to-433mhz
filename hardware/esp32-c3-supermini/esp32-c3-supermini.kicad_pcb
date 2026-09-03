@@ -9,7 +9,7 @@
 	(paper "A4")
 	(title_block
 		(title "ESP32-C3 SuperMini form-factor board")
-		(rev "1")
+		(rev "0")
 		(comment 1 "Outline and castellated 2x8 header layout identical to the ESP32-C3 SuperMini")
 	)
 	(layers

@@ -33,7 +33,8 @@ import pathlib
 import sys
 
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
-from kicadgen import Design, Footprint, Pad, Part, SymbolRef, Track, Via, fp_circle, fp_rect, fp_text, gr_line, gr_rect, gr_text  # noqa: E402
+from generate_cc1101 import SMA_GND_OFFSET, SMA_PAD_L, sma_fp  # noqa: E402
+from kicadgen import Design, Footprint, Pad, Part, SymbolRef, Track, Via, Zone, fp_circle, fp_rect, fp_text, gr_line, gr_rect, gr_text  # noqa: E402
 
 # ---------------------------------------------------------------------------
 # Shared: GPIO assignment and SuperMini geometry
@@ -66,6 +67,7 @@ CONN8 = SymbolRef("Connector_Generic.kicad_sym", "Connector_Generic", "Conn_01x0
 CONN16 = SymbolRef("Connector_Generic.kicad_sym", "Connector_Generic", "Conn_01x16")
 CONN1 = SymbolRef("Connector_Generic.kicad_sym", "Connector_Generic", "Conn_01x01")
 CONN2X4 = SymbolRef("Connector_Generic.kicad_sym", "Connector_Generic", "Conn_02x04_Odd_Even")
+COAX = SymbolRef("Connector.kicad_sym", "Connector", "Conn_Coaxial")
 
 
 
@@ -137,7 +139,9 @@ LAND = (1.0, 3.0)  # row / bottom land pads: width along the edge x length acros
 NOTCH_LAND = (2.0, 0.8)
 VIA_Y = MOD_T - 2.1  # 29.4: via row just above the land pads
 GND_TRUNK_Y = MOD_T - 1.3  # 30.2 on B.Cu
-ANT_HOLE_Y = MOD_B + 3.5
+ANT_HOLE_Y = MOD_B + 3.0  # 51.5: spring antenna wire hole
+SX_H = 58.0
+SMA_X = 17.0  # optional edge-mount SMA jack on the bottom edge (ground legs at +/-4.25)
 
 SX_PINS = ["GND", "DIO1", "DIO2", "DIO3", "+3V3", "MISO", "MOSI", "SCK", "NSS", "DIO0", "RESET", "GND", "DIO4", "DIO5", "GND", "ANT"]
 
@@ -193,15 +197,17 @@ def build_sx1278() -> Design:
         comment="Carrier joining an ESP32-C3 SuperMini to a 16-pin castellated SX1278 433MHz module",
         fp_lib="Adapter",
         width=BOARD_W,
-        height=55.0,
+        height=SX_H,
         thickness=1.6,
-        sch_note="ESP32-C3 SuperMini (J1 left row, J2 right row) driving an SX1278 LoRa module (U2).\\nSPI: MOSI=GPIO5 SCK=GPIO6 NSS=GPIO7 MISO=GPIO4; RESET=GPIO8 DIO0=GPIO10 DIO1=GPIO3.\\nJ3 is the spring antenna wire hole.",
+        castellated_refs=["J4"],  # the SMA's edge-mount pads sit on the board edge
+        sch_note="ESP32-C3 SuperMini (J1 left row, J2 right row) driving an SX1278 LoRa module (U2).\\nSPI: MOSI=GPIO5 SCK=GPIO6 NSS=GPIO7 MISO=GPIO4; RESET=GPIO8 DIO0=GPIO10 DIO1=GPIO3.\\nJ3 is the spring antenna wire hole; J4 an optional edge-mount SMA jack (fit one or the other).",
     )
     bx, by = d.bx, d.by
     left, right = supermini_nets(PINMAP)
     supermini_parts(d, left, right)
     d.parts.append(Part("U2", sx1278_land_fp(), (bx + MOD_L, by + MOD_T), CONN16, "SX1278_module", {str(i + 1): n for i, n in enumerate(SX_PINS)}, (127.0, 101.6), "SX1278 LoRa module"))
     d.parts.append(Part("J3", antenna_hole_fp(), (bx + MOD_R - 1.4, by + ANT_HOLE_Y), CONN1, "Antenna", {"1": "ANT"}, (152.4, 101.6), "Spring antenna"))
+    d.parts.append(Part("J4", sma_fp(), (bx + SMA_X, by + SX_H), COAX, "SMA", {"1": "ANT", "2": "GND"}, (165.1, 101.6), "Optional edge-mount SMA jack"))
 
     T = d.tracks
     V = d.vias
@@ -240,12 +246,21 @@ def build_sx1278() -> Design:
     T.append(Track("GND", B, 0.4, [(bx + gnd_bot_x, by + GND_TRUNK_Y), (bx + gnd_bot_x, by + MOD_B - 2.3)]))
     V.append(Via("GND", (bx + gnd_bot_x, by + MOD_B - 2.3)))
     T.append(Track("GND", F, TRACK, [(bx + gnd_bot_x, by + MOD_B - 2.3), (bx + gnd_bot_x, by + MOD_B + 0.5)]))
-    # Antenna: short trace from the module ANT pad to the wire hole.
-    T.append(Track("ANT", F, 0.5, [(bx + MOD_R - 1.4, by + MOD_B + 0.5), (bx + MOD_R - 1.4, by + ANT_HOLE_Y)]))
+    # Antenna: module ANT pad -> wire hole -> centre pin of the optional SMA.
+    T.append(Track("ANT", F, 0.5, [(bx + MOD_R - 1.4, by + MOD_B + 0.5), (bx + MOD_R - 1.4, by + ANT_HOLE_Y), (bx + SMA_X, by + SX_H - SMA_PAD_L + 0.5), (bx + SMA_X, by + SX_H - SMA_PAD_L / 2)]))
+    # SMA ground legs, on B.Cu from the via feeding the module's bottom GND pad.
+    leg_y = SX_H - SMA_PAD_L / 2
+    T.append(Track("GND", B, 0.4, [(bx + gnd_bot_x, by + MOD_B - 2.3), (bx + gnd_bot_x, by + MOD_B + 0.8), (bx + SMA_X + SMA_GND_OFFSET, by + MOD_B + 0.8), (bx + SMA_X + SMA_GND_OFFSET, by + leg_y)]))
+    T.append(Track("GND", B, 0.4, [(bx + gnd_bot_x, by + MOD_B + 0.8), (bx + SMA_X - SMA_GND_OFFSET, by + MOD_B + 0.8), (bx + SMA_X - SMA_GND_OFFSET, by + leg_y)]))
+    for leg_x in (SMA_X - SMA_GND_OFFSET, SMA_X + SMA_GND_OFFSET):  # the legs' front pads via up from the B.Cu feed
+        V.append(Via("GND", (bx + leg_x, by + SX_H - SMA_PAD_L - 1.2)))
+        T.append(Track("GND", F, 0.4, [(bx + leg_x, by + SX_H - SMA_PAD_L - 1.2), (bx + leg_x, by + leg_y)]))
 
     g = d.graphics
     g.append(gr_text("ant", "ANT", bx + MOD_R - 1.4 - 1.6, by + ANT_HOLE_Y, "F.SilkS", 0.6, "right"))
-    g.append(gr_text("title", "ESP32-C3 + SX1278 433MHz", bx + BOARD_W / 2, by + 53.5, "F.SilkS", 0.7))
+    g.append(gr_text("sma", "SMA", bx + SMA_X - 1.0, by + SX_H - SMA_PAD_L - 0.8, "F.SilkS", 0.5))
+    g.append(gr_text("title1", "ESP32-C3 +", bx + 6.2, by + 55.0, "F.SilkS", 0.6))
+    g.append(gr_text("title2", "SX1278 433MHz", bx + 6.2, by + 56.6, "F.SilkS", 0.6))
     return d
 
 
@@ -333,13 +348,13 @@ def build_cc1101() -> Design:
     SuperMini and under the socket to its left column."""
     d = Design(
         project="esp32c3-cc1101-adapter",
-        title="ESP32-C3 SuperMini to CC1101 E07-M1101D adapter (single-sided)",
-        comment="Single-sided carrier joining an ESP32-C3 SuperMini to an Ebyte E07-M1101D-SMA CC1101 433MHz board via a 2x4 socket",
+        title="ESP32-C3 SuperMini to CC1101 E07-M1101D adapter",
+        comment="Carrier joining an ESP32-C3 SuperMini to an Ebyte E07-M1101D-SMA CC1101 433MHz board via a 2x4 socket; all tracks on the back, GND pour on the front",
         fp_lib="Adapter",
         width=CC_W,
         height=CC_H,
         thickness=1.6,
-        sch_note="ESP32-C3 SuperMini (J1 = GPIO row, J2 = power row; through-hole or castellated) driving a CC1101 E07-M1101D board in socket J3.\\nSPI: MOSI=GPIO5 SCK=GPIO6 CSN=GPIO7 MISO=GPIO4; GDO0=GPIO10 GDO2=GPIO3.\\nH1-H4: M2 mounting holes.  Single-sided board: all tracks on B.Cu.",
+        sch_note="ESP32-C3 SuperMini (J1 = GPIO row, J2 = power row; through-hole or castellated) driving a CC1101 E07-M1101D board in socket J3.\\nSPI: MOSI=GPIO5 SCK=GPIO6 CSN=GPIO7 MISO=GPIO4; GDO0=GPIO10 GDO2=GPIO3.\\nH1-H4: M2 mounting holes.  All tracks on B.Cu; F.Cu carries a GND pour.",
     )
     bx, by = d.bx, d.by
     X = lambda v: bx + v  # noqa: E731
@@ -379,11 +394,20 @@ def build_cc1101() -> Design:
     track("+3V3", 0.4, [(px(3), TOP), (px(3), V33_Y), (gap(px(7), px(8)), V33_Y), (gap(px(7), px(8)), SY1), (sx(2), SY1)])
     # Radio outputs: over the top, down the right, under the socket, into its left column.
     OVER_GDO2, OVER_MISO = TOP - 3.0, TOP - 3.5
-    RIGHT_GDO2, RIGHT_MISO = px(8) + 1.18, px(8) + 1.63
+    SM_RIGHT = px(1) - 1.74 + 22.52  # SuperMini body right edge (22.02)
+    RIGHT_GDO2, RIGHT_MISO = SM_RIGHT + 0.5, SM_RIGHT + 0.95  # outside the module, clear of its antenna
     UNDER_GDO2, UNDER_MISO = SY1 + 1.3, SY1 + 1.8
     MISO_UP_X = sx(7) - 1.3
     track("DIO1", TRACK, [(px(5), TOP), (px(5), OVER_GDO2), (RIGHT_GDO2, OVER_GDO2), (RIGHT_GDO2, UNDER_GDO2), (sx(8), UNDER_GDO2), (sx(8), SY1)])
     track("MISO", TRACK, [(px(4), TOP), (px(4), OVER_MISO), (RIGHT_MISO, OVER_MISO), (RIGHT_MISO, UNDER_MISO), (MISO_UP_X, UNDER_MISO), (MISO_UP_X, SY0), (sx(7), SY0)])
+
+    # -- copper pour on the front (GND), kept away from the SuperMini's ceramic
+    # antenna, which occupies the 4.5 mm of the module furthest from the USB-C;
+    # the keepout also bars tracks on both layers there.
+    ANT_X0, ANT_X1, ANT_Y0, ANT_Y1 = SM_RIGHT - 3.8, SM_RIGHT + 0.1, TOP + 1.3, BOT - 1.3
+    d.zones.append(Zone("", ("F.Cu", "B.Cu"), "antenna_keepout", [(X(ANT_X0), Y(ANT_Y0)), (X(ANT_X1), Y(ANT_Y0)), (X(ANT_X1), Y(ANT_Y1)), (X(ANT_X0), Y(ANT_Y1))], keepout_tracks=True))
+    m = 0.3
+    d.zones.append(Zone("GND", ("F.Cu",), "gnd_pour", [(X(m), Y(m)), (X(CC_W - m), Y(m)), (X(CC_W - m), Y(CC_H - m)), (X(m), Y(CC_H - m))]))
 
     # -- silkscreen, front and back ------------------------------------------
     g = d.graphics
@@ -431,8 +455,8 @@ def build_cc1101() -> Design:
     silk("sockname", "CC1101 E07-M1101D", gap(sx(7), sx(1)), CC_H - 1.3, 0.7)
     # Board title in the strip right of the SuperMini.
     silk("title", "ESP32-C3 + CC1101 433MHz", CC_W - 2.8, CC_H / 2, 0.7, None, 90)
-    g.append(gr_text("ss:f", "single-sided: copper on back", X(CC_W - 1.3), Y(CC_H / 2), "F.SilkS", 0.5, None, 90))
-    g.append(gr_text("ss:b", "single-sided: copper this side", X(CC_W - 1.3), Y(CC_H / 2), "B.SilkS", 0.5, "mirror", 270))
+    g.append(gr_text("ss:f", "all tracks on back; GND pour on front", X(CC_W - 1.3), Y(CC_H / 2), "F.SilkS", 0.5, None, 90))
+    g.append(gr_text("ss:b", "all tracks this side", X(CC_W - 1.3), Y(CC_H / 2), "B.SilkS", 0.5, "mirror", 270))
     return d
 
 

@@ -5,9 +5,9 @@
 	(uuid "b71943b6-a88f-5429-bfd6-fb1a52f93b27")
 	(paper "A4")
 	(title_block
-		(title "ESP32-C3 SuperMini to CC1101 E07-M1101D adapter (single-sided)")
-		(rev "1")
-		(comment 1 "Single-sided carrier joining an ESP32-C3 SuperMini to an Ebyte E07-M1101D-SMA CC1101 433MHz board via a 2x4 socket")
+		(title "ESP32-C3 SuperMini to CC1101 E07-M1101D adapter")
+		(rev "0")
+		(comment 1 "Carrier joining an ESP32-C3 SuperMini to an Ebyte E07-M1101D-SMA CC1101 433MHz board via a 2x4 socket; all tracks on the back, GND pour on the front")
 	)
 	(lib_symbols
 	(symbol "Connector_Generic:Conn_01x08"
@@ -1778,7 +1778,7 @@
 			)
 		)
 	)
-	(text "ESP32-C3 SuperMini (J1 = GPIO row, J2 = power row; through-hole or castellated) driving a CC1101 E07-M1101D board in socket J3.\nSPI: MOSI=GPIO5 SCK=GPIO6 CSN=GPIO7 MISO=GPIO4; GDO0=GPIO10 GDO2=GPIO3.\nH1-H4: M2 mounting holes.  Single-sided board: all tracks on B.Cu."
+	(text "ESP32-C3 SuperMini (J1 = GPIO row, J2 = power row; through-hole or castellated) driving a CC1101 E07-M1101D board in socket J3.\nSPI: MOSI=GPIO5 SCK=GPIO6 CSN=GPIO7 MISO=GPIO4; GDO0=GPIO10 GDO2=GPIO3.\nH1-H4: M2 mounting holes.  All tracks on B.Cu; F.Cu carries a GND pour."
 		(exclude_from_sim no)
 		(at 60 90 0)
 		(effects
