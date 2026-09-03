@@ -1,0 +1,86 @@
+(footprint "Antenna_Wire_Hole_1.0mm"
+	(version 20241229)
+	(generator "kicadgen.py")
+	(generator_version "9.0")
+	(layer "F.Cu")
+	(descr "Through-hole for a spring / wire antenna, 1.0 mm drill, 2.0 mm pad")
+	(tags "antenna wire hole")
+	(property "Reference" "REF**"
+		(at 0 -1.8 0)
+		(layer "F.SilkS")
+		(uuid "9755a0f0-8082-56ef-9afa-848e9826f162")
+		(effects
+			(font
+				(size 0.8 0.8)
+				(thickness 0.12)
+			)
+		)
+	)
+	(property "Value" "Antenna_Wire_Hole_1.0mm"
+		(at 0 1.8 0)
+		(layer "F.Fab")
+		(uuid "6676b7e0-1e1f-5e41-ab03-49bb4c1d531c")
+		(effects
+			(font
+				(size 0.8 0.8)
+				(thickness 0.12)
+			)
+		)
+	)
+	(property "Datasheet" ""
+		(at 0 0 0)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "6d047801-1cd9-5277-8f72-4f07c27cc94d")
+		(effects
+			(font
+				(size 1.27 1.27)
+				(thickness 0.1905)
+			)
+		)
+	)
+	(property "Description" ""
+		(at 0 0 0)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "822b136f-5129-500b-bc34-9686b66d3fdf")
+		(effects
+			(font
+				(size 1.27 1.27)
+				(thickness 0.1905)
+			)
+		)
+	)
+	(attr through_hole)
+	(fp_rect
+		(start -1.25 -1.25)
+		(end 1.25 1.25)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(fill no)
+		(layer "F.CrtYd")
+		(uuid "a3c683d7-3b59-5786-b832-8d0ffb4e64e6")
+	)
+	(fp_text user "${REFERENCE}"
+		(at 0 -1.8 0)
+		(layer "F.Fab")
+		(uuid "3e4db38d-dab3-59a2-983e-a2d505d8162e")
+		(effects
+			(font
+				(size 0.6 0.6)
+				(thickness 0.09)
+			)
+		)
+	)
+	(pad "1" thru_hole circle
+		(at 0 0)
+		(size 2 2)
+		(drill 1)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+		(uuid "7331057f-b795-5e2b-9080-a25f2fb9a7a1")
+	)
+	(embedded_fonts no)
+)
