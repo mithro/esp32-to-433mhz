@@ -8,7 +8,7 @@
 For each project <name> this writes, in docs/images/:
   * <name>-3d-top.png     3D raytraced render of the top side (kicad-cli pcb render)
   * <name>-3d-bottom.png  3D raytraced render of the bottom side
-  * <name>-layout.png     2D plot of F.Cu, F.SilkS, F.Fab and Edge.Cuts
+  * <name>-layout.png     2D plot of B.Cu, F.Cu, F.SilkS, F.Fab and Edge.Cuts
                           (kicad-cli pcb export svg, rasterised with inkscape)
 
 All three images of a board have the same pixel size and the same scale:
@@ -114,7 +114,7 @@ def render(kicad: str, inkscape: str, pcb: pathlib.Path) -> None:
         # 2D plot on the full A4 page so the board position is known exactly,
         # then crop the board plus margin at the same scale.
         svg = tmpdir / "layout.svg"
-        run([kicad, "pcb", "export", "svg", "--output", str(svg), "--layers", "F.Cu,F.SilkS,F.Fab,Edge.Cuts",
+        run([kicad, "pcb", "export", "svg", "--output", str(svg), "--layers", "B.Cu,F.Cu,F.SilkS,F.Fab,Edge.Cuts",
              "--page-size-mode", "0", "--exclude-drawing-sheet", "--mode-single", str(pcb)])
         text = svg.read_text()
         for src, dst in SVG_COLOURS.items():

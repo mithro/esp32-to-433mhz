@@ -5,9 +5,9 @@
 	(uuid "b71943b6-a88f-5429-bfd6-fb1a52f93b27")
 	(paper "A4")
 	(title_block
-		(title "ESP32-C3 SuperMini to CC1101 E07-M1101D adapter")
+		(title "ESP32-C3 SuperMini to CC1101 E07-M1101D adapter (single-sided)")
 		(rev "1")
-		(comment 1 "Carrier joining an ESP32-C3 SuperMini to an Ebyte E07-M1101D-SMA CC1101 433MHz board via a 2x4 socket")
+		(comment 1 "Single-sided carrier joining an ESP32-C3 SuperMini to an Ebyte E07-M1101D-SMA CC1101 433MHz board via a 2x4 socket")
 	)
 	(lib_symbols
 	(symbol "Connector_Generic:Conn_01x08"
@@ -671,7 +671,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "Adapter:SuperMini_Header_1x08_P2.54mm_THT"
+		(property "Footprint" "Adapter:SuperMini_Header_1x08_P2.54mm_THT_Row"
 			(at 76.2 101.6 0)
 			(effects
 				(font
@@ -689,7 +689,7 @@
 				(hide yes)
 			)
 		)
-		(property "Description" "ESP32-C3 SuperMini left row"
+		(property "Description" "ESP32-C3 SuperMini GPIO row (left column)"
 			(at 76.2 101.6 0)
 			(effects
 				(font
@@ -935,7 +935,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "Adapter:SuperMini_Header_1x08_P2.54mm_THT"
+		(property "Footprint" "Adapter:SuperMini_Header_1x08_P2.54mm_THT_Row"
 			(at 101.6 101.6 0)
 			(effects
 				(font
@@ -953,7 +953,7 @@
 				(hide yes)
 			)
 		)
-		(property "Description" "ESP32-C3 SuperMini right row"
+		(property "Description" "ESP32-C3 SuperMini power row (right column)"
 			(at 101.6 101.6 0)
 			(effects
 				(font
@@ -1435,7 +1435,7 @@
 			)
 		)
 	)
-	(text "ESP32-C3 SuperMini (J1 left row, J2 right row) driving a CC1101 E07-M1101D board in socket J3.\nSPI: MOSI=GPIO5 SCK=GPIO6 CSN=GPIO7 MISO=GPIO4; GDO0=GPIO10 GDO2=GPIO3."
+	(text "ESP32-C3 SuperMini (J1 = GPIO row, J2 = power row) driving a CC1101 E07-M1101D board in socket J3.\nSPI: MOSI=GPIO5 SCK=GPIO6 CSN=GPIO7 MISO=GPIO4; GDO0=GPIO10 GDO2=GPIO3.\nSingle-sided board: all copper on B.Cu."
 		(exclude_from_sim no)
 		(at 60 90 0)
 		(effects
