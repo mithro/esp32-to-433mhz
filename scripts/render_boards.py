@@ -32,6 +32,13 @@ ROOT = pathlib.Path(__file__).resolve().parent.parent
 OUT = ROOT / "docs" / "images"
 SCALE = 36.0  # px per mm
 MARGIN_MM = 1.5
+# KiCad's default plot colours suit a dark editor background; remap the
+# light ones so the layout plot reads on white.
+SVG_COLOURS = {
+    "#F2EDA1": "#1A1A8C",  # F.SilkS: pale yellow -> dark blue
+    "#AFAFAF": "#6E6E6E",  # F.Fab: light grey -> mid grey
+    "#D0D2CD": "#000000",  # Edge.Cuts: light grey -> black
+}
 
 
 def find_kicad_cli(explicit: str | None) -> str:
@@ -109,8 +116,11 @@ def render(kicad: str, inkscape: str, pcb: pathlib.Path) -> None:
         svg = tmpdir / "layout.svg"
         run([kicad, "pcb", "export", "svg", "--output", str(svg), "--layers", "F.Cu,F.SilkS,F.Fab,Edge.Cuts",
              "--page-size-mode", "0", "--exclude-drawing-sheet", "--mode-single", str(pcb)])
-        head = svg.read_text()[:2000]
-        page_w = float(re.search(r'width="([\d.]+)mm"', head).group(1))
+        text = svg.read_text()
+        for src, dst in SVG_COLOURS.items():
+            text = text.replace(src, dst).replace(src.lower(), dst)
+        svg.write_text(text)
+        page_w = float(re.search(r'width="([\d.]+)mm"', text[:2000]).group(1))
         page_png = tmpdir / "page.png"
         run([inkscape, "--export-type=png", f"--export-width={round(page_w * SCALE)}", "--export-background=white",
              f"--export-filename={page_png}", str(svg)])
