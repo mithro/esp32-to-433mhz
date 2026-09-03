@@ -94,8 +94,9 @@ edge on the left.
 | Left edge | 13 pads (pins 1-13), centred on the edge: first pad 0.63 from the top |
 | Bottom edge | 1 pad (pin 14), 2.8 from the left edge |
 | Right edge | 2 pads: pin 16 (ANT) 1.27 and pin 15 (DIO5) 2.54 from the top |
-| Castellation half-hole | 0.80 diameter, centred on the edge |
-| Pad copper | 1.05 wide, reaching 1.5 into the board |
+| Through-hole | 0.60 diameter, 1.0 in from the edge |
+| Castellation half-hole | 0.60 diameter, centred on the edge |
+| Pad copper | 1.05 wide keyhole oval from the edge to 1.5 into the board |
 | Board thickness | 1.0 (assumed) |
 
 Pin names (J1), numbered counter-clockwise from the top-left:
@@ -124,9 +125,12 @@ Sources and accuracy:
   2.7 +/- 0.2 from the corner) and two pads on the opposite edge. Pad
   positions are therefore accurate to roughly +/-0.2 mm; the pitch, pin count
   and outline are solid.
-* [NiceRF LoRa127X datasheet](https://makerhero.com/img/files/download/LoRa127X-Module-Datasheet.pdf)
-  mechanical drawing for the pad geometry of this family (0.8 mm half-holes,
-  1.5 mm pad length, 1.27 mm pitch).
+* Close-up photos show every pad is a keyhole like the SuperMini's: a plated
+  through-hole about 1.0 mm in from the edge plus a half-hole castellation on
+  the edge, joined by an oval. The
+  [NiceRF LoRa127X datasheet](https://makerhero.com/img/files/download/LoRa127X-Module-Datasheet.pdf)
+  mechanical drawing shows the same construction for this family (1.5 mm pad
+  length, 1.27 mm pitch, 0.6 mm holes), which supplied the hole size.
 * The direction of the pin numbering (pin 1 at the top-left, ANT at the
   top-right) follows the NiceRF layout and the position of the RF matching
   parts in the photo; confirm against a physical module before ordering.
@@ -181,10 +185,10 @@ Sources:
 ## Castellations in KiCad
 
 KiCad has no native castellated pad. Each castellation is a through-hole pad
-whose drill is centred on the board edge, with its copper offset into the
-board; the fab cuts the plated hole in half. On the SuperMini each pin is two
-pads sharing a number: the through-hole at the pin centre and the half-hole on
-the edge, joined by oval copper.
+whose drill is centred on the board edge; the fab cuts the plated hole in
+half. On the SuperMini and the SX1278 module each pin is two pads sharing a
+number: the through-hole inboard and the half-hole on the edge, joined by oval
+copper.
 
 KiCad flags copper and holes touching the board edge, so each project's
 `.kicad_dru` ignores edge clearance and relaxes the hole-to-hole distance for
