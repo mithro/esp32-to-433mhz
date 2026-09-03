@@ -1,0 +1,86 @@
+(footprint "MountingHole_3.0mm_Pad_4.2mm"
+	(version 20241229)
+	(generator "kicadgen.py")
+	(generator_version "9.0")
+	(layer "F.Cu")
+	(descr "Plated mounting hole, 3.0 mm drill, 4.2 mm pad (Ebyte E07-M1101D)")
+	(tags "mounting hole 3.0mm")
+	(property "Reference" "REF**"
+		(at 0 -2.9 0)
+		(layer "F.SilkS")
+		(uuid "519391e5-fa03-5890-a67a-d5109bc4f511")
+		(effects
+			(font
+				(size 0.8 0.8)
+				(thickness 0.12)
+			)
+		)
+	)
+	(property "Value" "MountingHole_3.0mm_Pad_4.2mm"
+		(at 0 2.9 0)
+		(layer "F.Fab")
+		(uuid "b9e450ce-6ab0-5d34-b703-28f242d0f55a")
+		(effects
+			(font
+				(size 0.8 0.8)
+				(thickness 0.12)
+			)
+		)
+	)
+	(property "Datasheet" ""
+		(at 0 0 0)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "b1a03109-0ab8-55e5-a655-2ccd6c434c1d")
+		(effects
+			(font
+				(size 1.27 1.27)
+				(thickness 0.1905)
+			)
+		)
+	)
+	(property "Description" ""
+		(at 0 0 0)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "663a1cf1-1537-5707-82a1-43066e4cc3d7")
+		(effects
+			(font
+				(size 1.27 1.27)
+				(thickness 0.1905)
+			)
+		)
+	)
+	(attr through_hole)
+	(fp_rect
+		(start -2.35 -2.35)
+		(end 2.35 2.35)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(fill no)
+		(layer "F.CrtYd")
+		(uuid "ed87a3c6-c45f-5672-bbb2-a512589fb82b")
+	)
+	(fp_text user "${REFERENCE}"
+		(at 0 -2.9 0)
+		(layer "F.Fab")
+		(uuid "e1234711-487e-5dd7-ae79-3b26363da885")
+		(effects
+			(font
+				(size 0.6 0.6)
+				(thickness 0.09)
+			)
+		)
+	)
+	(pad "1" thru_hole circle
+		(at 0 0)
+		(size 4.2 4.2)
+		(drill 3)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+		(uuid "f19b62f1-200d-5842-95de-783da22e7091")
+	)
+	(embedded_fonts no)
+)

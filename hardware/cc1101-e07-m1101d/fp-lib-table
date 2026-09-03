@@ -1,0 +1,4 @@
+(fp_lib_table
+  (version 7)
+  (lib (name "E07")(type "KiCad")(uri "${KIPRJMOD}/footprints/E07.pretty")(options "")(descr "CC1101 E07-M1101D-SMA form-factor board"))
+)

@@ -1,0 +1,130 @@
+(footprint "SMA_EdgeMount_E07"
+	(version 20241229)
+	(generator "kicadgen.py")
+	(generator_version "9.0")
+	(layer "F.Cu")
+	(descr "Edge-mount SMA jack for 1.6 mm PCB edge, centre pin on top, ground legs 4.25 mm either side on both faces (as fitted to the Ebyte E07-M1101D-SMA)")
+	(tags "SMA edge mount coaxial")
+	(property "Reference" "REF**"
+		(at 0 -5.5 0)
+		(layer "F.SilkS")
+		(uuid "a0ac9bdd-691f-52d1-97e6-1e905257dea1")
+		(effects
+			(font
+				(size 0.8 0.8)
+				(thickness 0.12)
+			)
+		)
+	)
+	(property "Value" "SMA_EdgeMount_E07"
+		(at 0 11 0)
+		(layer "F.Fab")
+		(uuid "c850d185-d5d7-5e3b-9a76-a76a1f53c6e1")
+		(effects
+			(font
+				(size 0.8 0.8)
+				(thickness 0.12)
+			)
+		)
+	)
+	(property "Datasheet" ""
+		(at 0 0 0)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "79cebe0f-73d9-55d1-bf0a-54c52f42c223")
+		(effects
+			(font
+				(size 1.27 1.27)
+				(thickness 0.1905)
+			)
+		)
+	)
+	(property "Description" ""
+		(at 0 0 0)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "e3825897-a1a6-51b9-9bf3-811e177c107a")
+		(effects
+			(font
+				(size 1.27 1.27)
+				(thickness 0.1905)
+			)
+		)
+	)
+	(attr smd)
+	(fp_rect
+		(start -5.25 -4.75)
+		(end 5.25 0.25)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(fill no)
+		(layer "F.CrtYd")
+		(uuid "a8196550-12a8-5eca-b149-8df9f5affa55")
+	)
+	(fp_text user "${REFERENCE}"
+		(at 0 -5.5 0)
+		(layer "F.Fab")
+		(uuid "fc9109c6-9b9d-5ea4-9868-f1129682e319")
+		(effects
+			(font
+				(size 0.6 0.6)
+				(thickness 0.09)
+			)
+		)
+	)
+	(fp_rect
+		(start -3.175 0)
+		(end 3.175 9.5)
+		(stroke
+			(width 0.1)
+			(type dash)
+		)
+		(fill no)
+		(layer "F.Fab")
+		(uuid "4f0e4c1f-c8b8-5c9f-9734-4f8be18adcf6")
+	)
+	(fp_text user "SMA"
+		(at 0 5 0)
+		(layer "F.Fab")
+		(uuid "5346747e-2cb0-577b-86f5-58d784ab870e")
+		(effects
+			(font
+				(size 0.8 0.8)
+				(thickness 0.12)
+			)
+		)
+	)
+	(pad "1" smd rect
+		(at 0 -2.25)
+		(size 1.5 4.5)
+		(layers "F.Cu" "F.Mask" "F.Paste")
+		(uuid "a5a2150a-bb62-5def-9dbd-9ec80f7f7d81")
+	)
+	(pad "2" smd rect
+		(at -4.25 -2.25)
+		(size 1.5 4.5)
+		(layers "F.Cu" "F.Mask" "F.Paste")
+		(uuid "4a8b926f-fc29-583f-a642-82684bc0c137")
+	)
+	(pad "2" smd rect
+		(at -4.25 -2.25)
+		(size 1.5 4.5)
+		(layers "B.Cu" "B.Mask" "B.Paste")
+		(uuid "79144d78-4d57-5fb2-8204-e153bef9adef")
+	)
+	(pad "2" smd rect
+		(at 4.25 -2.25)
+		(size 1.5 4.5)
+		(layers "F.Cu" "F.Mask" "F.Paste")
+		(uuid "eafc4506-bcf6-5570-8ba4-e89f08eb7c59")
+	)
+	(pad "2" smd rect
+		(at 4.25 -2.25)
+		(size 1.5 4.5)
+		(layers "B.Cu" "B.Mask" "B.Paste")
+		(uuid "c593bc72-179a-5d63-81a9-04ba5f7f0eaa")
+	)
+	(embedded_fonts no)
+)
