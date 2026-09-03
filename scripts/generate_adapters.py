@@ -8,24 +8,18 @@
 
 * hardware/esp32c3-sx1278-adapter  - SuperMini + the 16-pin castellated
   SX1278 LoRa module (soldered onto SMD land pads) + a hole for the spring
-  antenna wire.
+  antenna wire.  Two-layer; the SuperMini sits at the top with its USB-C
+  pointing off the top edge and its pins in 1.0 mm through-holes.
 * hardware/esp32c3-cc1101-adapter  - SuperMini + a 2x4 socket for the Ebyte
-  E07-M1101D-SMA CC1101 board (which stands upright in the socket).  This
-  board is single-sided: every track is on the back (B.Cu; the front carries
-  only the through-hole pad rings), and the SuperMini lies sideways (USB-C
-  off the left edge) so that its GPIO row sits directly above the socket and
-  its power row behind it, which is what makes the eight nets routable on
-  one layer.
+  E07-M1101D-SMA CC1101 board.  Single-sided (every track on B.Cu), silk on
+  both sides, M2 holes in the corners.  The SuperMini lies on its side with
+  its USB-C hanging off the left edge; its pins land on keyhole pads (1.0 mm
+  hole plus copper extended past the SuperMini's edge) so it can be fitted
+  with header pins or soldered flat by its castellations.
 
 Both use the same GPIO assignment (see PINMAP) so firmware can share the SPI
-setup.  The SuperMini sits at the top of each board with its USB-C connector
-pointing off the top edge; its pins go into 1.0 mm through-holes so it can be
-soldered directly or fitted with headers.
-
-Routing is done by hand in this file: signal nets run on F.Cu in horizontal
-lanes below the SuperMini's antenna, power runs on B.Cu, and vias join B.Cu
-nets to the SMD module pads.  DRC (scripts/verify_boards.py) checks the
-result.
+setup.  Routing is done by hand in this file and checked by DRC
+(scripts/verify_boards.py).
 
 GPIO choice: GPIO2/8/9 are ESP32-C3 strapping pins and GPIO8 also drives the
 SuperMini LED, so radio outputs (DIO/GDO) are kept off them; the radio RESET
@@ -39,7 +33,7 @@ import pathlib
 import sys
 
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
-from kicadgen import Design, Footprint, Pad, Part, SymbolRef, Track, Via, fp_rect, fp_text, gr_rect, gr_text  # noqa: E402
+from kicadgen import Design, Footprint, Pad, Part, SymbolRef, Track, Via, fp_circle, fp_rect, fp_text, gr_line, gr_rect, gr_text  # noqa: E402
 
 # ---------------------------------------------------------------------------
 # Shared: GPIO assignment and SuperMini geometry
@@ -74,23 +68,17 @@ CONN1 = SymbolRef("Connector_Generic.kicad_sym", "Connector_Generic", "Conn_01x0
 CONN2X4 = SymbolRef("Connector_Generic.kicad_sym", "Connector_Generic", "Conn_02x04_Odd_Even")
 
 
-BACK_ONLY = ("B.Cu", "B.Mask")  # pad layers for a single-sided board (copper on the solder side)
 
-
-def supermini_header_fp(along: str = "y", layers: tuple[str, ...] | None = None) -> Footprint:
-    """1x8 row for one side of the SuperMini; pins step along +y (SuperMini
-    upright) or +x (SuperMini on its side); pin 1 at the origin."""
-    step = (0, SM_PITCH) if along == "y" else (SM_PITCH, 0)
-    pads = [Pad(str(i + 1), (i * step[0], i * step[1]), (SM_PAD, SM_PAD), "thru_hole", "rect" if i == 0 else "circle", SM_DRILL, layers=layers) for i in range(8)]
-    suffix = ("_Row" if along == "x" else "") + ("_SingleSided" if layers else "")
+def supermini_header_fp() -> Footprint:
+    """1x8 row for one side of the SuperMini, pins stepping along +y, pin 1 at the origin."""
+    pads = [Pad(str(i + 1), (0, i * SM_PITCH), (SM_PAD, SM_PAD), "thru_hole", "rect" if i == 0 else "circle", SM_DRILL) for i in range(8)]
     return Footprint(
-        name=f"SuperMini_Header_1x08_P2.54mm_THT{suffix}",
-        descr="1x8 2.54 mm through-hole row for one side of an ESP32-C3 SuperMini (1.0 mm holes, 1.6 mm pads); pin 1 square"
-        + ("; copper on B.Cu only (single-sided board)" if layers else ""),
+        name="SuperMini_Header_1x08_P2.54mm_THT",
+        descr="1x8 2.54 mm through-hole row for one side of an ESP32-C3 SuperMini (1.0 mm holes, 1.6 mm pads); pin 1 square",
         tags="ESP32-C3 SuperMini header 2.54mm",
         pads=pads,
-        ref_pos=(0, -2.0, 0) if along == "y" else (-2.0, 0, 90),
-        value_pos=(0, 7 * SM_PITCH + 2.0) if along == "y" else (7 * SM_PITCH + 2.0, 0),
+        ref_pos=(0, -2.0, 0),
+        value_pos=(0, 7 * SM_PITCH + 2.0),
     )
 
 
@@ -264,20 +252,65 @@ def build_sx1278() -> Design:
 # ---------------------------------------------------------------------------
 # Adapter B: SuperMini + 2x4 socket for the E07-M1101D CC1101 board
 # ---------------------------------------------------------------------------
-E07_PIN1 = (15.81, 30.0)  # socket pin 1; odd pins in the row at y=30, even pins 2.54 below
 E07_PINS = {"1": "GND", "2": "+3V3", "3": "DIO0", "4": "NSS", "5": "SCK", "6": "MOSI", "7": "MISO", "8": "DIO1"}
 E07_LABELS = {"1": "GND", "2": "VCC", "3": "GDO0", "4": "CSN", "5": "SCK", "6": "MOSI", "7": "MISO", "8": "GDO2"}
+E07_NAMES = {"NSS": "CSN", "DIO0": "GDO0", "DIO1": "GDO2"}  # net name -> name printed on the CC1101 board
+
+# Board geometry (mm from the board's top-left corner).
+CC_W, CC_H = 27.0, 36.5
+CC_OVER = 0.5  # the SuperMini body overhangs the left edge by this much, so its USB-C is clear of the board
+CC_PX1 = 1.74 - CC_OVER  # x of SuperMini pin 1 in both rows (1.74 = SuperMini edge to first pin)
+CC_TOP_Y = 7.0  # power row (the SuperMini's right column); its castellations face the top edge
+CC_BOT_Y = CC_TOP_Y + 15.24  # GPIO row (left column)
+CC_S1 = (16.48, 28.5)  # socket pin 1 (outer row, rightmost column); columns step -2.54
+CC_HOLE_IN = 2.4  # mounting hole centres from the edges
+CC_HOLE_D = 2.2  # M2 clearance hole
+CAST_LEN, CAST_OFF = 3.4, 0.9  # keyhole pad: oval length and copper offset outboard (copper reaches 2.6 mm from the hole)
+SM_EDGE = 1.38  # SuperMini pin centre to its castellated edge
 
 
-def e07_socket_fp(layers: tuple[str, ...] | None = None) -> Footprint:
+def supermini_castellated_row_fp(outboard: int) -> Footprint:
+    """1x8 row along +x, pin 1 at the origin, for one edge of a SuperMini that may
+    either be pinned through the holes or soldered flat by its castellations.
+    Each pad is a keyhole: a 1.0 mm hole at the pin with 1.6 mm wide copper
+    extended outboard (outboard = -1 toward -y, +1 toward +y) to 2.6 mm from the
+    hole, i.e. 1.2 mm past the SuperMini's edge, so the half-hole castellation
+    lands on copper."""
+    side = "Up" if outboard < 0 else "Down"
+    pads = [
+        Pad(str(i + 1), (i * SM_PITCH, 0), (SM_PAD, CAST_LEN), "thru_hole", "rect" if i == 0 else "oval", SM_DRILL, offset=(0, outboard * CAST_OFF))
+        for i in range(8)
+    ]
+    return Footprint(
+        name=f"SuperMini_Row_1x08_P2.54mm_THT_Castellated_{side}",
+        descr=f"1x8 2.54 mm row for one edge of an ESP32-C3 SuperMini: 1.0 mm holes for header pins, 1.6 x {CAST_LEN} mm oval copper extended {side.lower()} to 2.6 mm from the hole so the SuperMini can also be soldered flat by its castellations; pin 1 square",
+        tags="ESP32-C3 SuperMini castellated header 2.54mm",
+        pads=pads,
+        ref_pos=(-2.0, 0, 90),
+        value_pos=(7 * SM_PITCH + 2.0, 0),
+    )
+
+
+def mounting_hole_fp() -> Footprint:
+    return Footprint(
+        name=f"MountingHole_{CC_HOLE_D}mm_M2",
+        descr=f"M2 mounting hole, {CC_HOLE_D} mm, not plated",
+        tags="mounting hole M2",
+        pads=[Pad("1", (0, 0), (CC_HOLE_D, CC_HOLE_D), "np_thru_hole", "circle", CC_HOLE_D)],
+        extra=[fp_circle("hole:fab", 0, 0, CC_HOLE_D / 2, "F.Fab", 0.1), fp_circle("hole:bfab", 0, 0, CC_HOLE_D / 2, "B.Fab", 0.1)],
+        ref_pos=(0, -2.0, 0),
+        value_pos=(0, 2.0),
+    )
+
+
+def e07_socket_fp() -> Footprint:
     pads = []
     for n in range(1, 9):
         col, row = (n - 1) // 2, (n - 1) % 2
-        pads.append(Pad(str(n), (-col * SM_PITCH, row * SM_PITCH), (1.6, 1.6), "thru_hole", "rect" if n == 1 else "circle", 1.0, layers=layers))
+        pads.append(Pad(str(n), (-col * SM_PITCH, row * SM_PITCH), (1.6, 1.6), "thru_hole", "rect" if n == 1 else "circle", 1.0))
     return Footprint(
-        name="PinSocket_2x04_P2.54mm_E07" + ("_SingleSided" if layers else ""),
-        descr="2x4 2.54 mm socket matching the Ebyte E07-M1101D header: pin 1 square, pin 2 below it, odd pins in the outer row, columns stepping to -x"
-        + ("; copper on B.Cu only (single-sided board)" if layers else ""),
+        name="PinSocket_2x04_P2.54mm_E07",
+        descr="2x4 2.54 mm socket matching the Ebyte E07-M1101D header: pin 1 square, pin 2 below it, odd pins in the outer row, columns stepping to -x",
         tags="pin socket 2.54mm 2x04 E07-M1101D",
         pads=pads,
         ref_pos=(-3 * SM_PITCH - 1.8, SM_PITCH / 2, 90),
@@ -285,90 +318,121 @@ def e07_socket_fp(layers: tuple[str, ...] | None = None) -> Footprint:
     )
 
 
-def e07_x(pin: int) -> float:
-    return E07_PIN1[0] - ((pin - 1) // 2) * SM_PITCH
-
-
-def e07_y(pin: int) -> float:
-    return E07_PIN1[1] + ((pin - 1) % 2) * SM_PITCH
-
-
 def build_cc1101() -> Design:
-    """Single-sided carrier.  The SuperMini lies on its side with USB-C off
-    the left edge: its right column becomes the top row (5V at the left) and
-    its left column the bottom row (GPIO5 at the left), 15.24 mm apart.  The
-    2x4 socket sits below with pin 7 (MISO) under GPIO5.  All tracks are on
-    B.Cu; F.Cu carries only the through-hole pad rings, so the board can be
-    made single-sided from the B.Cu artwork alone."""
+    """Single-sided carrier with the SuperMini on its side (USB-C off the left
+    edge): its right column becomes the top row (5V at the left) and its left
+    column the bottom row (GPIO5 at the left), 15.24 mm apart.  The 2x4 socket
+    sits below, shifted right so the plugged-in E07 board clears the bottom-left
+    mounting screw.  All tracks are on B.Cu; F.Cu carries only the pad copper.
+
+    Routing (see the constants below): MOSI, SCK and CSN drop from the GPIO row
+    into three lanes and enter the socket from above; GDO0 goes straight down;
+    GND and 3V3 run between the SuperMini rows, drop through gaps in the GPIO
+    row and enter pin 1/2 from the right; MISO and GDO2 (radio outputs on the
+    power row) go over the top of the power row, down the right of the
+    SuperMini and under the socket to its left column."""
     d = Design(
         project="esp32c3-cc1101-adapter",
         title="ESP32-C3 SuperMini to CC1101 E07-M1101D adapter (single-sided)",
         comment="Single-sided carrier joining an ESP32-C3 SuperMini to an Ebyte E07-M1101D-SMA CC1101 433MHz board via a 2x4 socket",
         fp_lib="Adapter",
-        width=30.0,
-        height=38.0,
+        width=CC_W,
+        height=CC_H,
         thickness=1.6,
-        sch_note="ESP32-C3 SuperMini (J1 = GPIO row, J2 = power row) driving a CC1101 E07-M1101D board in socket J3.\\nSPI: MOSI=GPIO5 SCK=GPIO6 CSN=GPIO7 MISO=GPIO4; GDO0=GPIO10 GDO2=GPIO3.\\nSingle-sided board: all copper on B.Cu.",
+        sch_note="ESP32-C3 SuperMini (J1 = GPIO row, J2 = power row; through-hole or castellated) driving a CC1101 E07-M1101D board in socket J3.\\nSPI: MOSI=GPIO5 SCK=GPIO6 CSN=GPIO7 MISO=GPIO4; GDO0=GPIO10 GDO2=GPIO3.\\nH1-H4: M2 mounting holes.  Single-sided board: all tracks on B.Cu.",
     )
     bx, by = d.bx, d.by
-    XO = 2.0  # everything shifted right so the standing CC1101 board stays inside the outline
-    X = lambda v: bx + XO + v  # noqa: E731
+    X = lambda v: bx + v  # noqa: E731
     Y = lambda v: by + v  # noqa: E731
-    TOP_Y, BOT_Y = 4.0, 4.0 + 15.24  # SuperMini rows: right column on top, left column below
-    px = lambda pin: 4.0 + (pin - 1) * SM_PITCH  # noqa: E731  x of SuperMini pin along a row
+    TOP, BOT = CC_TOP_Y, CC_BOT_Y
+    px = lambda pin: CC_PX1 + (pin - 1) * SM_PITCH  # noqa: E731  x of SuperMini pin along a row
+    sx = lambda pin: CC_S1[0] - ((pin - 1) // 2) * SM_PITCH  # noqa: E731
+    sy = lambda pin: CC_S1[1] + ((pin - 1) % 2) * SM_PITCH  # noqa: E731
+    SY0, SY1 = sy(1), sy(2)  # socket outer / inner row
+    gap = lambda a, b: (a + b) / 2  # noqa: E731
+
     mapping = {k: v for k, v in PINMAP.items() if k != "RESET"}
     left, right = supermini_nets(mapping)
-    fp = supermini_header_fp("x")
-    d.parts.append(Part("J1", fp, (X(px(1)), Y(BOT_Y)), CONN8, "Conn_01x08", left, (76.2, 101.6), "ESP32-C3 SuperMini GPIO row (left column)"))
-    d.parts.append(Part("J2", fp, (X(px(1)), Y(TOP_Y)), CONN8, "Conn_01x08", right, (101.6, 101.6), "ESP32-C3 SuperMini power row (right column)"))
-    # Socket: pin 7 under GPIO5 (x = 4.0), pin 1 at x = 11.62; outer row y = 30.
-    S1 = (11.62, 30.0)
-    d.parts.append(Part("J3", e07_socket_fp(), (X(S1[0]), Y(S1[1])), CONN2X4, "E07-M1101D", E07_PINS, (127.0, 101.6), "CC1101 E07-M1101D socket"))
-    sx = lambda pin: S1[0] - ((pin - 1) // 2) * SM_PITCH  # noqa: E731
-    sy = lambda pin: S1[1] + ((pin - 1) % 2) * SM_PITCH  # noqa: E731
+    d.parts.append(Part("J1", supermini_castellated_row_fp(+1), (X(px(1)), Y(BOT)), CONN8, "Conn_01x08", left, (76.2, 101.6), "ESP32-C3 SuperMini GPIO row (left column)"))
+    d.parts.append(Part("J2", supermini_castellated_row_fp(-1), (X(px(1)), Y(TOP)), CONN8, "Conn_01x08", right, (101.6, 101.6), "ESP32-C3 SuperMini power row (right column)"))
+    d.parts.append(Part("J3", e07_socket_fp(), (X(CC_S1[0]), Y(CC_S1[1])), CONN2X4, "E07-M1101D", E07_PINS, (127.0, 101.6), "CC1101 E07-M1101D socket"))
+    hole_fp = mounting_hole_fp()
+    hole_sym = SymbolRef("Mechanical.kicad_sym", "Mechanical", "MountingHole")
+    corners = [(CC_HOLE_IN, CC_HOLE_IN), (CC_W - CC_HOLE_IN, CC_HOLE_IN), (CC_HOLE_IN, CC_H - CC_HOLE_IN), (CC_W - CC_HOLE_IN, CC_H - CC_HOLE_IN)]
+    for i, (hx, hy) in enumerate(corners, 1):
+        d.parts.append(Part(f"H{i}", hole_fp, (X(hx), Y(hy)), hole_sym, "MountingHole", {}, (152.4 + (i - 1) * 12.7, 101.6), "M2 mounting hole"))
 
     def track(net: str, width: float, pts: list[tuple[float, float]]) -> None:
         d.tracks.append(Track(net, "B.Cu", width, [(X(x), Y(y)) for x, y in pts]))
 
-    # GPIO row (y = 19.24) straight down into the socket; inner-row pads are
-    # reached through the gaps between the outer-row pads.
-    track("SCK", TRACK, [(px(2), BOT_Y), (sx(5), sy(5))])
-    track("MOSI", TRACK, [(px(1), BOT_Y), (px(1), 24.0), (5.27, 24.0), (5.27, sy(6)), (sx(6), sy(6))])
-    track("NSS", TRACK, [(px(3), BOT_Y), (px(3), 24.5), (7.81, 24.5), (7.81, sy(4)), (sx(4), sy(4))])
-    track("DIO0", TRACK, [(px(6), BOT_Y), (px(6), 25.0), (sx(3), 25.0), (sx(3), sy(3))])
-    # Power row (y = 4.0): GND and 3V3 run between the rows, drop through gaps
-    # in the GPIO row right of the signals, and enter pads 1 / 2 from the right.
-    track("GND", 0.4, [(px(2), TOP_Y), (px(2), 6.0), (17.97, 6.0), (17.97, sy(1)), (sx(1), sy(1))])
-    track("+3V3", 0.4, [(px(3), TOP_Y), (px(3), 5.3), (20.51, 5.3), (20.51, sy(2)), (sx(2), sy(2))])
-    # MISO and GDO2 (radio outputs) go over the top of the power row and down
-    # the left edge to the socket's left column.
-    track("MISO", TRACK, [(px(4), TOP_Y), (px(4), 2.2), (2.2 - XO + 1.6, 2.2), (2.2 - XO + 1.6, sy(7)), (sx(7), sy(7))])
-    track("DIO1", TRACK, [(px(5), TOP_Y), (px(5), 1.6), (1.6 - XO + 1.0, 1.6), (1.6 - XO + 1.0, sy(8)), (sx(8), sy(8))])
+    # Keyhole copper reaches 2.6 mm outboard of each row, so lanes below the
+    # GPIO row start at BOT + 3.05 and lanes above the power row end at TOP - 3.0.
+    LANE_CSN, LANE_SCK, LANE_MOSI = BOT + 3.05, BOT + 3.55, BOT + 4.05
+    track("NSS", TRACK, [(px(3), BOT), (px(3), LANE_CSN), (gap(sx(5), sx(3)), LANE_CSN), (gap(sx(5), sx(3)), SY1), (sx(4), SY1)])
+    track("SCK", TRACK, [(px(2), BOT), (px(2), LANE_SCK), (sx(5), LANE_SCK), (sx(5), SY0)])
+    track("MOSI", TRACK, [(px(1), BOT), (px(1), LANE_MOSI), (gap(sx(7), sx(5)), LANE_MOSI), (gap(sx(7), sx(5)), SY1), (sx(6), SY1)])
+    assert abs(px(6) - sx(3)) < 1e-9, "GDO0 drops straight into socket pin 3"
+    track("DIO0", TRACK, [(px(6), BOT), (sx(3), SY0)])
+    # Power: between the rows, then down through the gaps right of GPIO10.
+    GND_Y, V33_Y = TOP + 2.0, TOP + 1.3
+    track("GND", 0.4, [(px(2), TOP), (px(2), GND_Y), (gap(px(6), px(7)), GND_Y), (gap(px(6), px(7)), SY0), (sx(1), SY0)])
+    track("+3V3", 0.4, [(px(3), TOP), (px(3), V33_Y), (gap(px(7), px(8)), V33_Y), (gap(px(7), px(8)), SY1), (sx(2), SY1)])
+    # Radio outputs: over the top, down the right, under the socket, into its left column.
+    OVER_GDO2, OVER_MISO = TOP - 3.0, TOP - 3.5
+    RIGHT_GDO2, RIGHT_MISO = px(8) + 1.18, px(8) + 1.63
+    UNDER_GDO2, UNDER_MISO = SY1 + 1.3, SY1 + 1.8
+    MISO_UP_X = sx(7) - 1.3
+    track("DIO1", TRACK, [(px(5), TOP), (px(5), OVER_GDO2), (RIGHT_GDO2, OVER_GDO2), (RIGHT_GDO2, UNDER_GDO2), (sx(8), UNDER_GDO2), (sx(8), SY1)])
+    track("MISO", TRACK, [(px(4), TOP), (px(4), OVER_MISO), (RIGHT_MISO, OVER_MISO), (RIGHT_MISO, UNDER_MISO), (MISO_UP_X, UNDER_MISO), (MISO_UP_X, SY0), (sx(7), SY0)])
 
+    # -- silkscreen, front and back ------------------------------------------
     g = d.graphics
-    x0, y0, x1, y1 = px(1) - 1.74, TOP_Y - 1.38, px(1) - 1.74 + 22.52, BOT_Y + 1.38
-    g.append(gr_rect("sm_outline", X(x0), Y(y0), X(x1), Y(y1), "F.SilkS", 0.12))
-    g.append(gr_rect("sm_usb", X(x0) - 1.5, Y((y0 + y1) / 2 - 4.5), X(x0) + 5.85, Y((y0 + y1) / 2 + 4.5), "F.Fab", 0.1, "dash"))
-    g.append(gr_text("sm_title", "ESP32-C3 SuperMini", X((x0 + x1) / 2), Y((y0 + y1) / 2), "F.SilkS", 0.7))
-    g.append(gr_text("sm_usb", "USB-C", X(x0) + 2.2, Y((y0 + y1) / 2 + 1.2), "F.SilkS", 0.6))
+    MIRROR = {None: "mirror", "left": "right mirror", "right": "left mirror"}
+
+    def silk(key: str, text: str, x: float, y: float, size: float, justify: str | None = None, angle: float = 0) -> None:
+        """Text on both silk layers; the back copy is mirrored about its anchor
+        so it reads correctly from the back and keeps its side of the anchor."""
+        g.append(gr_text(f"{key}:f", text, X(x), Y(y), "F.SilkS", size, justify, angle))
+        g.append(gr_text(f"{key}:b", text, X(x), Y(y), "B.SilkS", size, MIRROR[justify], (-angle) % 360))
+
+    def both(fn, key: str, coords: tuple[float, ...], width: float, layers: tuple[str, str] = ("F.SilkS", "B.SilkS"), **kw) -> None:
+        """A gr_line / gr_rect on a pair of layers (front and back)."""
+        for suffix, layer in zip("fb", layers):
+            g.append(fn(f"{key}:{suffix}", *(X(v) if i % 2 == 0 else Y(v) for i, v in enumerate(coords)), layer, width, **kw))
+
+    # SuperMini body: full outline on the fab layers; on silk only the right end
+    # (the long edges would cross the keyhole pads).
+    x0, y0, x1, y1 = px(1) - 1.74, TOP - SM_EDGE, px(1) - 1.74 + 22.52, BOT + SM_EDGE
+    both(gr_line, "sm_top", (0.0, y0, x1, y0), 0.1, layers=("F.Fab", "B.Fab"))
+    both(gr_line, "sm_bot", (0.0, y1, x1, y1), 0.1, layers=("F.Fab", "B.Fab"))
+    both(gr_line, "sm_right", (x1, y0, x1, y1), 0.1, layers=("F.Fab", "B.Fab"))
+    both(gr_rect, "sm_usb", (0.2, (y0 + y1) / 2 - 4.5, x0 + 5.85, (y0 + y1) / 2 + 4.5), 0.1, layers=("F.Fab", "B.Fab"), stype="dash")
+    both(gr_line, "sm_silk_right", (x1, y0, x1, y1), 0.12)
+    both(gr_line, "sm_silk_tr", (px(8) + 1.05, y0, x1, y0), 0.12)
+    both(gr_line, "sm_silk_br", (px(8) + 1.05, y1, x1, y1), 0.12)
+    silk("sm_title", "ESP32-C3 SuperMini", (x0 + x1) / 2, (y0 + y1) / 2, 0.7)
+    silk("sm_usb", "USB-C", x0 + 2.2, (y0 + y1) / 2 + 1.2, 0.6)
+    # ESP32 pin names (as printed on the SuperMini) outside each row, beyond the
+    # keyhole copper; radio signal names inside the rows.
     for pin in range(1, 9):
-        g.append(gr_text(f"esp_t{pin}", SM_RIGHT_SILK[pin - 1], X(px(pin)), Y(TOP_Y - 2.0), "F.SilkS", 0.5))
-        g.append(gr_text(f"esp_b{pin}", SM_LEFT_SILK[pin - 1], X(px(pin)), Y(BOT_Y + 2.0), "F.SilkS", 0.5))
+        silk(f"esp_t{pin}", SM_RIGHT_SILK[pin - 1], px(pin), TOP - 3.1, 0.5)
+        silk(f"esp_b{pin}", SM_LEFT_SILK[pin - 1], px(pin), BOT + 3.1, 0.5)
         if right[str(pin)] != SM_RIGHT_GPIO[pin - 1]:
-            g.append(gr_text(f"sig_t{pin}", right[str(pin)], X(px(pin)), Y(TOP_Y + 2.7), "F.SilkS", 0.5, None, 90))
+            silk(f"sig_t{pin}", E07_NAMES.get(right[str(pin)], right[str(pin)]), px(pin), TOP + 2.7, 0.5, None, 90)
         if left[str(pin)] != SM_LEFT_GPIO[pin - 1]:
-            g.append(gr_text(f"sig_b{pin}", left[str(pin)], X(px(pin)), Y(BOT_Y - 2.7), "F.SilkS", 0.5, None, 90))
-    g.append(gr_rect("sockbox", X(sx(7) - 1.3), Y(sy(1) - 1.3), X(sx(1) + 1.3), Y(sy(2) + 1.3), "F.SilkS", 0.12))
-    g.append(gr_text("sock1", "1", X(sx(1) + 1.9), Y(sy(1)), "F.SilkS", 0.6, "left"))
-    g.append(gr_text("sock2", "2", X(sx(1) + 1.9), Y(sy(2)), "F.SilkS", 0.6, "left"))
+            silk(f"sig_b{pin}", E07_NAMES.get(left[str(pin)], left[str(pin)]), px(pin), BOT - 2.7, 0.5, None, 90)
+    # Socket.
+    both(gr_rect, "sockbox", (sx(7) - 1.3, SY0 - 1.3, sx(1) + 1.3, SY1 + 1.3), 0.12)
+    silk("sock1", "1", sx(1) + 1.9, SY0, 0.6, "left")
+    silk("sock2", "2", sx(1) + 1.9, SY1, 0.6, "left")
     for n, lab in E07_LABELS.items():
         pin = int(n)
-        g.append(gr_text(f"socklbl{n}", lab, X(sx(pin)), Y(sy(1) - 2.0 if pin % 2 else sy(2) + 2.0), "F.SilkS", 0.5))
-    g.append(gr_text("sockname", "CC1101 E07-M1101D", X(sx(4)), Y(36.6), "F.SilkS", 0.7))
-    legend = ["GPIO5  MOSI", "GPIO6  SCK", "GPIO7  CSN", "GPIO10 GDO0", "GPIO4  MISO", "GPIO3  GDO2"]
-    for i, line in enumerate(legend):
-        g.append(gr_text(f"legend{i}", line, X(16.0), Y(27.5 + i * 1.3), "F.SilkS", 0.6, "left"))
-    g.append(gr_text("ss", "single-sided: copper on back", X(16.0), Y(35.6), "F.SilkS", 0.5, "left"))
+        silk(f"socklbl{n}", lab, sx(pin), SY0 - 2.0 if pin % 2 else SY1 + 2.0, 0.5)
+    silk("sockname", "CC1101 E07-M1101D", gap(sx(7), sx(1)), CC_H - 1.3, 0.7)
+    # Board title in the strip right of the SuperMini.
+    silk("title", "ESP32-C3 + CC1101 433MHz", CC_W - 2.8, CC_H / 2, 0.7, None, 90)
+    g.append(gr_text("ss:f", "single-sided: copper on back", X(CC_W - 1.3), Y(CC_H / 2), "F.SilkS", 0.5, None, 90))
+    g.append(gr_text("ss:b", "single-sided: copper this side", X(CC_W - 1.3), Y(CC_H / 2), "B.SilkS", 0.5, "mirror", 270))
     return d
 
 

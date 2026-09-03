@@ -270,6 +270,21 @@ def gr_rect(key: str, x0: float, y0: float, x1: float, y1: float, layer: str, wi
 """
 
 
+def gr_line(key: str, x0: float, y0: float, x1: float, y1: float, layer: str, width: float, stype: str = "solid") -> str:
+    return f"""\
+	(gr_line
+		(start {fmt(x0)} {fmt(y0)})
+		(end {fmt(x1)} {fmt(y1)})
+		(stroke
+			(width {fmt(width)})
+			(type {stype})
+		)
+		(layer "{layer}")
+		(uuid "{uid(f'pcb:line:{key}')}")
+	)
+"""
+
+
 def gr_circle(key: str, cx: float, cy: float, r: float, layer: str, width: float) -> str:
     return f"""\
 	(gr_circle

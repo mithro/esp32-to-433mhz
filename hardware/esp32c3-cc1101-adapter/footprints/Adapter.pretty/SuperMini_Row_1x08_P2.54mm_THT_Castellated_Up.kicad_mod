@@ -1,0 +1,158 @@
+(footprint "SuperMini_Row_1x08_P2.54mm_THT_Castellated_Up"
+	(version 20241229)
+	(generator "kicadgen.py")
+	(generator_version "9.0")
+	(layer "F.Cu")
+	(descr "1x8 2.54 mm row for one edge of an ESP32-C3 SuperMini: 1.0 mm holes for header pins, 1.6 x 3.4 mm oval copper extended up to 2.6 mm from the hole so the SuperMini can also be soldered flat by its castellations; pin 1 square")
+	(tags "ESP32-C3 SuperMini castellated header 2.54mm")
+	(property "Reference" "REF**"
+		(at -2 0 90)
+		(layer "F.SilkS")
+		(uuid "24dea6d7-fba9-5b34-8dac-426467431ae1")
+		(effects
+			(font
+				(size 0.8 0.8)
+				(thickness 0.12)
+			)
+		)
+	)
+	(property "Value" "SuperMini_Row_1x08_P2.54mm_THT_Castellated_Up"
+		(at 19.78 0 0)
+		(layer "F.Fab")
+		(uuid "83dd0661-3779-5f1e-ab1c-e3ceb56a0a16")
+		(effects
+			(font
+				(size 0.8 0.8)
+				(thickness 0.12)
+			)
+		)
+	)
+	(property "Datasheet" ""
+		(at 0 0 0)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "b3a85811-2098-5173-a7ab-4b80064aea99")
+		(effects
+			(font
+				(size 1.27 1.27)
+				(thickness 0.1905)
+			)
+		)
+	)
+	(property "Description" ""
+		(at 0 0 0)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "3fcace00-1fde-53ce-97c5-a3329290ad59")
+		(effects
+			(font
+				(size 1.27 1.27)
+				(thickness 0.1905)
+			)
+		)
+	)
+	(attr through_hole)
+	(fp_rect
+		(start -1.05 -2.85)
+		(end 18.83 1.05)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(fill no)
+		(layer "F.CrtYd")
+		(uuid "006e1eb2-3c05-50e7-9f74-17676b11db87")
+	)
+	(fp_text user "${REFERENCE}"
+		(at -2 0 90)
+		(layer "F.Fab")
+		(uuid "9fea8d0d-b856-5240-99b5-c510edc189e3")
+		(effects
+			(font
+				(size 0.6 0.6)
+				(thickness 0.09)
+			)
+		)
+	)
+	(pad "1" thru_hole rect
+		(at 0 0)
+		(size 1.6 3.4)
+		(drill 1
+			(offset 0 -0.9)
+		)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+		(uuid "ca0a6596-c2b1-5a30-a716-ed5f45c198a1")
+	)
+	(pad "2" thru_hole oval
+		(at 2.54 0)
+		(size 1.6 3.4)
+		(drill 1
+			(offset 0 -0.9)
+		)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+		(uuid "8b8258f7-e461-5741-9b4b-3933f41f4961")
+	)
+	(pad "3" thru_hole oval
+		(at 5.08 0)
+		(size 1.6 3.4)
+		(drill 1
+			(offset 0 -0.9)
+		)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+		(uuid "a8d1f176-4958-5dd1-b8a2-c27e6ace8e97")
+	)
+	(pad "4" thru_hole oval
+		(at 7.62 0)
+		(size 1.6 3.4)
+		(drill 1
+			(offset 0 -0.9)
+		)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+		(uuid "a7a13921-a318-5694-8422-eefb20cb21b6")
+	)
+	(pad "5" thru_hole oval
+		(at 10.16 0)
+		(size 1.6 3.4)
+		(drill 1
+			(offset 0 -0.9)
+		)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+		(uuid "e1fa443f-f695-5e9a-b7cc-3bdb1ec90ec6")
+	)
+	(pad "6" thru_hole oval
+		(at 12.7 0)
+		(size 1.6 3.4)
+		(drill 1
+			(offset 0 -0.9)
+		)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+		(uuid "f47cb46c-9fc7-5a50-8314-9d27f6372ce6")
+	)
+	(pad "7" thru_hole oval
+		(at 15.24 0)
+		(size 1.6 3.4)
+		(drill 1
+			(offset 0 -0.9)
+		)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+		(uuid "efc9195f-8646-5346-9c1a-712bb9c19e28")
+	)
+	(pad "8" thru_hole oval
+		(at 17.78 0)
+		(size 1.6 3.4)
+		(drill 1
+			(offset 0 -0.9)
+		)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+		(uuid "fc5f64e1-6944-559c-a271-05c51de1f480")
+	)
+	(embedded_fonts no)
+)
