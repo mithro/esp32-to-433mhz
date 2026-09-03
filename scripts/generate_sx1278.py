@@ -16,8 +16,10 @@ geometry combines:
   16.5 mm edge at 1.27 mm pitch (measured 1.26), one pad around the corner
   on the adjacent 17.0 mm edge, and two pads at 1.27 mm pitch near the top
   of the opposite edge.
-* NiceRF LoRa127X mechanical drawing for the pad geometry of this family:
-  0.8 mm half-holes, pads 1.5 mm long, 1.27 mm pitch.
+* NiceRF LoRa127X mechanical drawing and close-up photos for the pad
+  geometry of this family: keyhole pads 1.5 mm long at 1.27 mm pitch, each
+  with a plated through-hole about 1.0 mm in from the edge and a half-hole
+  castellation on the edge (0.6 mm holes).
 * Seller pin table for the names (pin 1 GND ... pin 16 ANT), numbered
   counter-clockwise from the top-left when viewed from the component side.
 
@@ -41,36 +43,39 @@ N_LEFT = 13
 LEFT_FIRST_Y = (BOARD_H - (N_LEFT - 1) * PITCH) / 2  # pads centred on the edge: 0.63
 BOTTOM_PAD_X = 2.8  # pin 14, from the left edge (photo: 2.7 +/- 0.2)
 RIGHT_PAD_Y = (PITCH, 2 * PITCH)  # pins 16 (upper) and 15 (lower) from the top edge
-HOLE = 0.8
-PAD_W = 1.05  # along the edge (0.125 mm ring around the 0.8 mm hole, 0.22 mm to the neighbour)
+HOLE = 0.6  # through-hole and castellation half-hole diameter
+HOLE_IN = 1.0  # through-hole centre from the board edge
+PAD_W = 1.05  # along the edge (0.225 mm ring, 0.22 mm to the neighbour)
 PAD_IN = 1.5  # copper reaching into the board
-PAD_OUT = 0.6  # copper outside the edge (removed when the board is routed)
 
 PIN_NAMES = ["GND", "DIO1", "DIO2", "DIO3", "VCC", "MISO", "MOSI", "SCK", "NSS", "DIO0", "REST", "REST", "GND", "DIO4", "DIO5", "ANT"]
 PROJECT = "sx1278-lora-module"
 
 
-def edge_pad(n: int, x: float, y: float, direction: str) -> Pad:
-    """Castellated pad: hole centred on the board edge, copper oval reaching
-    PAD_IN into the board and PAD_OUT beyond it.  direction = side of the
+def edge_pad(n: int, x: float, y: float, direction: str) -> list[Pad]:
+    """Keyhole pad on the board edge at (x, y): a through-hole HOLE_IN into
+    the board with oval copper running from the edge to PAD_IN, plus a
+    castellation half-hole centred on the edge.  direction = side of the
     board the pad reaches into: 'right' (from the left edge), 'left', 'up'."""
-    length = PAD_IN + PAD_OUT
-    shift = length / 2 - PAD_OUT
-    if direction == "right":
-        return Pad(str(n), (x, y), (length, PAD_W), "thru_hole", "oval", HOLE, (shift, 0))
-    if direction == "left":
-        return Pad(str(n), (x, y), (length, PAD_W), "thru_hole", "oval", HOLE, (-shift, 0))
-    return Pad(str(n), (x, y), (PAD_W, length), "thru_hole", "oval", HOLE, (0, -shift))
+    dx, dy = {"right": (1, 0), "left": (-1, 0), "up": (0, -1)}[direction]
+    shift = PAD_IN / 2 - HOLE_IN  # oval centre relative to the through-hole
+    size = (PAD_IN, PAD_W) if dy == 0 else (PAD_W, PAD_IN)
+    return [
+        Pad(str(n), (x + dx * HOLE_IN, y + dy * HOLE_IN), size, "thru_hole", "oval", HOLE, (dx * shift, dy * shift), tag="th"),
+        Pad(str(n), (x, y), (PAD_W, PAD_W), "thru_hole", "circle", HOLE, tag="edge"),
+    ]
 
 
 def module_fp() -> Footprint:
-    pads = [edge_pad(i + 1, 0, LEFT_FIRST_Y + i * PITCH, "right") for i in range(N_LEFT)]
-    pads.append(edge_pad(14, BOTTOM_PAD_X, BOARD_H, "up"))
-    pads.append(edge_pad(15, BOARD_W, RIGHT_PAD_Y[1], "left"))
-    pads.append(edge_pad(16, BOARD_W, RIGHT_PAD_Y[0], "left"))
+    pads = []
+    for i in range(N_LEFT):
+        pads += edge_pad(i + 1, 0, LEFT_FIRST_Y + i * PITCH, "right")
+    pads += edge_pad(14, BOTTOM_PAD_X, BOARD_H, "up")
+    pads += edge_pad(15, BOARD_W, RIGHT_PAD_Y[1], "left")
+    pads += edge_pad(16, BOARD_W, RIGHT_PAD_Y[0], "left")
     return Footprint(
         name="SX1278_Module_16pin_Castellated",
-        descr="16-pin castellated SX1278 LoRa module (PXL1276-D01 / NiceRF LoRa1278 derivative): 13 pads at 1.27 mm on the left edge, one on the bottom edge, two on the right edge; 0.8 mm half-holes. Origin at the top-left board corner; board edges must run through the hole centres.",
+        descr="16-pin castellated SX1278 LoRa module (PXL1276-D01 / NiceRF LoRa1278 derivative): 13 keyhole pads at 1.27 mm on the left edge, one on the bottom edge, two on the right edge; each has a 0.6 mm through-hole 1.0 mm in from the edge and a 0.6 mm half-hole on the edge. Origin at the top-left board corner; board edges must run through the castellation centres.",
         tags="SX1278 LoRa module castellated 1.27mm",
         pads=pads,
         ref_pos=(BOARD_W / 2, BOARD_H / 2 + 2.5, 0),
