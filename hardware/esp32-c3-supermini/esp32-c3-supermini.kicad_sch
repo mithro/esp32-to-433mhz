@@ -1,6 +1,6 @@
 (kicad_sch
 	(version 20250114)
-	(generator "generate_supermini.py")
+	(generator "kicadgen.py")
 	(generator_version "9.0")
 	(uuid "b71943b6-a88f-5429-bfd6-fb1a52f93b27")
 	(paper "A4")
@@ -338,7 +338,7 @@
 		(fields_autoplaced yes)
 		(uuid "cfc603cb-43f3-5153-9ab1-6c66e0348af1")
 		(property "Reference" "J1"
-			(at 78.74 91.44 0)
+			(at 78.74 88.9 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -373,7 +373,7 @@
 				(hide yes)
 			)
 		)
-		(property "Description" "Generic connector, single row, 01x08, script generated (kicad-library-utils/schlib/autogen/connector/)"
+		(property "Description" "Left header"
 			(at 76.2 101.6 0)
 			(effects
 				(font
@@ -425,9 +425,9 @@
 			)
 			(justify right)
 		)
-		(uuid "495d00ce-279c-5086-beeb-12bf8ad0a45d")
+		(uuid "e060a5ec-8b75-51a9-a897-24b0709328f1")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 63.12 93.98 0)
+			(at 71.12 93.98 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -447,9 +447,9 @@
 			)
 			(justify right)
 		)
-		(uuid "e060a5ec-8b75-51a9-a897-24b0709328f1")
+		(uuid "0d6e639a-2e05-58ad-829a-de6a2d9d15e8")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 63.12 96.52 0)
+			(at 71.12 96.52 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -469,9 +469,9 @@
 			)
 			(justify right)
 		)
-		(uuid "0d6e639a-2e05-58ad-829a-de6a2d9d15e8")
+		(uuid "5147100c-9361-5e44-a11f-844df4467fae")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 63.12 99.06 0)
+			(at 71.12 99.06 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -491,9 +491,9 @@
 			)
 			(justify right)
 		)
-		(uuid "5147100c-9361-5e44-a11f-844df4467fae")
+		(uuid "70de16bd-9260-5136-b8f9-f07626dff72f")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 63.12 101.6 0)
+			(at 71.12 101.6 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -513,9 +513,9 @@
 			)
 			(justify right)
 		)
-		(uuid "70de16bd-9260-5136-b8f9-f07626dff72f")
+		(uuid "dec7e0d3-65f9-5a79-9088-05b3917405ed")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 63.12 104.14 0)
+			(at 71.12 104.14 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -535,9 +535,9 @@
 			)
 			(justify right)
 		)
-		(uuid "dec7e0d3-65f9-5a79-9088-05b3917405ed")
+		(uuid "ddc62881-9584-588f-a0db-17ba96ac50c6")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 63.12 106.68 0)
+			(at 71.12 106.68 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -557,9 +557,9 @@
 			)
 			(justify right)
 		)
-		(uuid "ddc62881-9584-588f-a0db-17ba96ac50c6")
+		(uuid "1a4af9e5-17de-510a-a88a-1fada291caa5")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 63.12 109.22 0)
+			(at 71.12 109.22 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -579,9 +579,9 @@
 			)
 			(justify right)
 		)
-		(uuid "1a4af9e5-17de-510a-a88a-1fada291caa5")
+		(uuid "57159153-a7dd-550c-9c3f-ca31061fca0e")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 63.12 111.76 0)
+			(at 71.12 111.76 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -602,7 +602,7 @@
 		(fields_autoplaced yes)
 		(uuid "a920a0b9-61f9-568f-97e4-a8cab20b15cf")
 		(property "Reference" "J2"
-			(at 129.54 91.44 0)
+			(at 129.54 88.9 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -637,7 +637,7 @@
 				(hide yes)
 			)
 		)
-		(property "Description" "Generic connector, single row, 01x08, script generated (kicad-library-utils/schlib/autogen/connector/)"
+		(property "Description" "Right header"
 			(at 127 101.6 0)
 			(effects
 				(font
@@ -689,9 +689,9 @@
 			)
 			(justify right)
 		)
-		(uuid "11507962-879c-53e8-afa4-276f62a089fc")
+		(uuid "935129be-1e49-5d1d-97bd-d5163723d6b5")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 113.92 93.98 0)
+			(at 121.92 93.98 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -711,9 +711,9 @@
 			)
 			(justify right)
 		)
-		(uuid "935129be-1e49-5d1d-97bd-d5163723d6b5")
+		(uuid "9fda2db0-8b99-5977-839e-5a3610e5130a")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 113.92 96.52 0)
+			(at 121.92 96.52 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -733,9 +733,9 @@
 			)
 			(justify right)
 		)
-		(uuid "9fda2db0-8b99-5977-839e-5a3610e5130a")
+		(uuid "112a8564-733f-57c2-abcc-fad4b8ee2ac8")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 113.92 99.06 0)
+			(at 121.92 99.06 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -755,9 +755,9 @@
 			)
 			(justify right)
 		)
-		(uuid "112a8564-733f-57c2-abcc-fad4b8ee2ac8")
+		(uuid "909076e9-7ed4-5200-8c22-dc2ba3e1d544")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 113.92 101.6 0)
+			(at 121.92 101.6 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -777,9 +777,9 @@
 			)
 			(justify right)
 		)
-		(uuid "909076e9-7ed4-5200-8c22-dc2ba3e1d544")
+		(uuid "79ee3028-462d-5481-a117-d784492a2b22")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 113.92 104.14 0)
+			(at 121.92 104.14 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -799,9 +799,9 @@
 			)
 			(justify right)
 		)
-		(uuid "79ee3028-462d-5481-a117-d784492a2b22")
+		(uuid "fa17fd5f-9185-54c9-b3ba-1c06a6c60cc5")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 113.92 106.68 0)
+			(at 121.92 106.68 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -821,9 +821,9 @@
 			)
 			(justify right)
 		)
-		(uuid "fa17fd5f-9185-54c9-b3ba-1c06a6c60cc5")
+		(uuid "e15000fe-b120-5dee-afe8-5dc2b3148403")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 113.92 109.22 0)
+			(at 121.92 109.22 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -843,9 +843,9 @@
 			)
 			(justify right)
 		)
-		(uuid "e15000fe-b120-5dee-afe8-5dc2b3148403")
+		(uuid "56be8d06-8b95-5643-ad13-cb1350042115")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 113.92 111.76 0)
+			(at 121.92 111.76 0)
 			(effects
 				(font
 					(size 1.27 1.27)

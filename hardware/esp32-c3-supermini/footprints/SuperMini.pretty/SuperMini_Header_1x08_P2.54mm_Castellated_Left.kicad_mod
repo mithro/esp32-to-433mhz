@@ -1,14 +1,14 @@
 (footprint "SuperMini_Header_1x08_P2.54mm_Castellated_Left"
 	(version 20241229)
-	(generator "generate_supermini.py")
+	(generator "kicadgen.py")
 	(generator_version "9.0")
 	(layer "F.Cu")
 	(descr "ESP32-C3 SuperMini left header, 1x08, 2.54 mm pitch, 1.0 mm through-holes with castellated half-holes on the board edge 1.38 mm from the pin centres. Board edge must run along the castellation centres.")
 	(tags "ESP32-C3 SuperMini castellated header 2.54mm")
 	(property "Reference" "REF**"
-		(at 1.3 -2.5 0)
+		(at 1.3 8.89 90)
 		(layer "F.SilkS")
-		(uuid "abbeb762-ee20-5993-9e56-d517cc79fe0b")
+		(uuid "d085d039-ad63-55b4-8a05-682a31f98fe5")
 		(effects
 			(font
 				(size 0.8 0.8)
@@ -19,7 +19,7 @@
 	(property "Value" "SuperMini_Header_1x08_P2.54mm_Castellated_Left"
 		(at 0 20.28 0)
 		(layer "F.Fab")
-		(uuid "0230640a-714a-52d4-a333-94ae7961212f")
+		(uuid "b2973f06-4bc1-53dc-8e45-ee118c6a94ec")
 		(effects
 			(font
 				(size 0.8 0.8)
@@ -31,11 +31,11 @@
 		(at 0 0 0)
 		(layer "F.Fab")
 		(hide yes)
-		(uuid "8939490e-0cca-5bb2-8d4c-fdb109307638")
+		(uuid "2c07cfea-42fa-52e0-996b-a53afa12d6c9")
 		(effects
 			(font
 				(size 1.27 1.27)
-				(thickness 0.15)
+				(thickness 0.1905)
 			)
 		)
 	)
@@ -43,17 +43,17 @@
 		(at 0 0 0)
 		(layer "F.Fab")
 		(hide yes)
-		(uuid "a0821514-75b4-5b11-a2f0-51ef776a64cd")
+		(uuid "25463b0a-e72f-54cd-a52b-4db020379389")
 		(effects
 			(font
 				(size 1.27 1.27)
-				(thickness 0.15)
+				(thickness 0.1905)
 			)
 		)
 	)
 	(attr through_hole)
 	(fp_rect
-		(start -1.38 -1.05)
+		(start -2.43 -1.05)
 		(end 1.05 18.83)
 		(stroke
 			(width 0.05)
@@ -70,7 +70,7 @@
 		(effects
 			(font
 				(size 0.6 0.6)
-				(thickness 0.1)
+				(thickness 0.09)
 			)
 		)
 	)
@@ -90,7 +90,7 @@
 		(drill 1)
 		(layers "*.Cu" "*.Mask")
 		(remove_unused_layers no)
-		(uuid "e0027f6b-f972-5c74-a780-c4c19fd7af71")
+		(uuid "b4fb1f58-2cd3-5df7-9747-a1740f4bd2f6")
 	)
 	(pad "2" thru_hole oval
 		(at 0 2.54)
@@ -108,7 +108,7 @@
 		(drill 1)
 		(layers "*.Cu" "*.Mask")
 		(remove_unused_layers no)
-		(uuid "3e598e47-8bdf-5ef7-bf82-2881ebdd8944")
+		(uuid "b2999297-9e11-522d-bece-aab042fad36b")
 	)
 	(pad "3" thru_hole oval
 		(at 0 5.08)
@@ -126,7 +126,7 @@
 		(drill 1)
 		(layers "*.Cu" "*.Mask")
 		(remove_unused_layers no)
-		(uuid "05d8fd60-6705-509b-aa1e-fb0736d937b8")
+		(uuid "e0d6690e-e627-5975-a728-bc57066f58e8")
 	)
 	(pad "4" thru_hole oval
 		(at 0 7.62)
@@ -144,7 +144,7 @@
 		(drill 1)
 		(layers "*.Cu" "*.Mask")
 		(remove_unused_layers no)
-		(uuid "2e5991ac-3dcf-549d-a6de-81b485732cb5")
+		(uuid "7c95ef7b-20cc-5d1d-b0d5-1d14b7c5e933")
 	)
 	(pad "5" thru_hole oval
 		(at 0 10.16)
@@ -162,7 +162,7 @@
 		(drill 1)
 		(layers "*.Cu" "*.Mask")
 		(remove_unused_layers no)
-		(uuid "23cf2612-afbf-5953-b23f-815f98e3c0a6")
+		(uuid "c7fddf21-35a5-5179-80e8-979ad87b087e")
 	)
 	(pad "6" thru_hole oval
 		(at 0 12.7)
@@ -180,7 +180,7 @@
 		(drill 1)
 		(layers "*.Cu" "*.Mask")
 		(remove_unused_layers no)
-		(uuid "44dd33f6-ecea-57b3-8e9b-020eee09006e")
+		(uuid "a89ad742-dec9-5226-bf9b-a51248fe2b9e")
 	)
 	(pad "7" thru_hole oval
 		(at 0 15.24)
@@ -198,7 +198,7 @@
 		(drill 1)
 		(layers "*.Cu" "*.Mask")
 		(remove_unused_layers no)
-		(uuid "a084f62d-1b54-58d1-b98d-2a455d757df0")
+		(uuid "05eab1ce-7d82-5398-9c20-d63c2fd50259")
 	)
 	(pad "8" thru_hole oval
 		(at 0 17.78)
@@ -216,7 +216,7 @@
 		(drill 1)
 		(layers "*.Cu" "*.Mask")
 		(remove_unused_layers no)
-		(uuid "12122168-b1e7-516e-a923-c31b71f4734d")
+		(uuid "c0a2bbc2-f600-5451-8f8a-37ac0d290260")
 	)
 	(embedded_fonts no)
 )

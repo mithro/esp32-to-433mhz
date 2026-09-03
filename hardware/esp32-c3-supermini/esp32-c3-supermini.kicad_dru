@@ -1,15 +1,14 @@
 (version 1)
 
-# The SuperMini pin headers are castellated: every header pad has a plated
-# half-hole centred on the board edge.  KiCad's default DRC treats copper and
-# holes touching the outline as errors, so relax those checks for the header
-# pads only.  Everything else on the board keeps the normal constraints.
-(rule "castellated_header_pads_edge"
+# Pads of these footprints are castellated / reach the board edge.  KiCad's
+# default DRC treats copper and holes touching the outline as errors, so
+# relax those checks for them only.  Everything else keeps the normal rules.
+(rule "edge_pads_edge_clearance"
 	(severity ignore)
 	(condition "A.Type == 'Pad' && (A.memberOfFootprint('J1') || A.memberOfFootprint('J2'))")
 	(constraint edge_clearance)
 )
-(rule "castellated_header_pads_holes"
+(rule "edge_pads_hole_to_hole"
 	(condition "A.Type == 'Pad' && B.Type == 'Pad' && A.Net == B.Net && (A.memberOfFootprint('J1') || A.memberOfFootprint('J2'))")
 	(constraint hole_to_hole (min 0mm))
 )
