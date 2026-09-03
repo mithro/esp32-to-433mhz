@@ -9,7 +9,7 @@
 	(paper "A4")
 	(title_block
 		(title "SX1278 LoRa module form-factor board")
-		(rev "0")
+		(rev "${GIT_DESCRIBE}")
 		(comment 1 "Outline and 16-pin castellated edge layout of the PXL1276-D01 style SX1278 433MHz LoRa module")
 	)
 	(layers

@@ -7,7 +7,8 @@
 
 Exits non-zero if any ERC error or any DRC violation is reported.  ERC
 warnings about single global labels are expected (each pin carries one label)
-and are only counted.
+and are only counted.  The boards' title-block revision is the GIT_DESCRIBE
+text variable, defined here (as in export_manufacturing.py) from git describe.
 """
 
 from __future__ import annotations
@@ -34,8 +35,14 @@ def run(cmd: list[str]) -> str:
     return r.stdout + r.stderr
 
 
+def git_describe() -> str:
+    r = subprocess.run(["git", "-C", str(ROOT), "describe", "--tags", "--dirty", "--always", "--match", "v[0-9]*"], capture_output=True, text=True)
+    return r.stdout.strip() if r.returncode == 0 else "unknown"
+
+
 def main() -> None:
     cli = kicad_cli()
+    define = ["--define-var", f"GIT_DESCRIBE={git_describe()}"]
     failed = False
     with tempfile.TemporaryDirectory(prefix="kicad-verify-", dir=ROOT) as tmp:
         for proj in sorted(ROOT.glob("hardware/*/*.kicad_pro")):
@@ -43,8 +50,8 @@ def main() -> None:
             sch, pcb = proj.with_suffix(".kicad_sch"), proj.with_suffix(".kicad_pcb")
             erc = pathlib.Path(tmp) / f"{name}.erc.rpt"
             drc = pathlib.Path(tmp) / f"{name}.drc.rpt"
-            run([cli, "sch", "erc", "--format", "report", "--severity-all", "--output", str(erc), str(sch)])
-            run([cli, "pcb", "drc", "--format", "report", "--severity-all", "--schematic-parity", "--output", str(drc), str(pcb)])
+            run([cli, "sch", "erc", "--format", "report", "--severity-all", *define, "--output", str(erc), str(sch)])
+            run([cli, "pcb", "drc", "--format", "report", "--severity-all", "--schematic-parity", *define, "--output", str(drc), str(pcb)])
             if not erc.exists() or not drc.exists():
                 print(f"{name}: FAILED to produce reports (file did not load?)")
                 failed = True

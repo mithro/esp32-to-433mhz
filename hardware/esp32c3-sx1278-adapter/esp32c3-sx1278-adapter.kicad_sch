@@ -6,7 +6,7 @@
 	(paper "A4")
 	(title_block
 		(title "ESP32-C3 SuperMini to SX1278 LoRa module adapter")
-		(rev "0")
+		(rev "${GIT_DESCRIBE}")
 		(comment 1 "Carrier joining an ESP32-C3 SuperMini to a 16-pin castellated SX1278 433MHz module")
 	)
 	(lib_symbols

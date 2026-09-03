@@ -446,5 +446,7 @@
       "Root"
     ]
   ],
-  "text_variables": {}
+  "text_variables": {
+    "GIT_DESCRIBE": "(git describe)"
+  }
 }

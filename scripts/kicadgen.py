@@ -27,7 +27,9 @@ KICAD_SHARE = pathlib.Path(os.environ.get("KICAD_SHARE") or next(
     (p for p in ("/snap/kicad/current/usr/share/kicad", "/usr/share/kicad") if pathlib.Path(p).is_dir()),
     "/usr/share/kicad",
 ))
-REV = "0"  # board revision written to every title block (release packages are named rev<REV>)
+# Title-block revision: a KiCad text variable that scripts/export_manufacturing.py
+# defines from `git describe` at export time, so the committed files never change.
+REV = "${GIT_DESCRIBE}"
 
 
 def uid(key: str) -> str:
@@ -1264,6 +1266,8 @@ PROJECT_TEMPLATE = r"""{
       "Root"
     ]
   ],
-  "text_variables": {}
+  "text_variables": {
+    "GIT_DESCRIBE": "(git describe)"
+  }
 }
 """

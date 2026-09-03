@@ -9,7 +9,7 @@
 	(paper "A4")
 	(title_block
 		(title "ESP32-C3 SuperMini to CC1101 E07-M1101D adapter")
-		(rev "0")
+		(rev "${GIT_DESCRIBE}")
 		(comment 1 "Carrier joining an ESP32-C3 SuperMini to an Ebyte E07-M1101D-SMA CC1101 433MHz board via a 2x4 socket; all tracks on the back, GND pour on the front")
 	)
 	(layers

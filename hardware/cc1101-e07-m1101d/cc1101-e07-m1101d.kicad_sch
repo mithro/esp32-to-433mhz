@@ -6,7 +6,7 @@
 	(paper "A4")
 	(title_block
 		(title "CC1101 E07-M1101D-SMA form-factor board")
-		(rev "0")
+		(rev "${GIT_DESCRIBE}")
 		(comment 1 "Outline, 2x4 header, mounting holes and SMA position identical to the Ebyte E07-M1101D-SMA (TENSTAR CC1101 433MHz module)")
 	)
 	(lib_symbols
