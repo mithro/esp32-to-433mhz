@@ -91,12 +91,12 @@ edge on the left.
 | --- | --- |
 | Board outline | 17.0 (top/bottom edges) x 16.5 (left/right edges) |
 | Pad pitch | 1.27 |
-| Left edge | 13 pads (pins 1-13), centred on the edge: first pad 0.63 from the top |
-| Bottom edge | 1 pad (pin 14), 2.8 from the left edge |
-| Right edge | 2 pads: pin 16 (ANT) 1.27 and pin 15 (DIO5) 2.54 from the top |
-| Through-hole | 0.60 diameter, 1.0 in from the edge |
-| Castellation half-hole | 0.60 diameter, centred on the edge |
-| Pad copper | 1.05 wide keyhole oval from the edge to 1.5 into the board |
+| Left edge | 12 keyhole pads (pins 1-12), first pad 0.72 from the top, plus a castellation-only pad (pin 13) flush with the bottom corner (0.53 from it) |
+| Bottom edge | 1 castellation-only pad (pin 14), 2.7 from the left edge |
+| Right edge | 2 keyhole pads: pin 16 (ANT) 1.27 and pin 15 (DIO5) 2.54 from the top |
+| Keyhole pads | 0.60 through-hole 1.0 in from the edge plus a 0.60 half-hole on the edge |
+| Castellation-only pads | 0.60 half-hole on the edge, no inboard hole |
+| Pad copper | 1.05 wide oval from the edge to 1.5 into the board |
 | Board thickness | 1.0 (assumed) |
 
 Pin names (J1), numbered counter-clockwise from the top-left:
@@ -120,14 +120,17 @@ Sources and accuracy:
 * Seller PDF for the "SX1278 LoRa 433MHz Wireless Module (PXL1276-D01)":
   module size 17 mm x 16.5 mm; seller pin table for the 16 pin names.
 * No manufacturer drawing was found for this 16-pin variant. The pad layout
-  was measured from a perspective-rectified product photo: 13 pads at 1.27 mm
-  pitch (measured 1.26) down one edge, one pad around the corner (measured
+  was measured from a perspective-rectified product photo: 12 pads at 1.27 mm
+  pitch (measured 1.26) down one edge starting about 0.75 mm from the top,
+  a pad at the bottom corner of that edge, one around the corner (measured
   2.7 +/- 0.2 from the corner) and two pads on the opposite edge. Pad
   positions are therefore accurate to roughly +/-0.2 mm; the pitch, pin count
   and outline are solid.
-* Close-up photos show every pad is a keyhole like the SuperMini's: a plated
-  through-hole about 1.0 mm in from the edge plus a half-hole castellation on
-  the edge, joined by an oval. The
+* Close-up photos show the 12 left-edge pads and the two right-edge pads are
+  keyholes like the SuperMini's: a plated through-hole about 1.0 mm in from
+  the edge plus a half-hole castellation on the edge, joined by an oval. The
+  two corner pads (pins 13 and 14) are plain castellations without an inboard
+  hole. The
   [NiceRF LoRa127X datasheet](https://makerhero.com/img/files/download/LoRa127X-Module-Datasheet.pdf)
   mechanical drawing shows the same construction for this family (1.5 mm pad
   length, 1.27 mm pitch, 0.6 mm holes), which supplied the hole size.
