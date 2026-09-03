@@ -21,3 +21,6 @@ __pycache__/
 
 # Playwright MCP scratch output
 .playwright-mcp/
+
+# Manufacturing packages built by scripts/export_manufacturing.py / CI
+dist/

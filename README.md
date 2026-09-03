@@ -315,6 +315,23 @@ uv run scripts/render_boards.py   # docs/images/*.png
 ERC reports only "global label not connected anywhere else" warnings (each
 pin carries a single global label); DRC reports no violations on any board.
 
+## CI and manufacturing packages
+
+GitHub Actions (`.github/workflows/ci.yml`, KiCad 9.0.7 container) runs on
+every push: it regenerates all boards (including zone fills) and fails if the
+result differs from the commit, runs ERC/DRC with schematic parity, and builds
+manufacturing packages with `scripts/export_manufacturing.py`. Pushing a
+`v*` tag publishes them on the GitHub release: one zip per board for JLCPCB
+and one for NextPCB (`<board>-rev<N>-<fab>.zip`, Gerber RS-274X with Protel
+extensions plus Excellon drill files and a README.txt of the size, stack-up
+and ordering notes), with `SHA256SUMS`. The revision comes from the boards'
+title blocks (currently rev 0). Order the two module replicas with the
+castellated-holes option.
+
+```sh
+uv run scripts/export_manufacturing.py --out dist   # same packages locally
+```
+
 ## Licence
 
 Apache License 2.0, see `LICENSE`.
