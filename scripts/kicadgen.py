@@ -310,6 +310,26 @@ class Track:
 
 
 @dataclass
+class Via:
+    net: str
+    at: tuple[float, float]
+    size: float = 0.8
+    drill: float = 0.4
+
+    def sexpr(self, key: str, net_id: int) -> str:
+        return f"""\
+	(via
+		(at {fmt(self.at[0])} {fmt(self.at[1])})
+		(size {fmt(self.size)})
+		(drill {fmt(self.drill)})
+		(layers "F.Cu" "B.Cu")
+		(net {net_id})
+		(uuid "{uid(f'pcb:via:{key}')}")
+	)
+"""
+
+
+@dataclass
 class Design:
     project: str
     title: str
@@ -322,6 +342,7 @@ class Design:
     parts: list[Part] = field(default_factory=list)
     graphics: list[str] = field(default_factory=list)
     tracks: list[Track] = field(default_factory=list)
+    vias: list[Via] = field(default_factory=list)
     castellated_refs: list[str] = field(default_factory=list)
     sch_note: str = ""
 
@@ -365,6 +386,7 @@ class Design:
         body += gr_rect("edge", self.bx, self.by, self.bx + self.width, self.by + self.height, "Edge.Cuts", 0.05)
         body += "".join(self.graphics)
         body += "".join(t.sexpr(f"{t.net}:{t.layer}:{i}", nets[t.net]) for i, t in enumerate(self.tracks))
+        body += "".join(v.sexpr(f"{v.net}:{i}", nets[v.net]) for i, v in enumerate(self.vias))
         core = self.thickness - 0.07 - 0.02
         return f"""\
 (kicad_pcb
