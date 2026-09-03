@@ -7,25 +7,30 @@
 433 MHz module sold as "SX1278 LoRa 433MHz Wireless Module (PXL1276-D01)"
 (HKFYD and others).
 
-The module is a derivative of the NiceRF LoRa1276/LoRa1278 layout with two
-extra pins.  No manufacturer drawing was found for this variant, so the
-geometry combines:
+The module is a derivative of the NiceRF LoRa1276/LoRa1278 layout.  No
+manufacturer drawing was found for this variant, so the geometry combines:
 
 * Seller PDF ("Module Size: 17mm x 16.5mm").
-* A perspective-rectified product photo: 12 keyhole pads down one 16.5 mm
-  edge at 1.27 mm pitch (measured 1.26), a castellation-only pad at the
-  bottom corner of that edge, another castellation-only pad around the
-  corner on the adjacent 17.0 mm edge, and two keyhole pads at 1.27 mm
-  pitch near the top of the opposite edge.
-* NiceRF LoRa127X mechanical drawing and close-up photos for the pad
-  geometry of this family: keyhole pads 1.5 mm long at 1.27 mm pitch, each
-  with a plated through-hole about 1.0 mm in from the edge and a half-hole
-  castellation on the edge (0.6 mm holes).
-* Seller pin table for the names (pin 1 GND ... pin 16 ANT), numbered
-  counter-clockwise from the top-left when viewed from the component side.
+* Seller pinout photo (top-down, dimensioned) and close-up photos, measured
+  in pixels against the board edges and the 1.27 mm pitch:
+  - 12 keyhole pads (plated hole 1.2 mm in from the edge plus a half-hole
+    castellation on the edge) at 1.27 mm pitch along one 16.5 mm edge,
+    first hole 1.25 mm from the corner.
+  - Two small castellation-only notches (DIO4, DIO5) on the adjacent 17 mm
+    edge, 1.25 and 2.7 mm from the shared corner.
+  - Two keyhole pads (GND, ANT) near the far corner of the opposite 17 mm
+    edge, 2.8 and 1.4 mm from that corner, holes 0.9 mm in from the edge.
+* NiceRF LoRa127X mechanical drawing for the hole size (0.6 mm) of this
+  family.
 
-Pad positions are therefore accurate to roughly +/-0.2 mm; the pitch and
-pin count are solid.
+Pin names follow the seller's pinout photo (GND DIO1 DIO2 DIO3 VCC MISO MOSI
+SCK NSS DIO0 REST GND along the row, then DIO4 DIO5, then GND and ANT); the
+seller's pin table lists REST twice, which shifts its last entries by one.
+
+Viewed from the component side the 12-pad row is on the left edge with pin 1
+at the top, DIO4/DIO5 on the bottom edge at the left corner, and GND/ANT on
+the right edge at the top corner.  Positions are accurate to roughly
++/-0.15 mm.
 """
 
 from __future__ import annotations
@@ -38,56 +43,57 @@ sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
 from kicadgen import Design, Footprint, Pad, Part, SymbolRef, Track, gr_rect, gr_text  # noqa: E402
 
 BOARD_W = 17.0  # top/bottom edges
-BOARD_H = 16.5  # left/right edges (the 13-pad edge)
+BOARD_H = 16.5  # left/right edges (the 12-pad edge)
 PITCH = 1.27
-N_LEFT = 12  # keyhole pads on the left edge (pins 1-12)
-LEFT_FIRST_Y = 0.72  # pin 1 centre from the top edge (photo: 0.75; leaves 0.2 mm between pad 12 and the corner pad)
-CORNER_PAD_Y = BOARD_H - 0.53  # pin 13: castellation-only pad flush with the bottom-left corner
-BOTTOM_PAD_X = 2.7  # pin 14: castellation-only pad on the bottom edge (photo: 2.7 +/- 0.2)
-RIGHT_PAD_Y = (PITCH, 2 * PITCH)  # pins 16 (upper) and 15 (lower) from the top edge
+N_LEFT = 12
+LEFT_FIRST_Y = 1.2  # pin 1 hole centre from the top edge (photo: 1.25)
+ROW_HOLE_IN = 1.2  # row through-hole centre from the edge
+ROW_PAD_IN = 1.85  # row copper reaching into the board
+BOTTOM_NOTCH_X = (1.25, 2.7)  # DIO4, DIO5 castellation centres from the left edge
+RIGHT_PAD_Y = {"ANT": 1.4, "GND": 2.8}  # right-edge keyhole holes from the top edge
+RIGHT_HOLE_IN = 0.9
+RIGHT_PAD_IN = 1.7
 HOLE = 0.6  # through-hole and castellation half-hole diameter
-HOLE_IN = 1.0  # through-hole centre from the board edge
-PAD_W = 1.05  # along the edge (0.225 mm ring, 0.22 mm to the neighbour)
-PAD_IN = 1.5  # copper reaching into the board
-PAD_OUT = 0.5  # copper outside the edge for castellation-only pads (removed when routed)
+PAD_W = 1.05  # keyhole pad width along the edge
+NOTCH_W = 0.8  # castellation-only pad width along the edge
+NOTCH_IN = 0.55  # castellation-only copper reaching into the board
+NOTCH_OUT = 0.5  # castellation-only copper outside the edge (removed when routed)
 
-PIN_NAMES = ["GND", "DIO1", "DIO2", "DIO3", "VCC", "MISO", "MOSI", "SCK", "NSS", "DIO0", "REST", "REST", "GND", "DIO4", "DIO5", "ANT"]
+PIN_NAMES = ["GND", "DIO1", "DIO2", "DIO3", "VCC", "MISO", "MOSI", "SCK", "NSS", "DIO0", "REST", "GND", "DIO4", "DIO5", "GND", "ANT"]
 PROJECT = "sx1278-lora-module"
 
 
-def edge_pad(n: int, x: float, y: float, direction: str, keyhole: bool = True) -> list[Pad]:
-    """Pad on the board edge at (x, y).  direction = side of the board the
-    pad reaches into: 'right' (from the left edge), 'left', 'up'.
-
-    keyhole=True: a through-hole HOLE_IN into the board with oval copper
-    running from the edge to PAD_IN, plus a castellation half-hole centred
-    on the edge.  keyhole=False: only the castellation half-hole, with oval
-    copper from PAD_OUT outside the edge to PAD_IN inside."""
-    dx, dy = {"right": (1, 0), "left": (-1, 0), "up": (0, -1)}[direction]
-    if not keyhole:
-        length = PAD_IN + PAD_OUT
-        shift = length / 2 - PAD_OUT
-        size = (length, PAD_W) if dy == 0 else (PAD_W, length)
-        return [Pad(str(n), (x, y), size, "thru_hole", "oval", HOLE, (dx * shift, dy * shift), tag="edge")]
-    shift = PAD_IN / 2 - HOLE_IN  # oval centre relative to the through-hole
-    size = (PAD_IN, PAD_W) if dy == 0 else (PAD_W, PAD_IN)
+def keyhole(n: int, x: float, y: float, direction: str, hole_in: float, pad_in: float) -> list[Pad]:
+    """Keyhole pad on the board edge at (x, y): a through-hole hole_in into
+    the board with oval copper running from the edge to pad_in, plus a
+    castellation half-hole centred on the edge.  direction = side of the
+    board the pad reaches into: 'right' (from the left edge) or 'left'."""
+    dx = {"right": 1, "left": -1}[direction]
+    shift = pad_in / 2 - hole_in  # oval centre relative to the through-hole
     return [
-        Pad(str(n), (x + dx * HOLE_IN, y + dy * HOLE_IN), size, "thru_hole", "oval", HOLE, (dx * shift, dy * shift), tag="th"),
+        Pad(str(n), (x + dx * hole_in, y), (pad_in, PAD_W), "thru_hole", "oval", HOLE, (dx * shift, 0), tag="th"),
         Pad(str(n), (x, y), (PAD_W, PAD_W), "thru_hole", "circle", HOLE, tag="edge"),
     ]
+
+
+def notch(n: int, x: float, y: float) -> Pad:
+    """Castellation-only pad on the bottom edge at (x, y), copper reaching up
+    NOTCH_IN into the board and NOTCH_OUT beyond the edge."""
+    length = NOTCH_IN + NOTCH_OUT
+    return Pad(str(n), (x, y), (NOTCH_W, length), "thru_hole", "oval", HOLE, (0, -(length / 2 - NOTCH_OUT)), tag="edge")
 
 
 def module_fp() -> Footprint:
     pads = []
     for i in range(N_LEFT):
-        pads += edge_pad(i + 1, 0, LEFT_FIRST_Y + i * PITCH, "right")
-    pads += edge_pad(13, 0, CORNER_PAD_Y, "right", keyhole=False)
-    pads += edge_pad(14, BOTTOM_PAD_X, BOARD_H, "up", keyhole=False)
-    pads += edge_pad(15, BOARD_W, RIGHT_PAD_Y[1], "left")
-    pads += edge_pad(16, BOARD_W, RIGHT_PAD_Y[0], "left")
+        pads += keyhole(i + 1, 0, LEFT_FIRST_Y + i * PITCH, "right", ROW_HOLE_IN, ROW_PAD_IN)
+    pads.append(notch(13, BOTTOM_NOTCH_X[0], BOARD_H))
+    pads.append(notch(14, BOTTOM_NOTCH_X[1], BOARD_H))
+    pads += keyhole(15, BOARD_W, RIGHT_PAD_Y["GND"], "left", RIGHT_HOLE_IN, RIGHT_PAD_IN)
+    pads += keyhole(16, BOARD_W, RIGHT_PAD_Y["ANT"], "left", RIGHT_HOLE_IN, RIGHT_PAD_IN)
     return Footprint(
         name="SX1278_Module_16pin_Castellated",
-        descr="16-pin castellated SX1278 LoRa module (PXL1276-D01 / NiceRF LoRa1278 derivative): 12 keyhole pads at 1.27 mm on the left edge (0.6 mm through-hole 1.0 mm in from the edge plus a 0.6 mm half-hole on the edge), castellation-only pads at the bottom-left corner and on the bottom edge, and two keyhole pads on the right edge. Origin at the top-left board corner; board edges must run through the castellation centres.",
+        descr="16-pin castellated SX1278 LoRa module (PXL1276-D01 / NiceRF LoRa1278 derivative): 12 keyhole pads at 1.27 mm on the left edge (0.6 mm through-hole 1.2 mm in from the edge plus a 0.6 mm half-hole on the edge), two castellation-only notches on the bottom edge at the left corner, and two keyhole pads on the right edge at the top corner. Origin at the top-left board corner; board edges must run through the castellation centres.",
         tags="SX1278 LoRa module castellated 1.27mm",
         pads=pads,
         ref_pos=(BOARD_W / 2, BOARD_H / 2 + 2.5, 0),
@@ -105,32 +111,34 @@ def build() -> Design:
         height=BOARD_H,
         thickness=1.0,
         castellated_refs=["J1"],
-        sch_note="SX1278 LoRa module (PXL1276-D01 style) form-factor board.\\nJ1 pins 1-13 run down the left edge, 14 is on the bottom edge, 15/16 on the right edge,\\nviewed from the component side.  Both REST pins are the module reset.",
+        sch_note="SX1278 LoRa module (PXL1276-D01 style) form-factor board.\\nJ1 pins 1-12 run down the left edge, 13/14 (DIO4/DIO5) are notches on the bottom edge,\\n15/16 (GND/ANT) are on the right edge near the top, viewed from the component side.",
     )
     bx, by = d.bx, d.by
     nets = {str(i + 1): n for i, n in enumerate(PIN_NAMES)}
     d.parts.append(Part("J1", module_fp(), (bx, by), SymbolRef("Connector_Generic.kicad_sym", "Connector_Generic", "Conn_01x16"), "Conn_01x16", nets, (76.2, 101.6), "Module edge pads"))
 
-    # Nets shared by two pads: GND (pins 1 and 13) and the two REST pins.
+    # GND appears on pins 1, 12 and 15; join them with tracks (the original
+    # uses a ground plane).  The vertical run sits just clear of the row copper
+    # (x <= 1.85) and stops above the DIO5 notch; the top run goes along the
+    # top edge and drops down to pad 15 clear of the ANT pad.
     y = lambda pin: by + LEFT_FIRST_Y + (pin - 1) * PITCH  # noqa: E731
-    # The vertical run passes between the pad copper (x <= 1.5) and pad 14 (x >= 2.175).
-    gx = bx + 1.84
-    d.tracks.append(Track("GND", "F.Cu", 0.25, [(bx + PAD_IN - 0.2, y(1)), (gx, y(1)), (gx, by + CORNER_PAD_Y), (bx + PAD_IN - 0.2, by + CORNER_PAD_Y)]))
-    d.tracks.append(Track("REST", "F.Cu", 0.3, [(bx + PAD_IN - 0.2, y(11)), (bx + PAD_IN - 0.2, y(12))]))
+    gx = bx + 2.2
+    d.tracks.append(Track("GND", "F.Cu", 0.25, [(bx + ROW_PAD_IN - 0.2, y(1)), (gx, y(1)), (gx, y(12)), (bx + ROW_PAD_IN - 0.2, y(12))]))
+    d.tracks.append(Track("GND", "F.Cu", 0.25, [(gx, y(1)), (gx, by + 0.6), (bx + 14.0, by + 0.6), (bx + 14.0, by + RIGHT_PAD_Y["GND"]), (bx + BOARD_W - RIGHT_PAD_IN + 0.2, by + RIGHT_PAD_Y["GND"])]))
 
     g = d.graphics
     for i in range(N_LEFT):
-        g.append(gr_text(f"l{i}", PIN_NAMES[i], bx + 2.5, by + LEFT_FIRST_Y + i * PITCH, "F.SilkS", 0.5, "left"))
-    # Pin 13 (GND) and the corner pad 14 (DIO4) are labelled to the right of pad 14.
-    g.append(gr_text("l12", PIN_NAMES[12], bx + BOTTOM_PAD_X + 0.9, by + BOARD_H - 1.1, "F.SilkS", 0.5, "left"))
-    g.append(gr_text("l13", PIN_NAMES[13], bx + BOTTOM_PAD_X + 0.9, by + BOARD_H - 0.35, "F.SilkS", 0.5, "left"))
-    g.append(gr_text("l14", PIN_NAMES[14], bx + BOARD_W - PAD_IN - 0.3, by + RIGHT_PAD_Y[1], "F.SilkS", 0.5, "right"))
-    g.append(gr_text("l15", PIN_NAMES[15], bx + BOARD_W - PAD_IN - 0.3, by + RIGHT_PAD_Y[0], "F.SilkS", 0.5, "right"))
-    g.append(gr_text("title", "SX1278 module form factor", bx + BOARD_W / 2 + 1.0, by + BOARD_H - 2.0, "F.Fab", 0.5))
+        g.append(gr_text(f"l{i}", PIN_NAMES[i], bx + 2.6, by + LEFT_FIRST_Y + i * PITCH, "F.SilkS", 0.5, "left"))
+    # DIO4 / DIO5 notches are labelled to the right of them, in edge order.
+    g.append(gr_text("l12", PIN_NAMES[12], bx + BOTTOM_NOTCH_X[1] + 1.6, by + BOARD_H - 0.95, "F.SilkS", 0.5, "left"))
+    g.append(gr_text("l13", PIN_NAMES[13], bx + BOTTOM_NOTCH_X[1] + 1.6, by + BOARD_H - 0.3, "F.SilkS", 0.5, "left"))
+    g.append(gr_text("l14", PIN_NAMES[14], bx + BOARD_W - RIGHT_PAD_IN - 0.3, by + RIGHT_PAD_Y["GND"], "F.SilkS", 0.5, "right"))
+    g.append(gr_text("l15", PIN_NAMES[15], bx + BOARD_W - RIGHT_PAD_IN - 0.3, by + RIGHT_PAD_Y["ANT"], "F.SilkS", 0.5, "right"))
+    g.append(gr_text("title", "SX1278 module form factor", bx + BOARD_W / 2 + 1.0, by + BOARD_H - 1.5, "F.Fab", 0.5))
     # Approximate positions of the SX1278 (QFN-28, 6x6) and the 32 MHz crystal, from photos.
     g.append(gr_rect("sx1278", bx + 3.5, by + 8.0, bx + 9.5, by + 14.0, "F.Fab", 0.1, "dash"))
     g.append(gr_text("sx1278", "SX1278", bx + 6.5, by + 11.0, "F.Fab", 0.5))
-    g.append(gr_rect("xtal", bx + 4.0, by + 0.8, bx + 7.2, by + 3.3, "F.Fab", 0.1, "dash"))
+    g.append(gr_rect("xtal", bx + 4.0, by + 1.2, bx + 7.2, by + 3.7, "F.Fab", 0.1, "dash"))
     return d
 
 

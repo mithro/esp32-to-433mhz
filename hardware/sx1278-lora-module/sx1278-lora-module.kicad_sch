@@ -913,7 +913,7 @@
 			)
 		)
 	)
-	(global_label "REST"
+	(global_label "GND"
 		(shape bidirectional)
 		(at 71.12 111.76 180)
 		(fields_autoplaced yes)
@@ -935,7 +935,7 @@
 			)
 		)
 	)
-	(global_label "GND"
+	(global_label "DIO4"
 		(shape bidirectional)
 		(at 71.12 114.3 180)
 		(fields_autoplaced yes)
@@ -957,7 +957,7 @@
 			)
 		)
 	)
-	(global_label "DIO4"
+	(global_label "DIO5"
 		(shape bidirectional)
 		(at 71.12 116.84 180)
 		(fields_autoplaced yes)
@@ -979,7 +979,7 @@
 			)
 		)
 	)
-	(global_label "DIO5"
+	(global_label "GND"
 		(shape bidirectional)
 		(at 71.12 119.38 180)
 		(fields_autoplaced yes)
@@ -1023,7 +1023,7 @@
 			)
 		)
 	)
-	(text "SX1278 LoRa module (PXL1276-D01 style) form-factor board.\nJ1 pins 1-13 run down the left edge, 14 is on the bottom edge, 15/16 on the right edge,\nviewed from the component side.  Both REST pins are the module reset."
+	(text "SX1278 LoRa module (PXL1276-D01 style) form-factor board.\nJ1 pins 1-12 run down the left edge, 13/14 (DIO4/DIO5) are notches on the bottom edge,\n15/16 (GND/ANT) are on the right edge near the top, viewed from the component side."
 		(exclude_from_sim no)
 		(at 60 90 0)
 		(effects
