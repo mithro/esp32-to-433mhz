@@ -7,6 +7,15 @@ positions and castellated edge pads are identical to the ESP32-C3 SuperMini
 development board, ready to be used as the starting point for a drop-in
 replacement or a board that plugs into the same socket.
 
+| 3D render, top | 3D render, bottom | Layout (copper, silk, fab, outline) |
+| --- | --- | --- |
+| ![3D render of the top side](docs/images/pcb-3d-top.png) | ![3D render of the bottom side](docs/images/pcb-3d-bottom.png) | ![2D layout plot](docs/images/pcb-layout.png) |
+
+The grey half-circles outside the outline in the 3D renders are the outer
+halves of the castellation pads; the PCB fab routes them away, leaving plated
+half-holes on the edge. Regenerate the images with
+`uv run scripts/render_supermini.py` (needs `kicad-cli` and `inkscape`).
+
 ## Dimensions
 
 All values in millimetres, viewed from the component side with the USB-C end
