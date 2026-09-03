@@ -328,13 +328,14 @@ latest release always holds packages for the tip of `main`. CI creates no
 tags; pushing a `vN.M` tag starts a new release the next time `main` is
 built.
 
-The packages are one zip per board for JLCPCB and one for NextPCB
+The packages cover the two adapter boards (the module replicas are
+reference models; pass their names to the script to export them too): one
+zip per board for JLCPCB and one for NextPCB
 (`<board>-<git describe>-<fab>.zip`: Gerber RS-274X with Protel extensions,
 Excellon drill files and a README.txt of the size, stack-up and ordering
 notes), plus `SHA256SUMS`. The boards' title blocks take their revision from
 the same `git describe` string through the `GIT_DESCRIBE` text variable, which
-the export defines at plot time. Order the two module replicas with the
-castellated-holes option.
+the export defines at plot time.
 
 ```sh
 uv run scripts/export_manufacturing.py --out dist   # same packages locally

@@ -3,8 +3,10 @@
 # requires-python = ">=3.11"
 # dependencies = []
 # ///
-"""Build manufacturing packages (Gerber + Excellon drill zips) for every board
-under hardware/, one zip per board per fab, ready to upload for a quote:
+"""Build manufacturing packages (Gerber + Excellon drill zips) for the boards
+meant to be fabricated (by default the two adapters; the module replicas are
+reference models and are only exported when named explicitly), one zip per
+board per fab, ready to upload for a quote:
 
   <out>/<board>-<rev>-jlcpcb.zip
   <out>/<board>-<rev>-nextpcb.zip
@@ -35,6 +37,7 @@ import tempfile
 import zipfile
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
+DEFAULT_BOARDS = ["esp32c3-sx1278-adapter", "esp32c3-cc1101-adapter"]
 LAYERS = "F.Cu,B.Cu,F.Paste,B.Paste,F.SilkS,B.SilkS,F.Mask,B.Mask,Edge.Cuts"
 FABS = {
     "jlcpcb": {"name": "JLCPCB", "drill": ["--excellon-oval-format", "route"]},
@@ -132,13 +135,15 @@ def export(cli: str, pcb: pathlib.Path, fab: str, out_zip: pathlib.Path, info: d
 def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--out", type=pathlib.Path, default=ROOT / "dist")
-    ap.add_argument("boards", nargs="*", help="project names (default: all under hardware/)")
+    ap.add_argument("boards", nargs="*", help=f"project names (default: {' '.join(DEFAULT_BOARDS)})")
     args = ap.parse_args()
     cli = kicad_cli()
     args.out.mkdir(parents=True, exist_ok=True)
-    pcbs = sorted(ROOT.glob("hardware/*/*.kicad_pcb"))
-    if args.boards:
-        pcbs = [p for p in pcbs if p.stem in args.boards]
+    wanted = args.boards or DEFAULT_BOARDS
+    pcbs = [p for p in sorted(ROOT.glob("hardware/*/*.kicad_pcb")) if p.stem in wanted]
+    missing = set(wanted) - {p.stem for p in pcbs}
+    if missing:
+        raise SystemExit(f"no such board(s): {', '.join(sorted(missing))}")
     rev = git_describe()
     rows = []
     zips = []
@@ -157,7 +162,7 @@ def main() -> None:
     notes = "\n".join([
         f"Manufacturing packages for `{rev}` (Gerber + Excellon drill), one zip per board and fab, generated",
         "by CI from the committed KiCad files after ERC/DRC passed. Each zip contains a README.txt with the",
-        "board size, stack-up and ordering notes (castellated holes are required for the two module boards).",
+        "board size, stack-up and ordering notes.",
         "",
         "| Board | Size (mm) | Rev | JLCPCB | NextPCB |",
         "| --- | --- | --- | --- | --- |",
