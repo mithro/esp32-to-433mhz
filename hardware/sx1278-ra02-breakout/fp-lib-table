@@ -1,0 +1,4 @@
+(fp_lib_table
+  (version 7)
+  (lib (name "Ra02Breakout")(type "KiCad")(uri "${KIPRJMOD}/footprints/Ra02Breakout.pretty")(options "")(descr "SX1278 LoRa 433MHz v4.0 breakout (Ai-Thinker Ra-02)"))
+)

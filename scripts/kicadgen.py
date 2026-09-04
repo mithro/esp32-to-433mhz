@@ -363,6 +363,7 @@ class Zone:
     min_thickness: float = 0.25
     keepout_tracks: bool = False  # keepout areas only
     keepout_pour: bool = True
+    solid_pads: bool = False  # connect pads solidly instead of with thermal reliefs
     fills: str = ""  # (filled_polygon ...) blocks inserted by scripts/fill_zones.py
 
     def sexpr(self, key: str, net_id: int) -> str:
@@ -370,7 +371,7 @@ class Zone:
         layer = f'(layer "{self.layers[0]}")' if len(self.layers) == 1 else "(layers " + " ".join(f'"{l}"' for l in self.layers) + ")"
         if self.net:
             body = f"""\
-\t\t(connect_pads
+\t\t(connect_pads{' yes' if self.solid_pads else ''}
 \t\t\t(clearance {fmt(self.clearance)})
 \t\t)
 \t\t(min_thickness {fmt(self.min_thickness)})
