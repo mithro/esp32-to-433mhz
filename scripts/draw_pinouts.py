@@ -15,7 +15,6 @@ from __future__ import annotations
 
 import pathlib
 import sys
-import textwrap
 
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
 import generate_cc1101 as cc  # noqa: E402
@@ -165,43 +164,39 @@ def text_w(chars: int, size: float) -> float:
     return chars * size * 0.55
 
 
-def write_svg(path: pathlib.Path, title: str, boards: list[tuple[list[str], View, View, float, list[str]]]) -> None:
+def write_svg(path: pathlib.Path, title: str, boards: list[tuple[list[str], View, View, float]]) -> None:
     """boards: (subtitle lines, front view, back view, mm hanging below the
-    board drawing, footnote lines) per board.  Layout is a compact grid: one
+    board drawing) per board.  Layout is a compact grid: one
     column per board, front views in the first row, back views in the
     second."""
     margin, col_gap = 5.0, 6.0
-    sub_size, cap_size, note_size, title_size = 1.5, 1.3, 1.0, 1.8
+    sub_size, cap_size, title_size = 1.5, 1.3, 1.8
     label_rise = 5.0  # rotated pin names reach this far above a board's top edge
-    col_w = [max(f.w, b.w, *(text_w(len(line), sub_size) for line in sub)) for sub, f, b, _, _ in boards]
-    notes = [line for *_, ns in boards for n in ns for line in textwrap.wrap(n, 78)]
+    col_w = [max(f.w, b.w, *(text_w(len(line), sub_size) for line in sub)) for sub, f, b, _ in boards]
     n_sub = max(len(sub) for sub, *_ in boards)
-    # vertical stack (mm): title, subtitles, [labels + caption] board, hang, [labels + caption] board, hang, notes
+    # vertical stack (mm): title, subtitles, [labels + caption] board, hang, [labels + caption] board, hang
     y_title = 1.6
     y_sub0 = y_title + 2.6
     y_front = y_sub0 + (n_sub - 1) * 2.0 + 2.0 + label_rise + 1.5
-    hang = max(h for *_, h, _ in boards)
+    hang = max(h for *_, h in boards)
     row1_h = max(f.h for _, f, *_ in boards)
     y_back = y_front + row1_h + hang + label_rise + 2.5
     row2_h = max(b.h for _, _, b, *_ in boards)
-    y_notes0 = y_back + row2_h + hang + 1.5
     total_w = (margin * 2 + sum(col_w) + col_gap * (len(boards) - 1)) * S
-    total_w = max(total_w, (text_w(len(title), title_size) + 2 * margin) * S, *((text_w(len(n), note_size) + 2 * margin) * S for n in notes))
-    total_h = (y_notes0 + 1.5 * len(notes) + 0.5) * S
+    total_w = max(total_w, (text_w(len(title), title_size) + 2 * margin) * S)
+    total_h = (y_back + row2_h + hang + 0.5) * S
     parts = [
         f'<svg xmlns="http://www.w3.org/2000/svg" width="{total_w:.0f}" height="{total_h:.0f}" viewBox="0 0 {total_w:.0f} {total_h:.0f}">',
         '<rect width="100%" height="100%" fill="#ffffff"/>',
         f'<text x="{total_w / 2:.1f}" y="{y_title * S:.1f}" font-size="{title_size * S:.1f}" font-family="Helvetica, Arial, sans-serif" font-weight="bold" fill="{INK}" text-anchor="middle" dy="0.36em">{title}</text>',
     ]
     x = (total_w / S - (sum(col_w) + col_gap * (len(boards) - 1))) / 2  # centre the columns under the title
-    for (sub, front, back, _, _), w in zip(boards, col_w):
+    for (sub, front, back, _), w in zip(boards, col_w):
         for i, line in enumerate(sub):
             parts.append(f'<text x="{(x + w / 2) * S:.1f}" y="{(y_sub0 + i * 2.0) * S:.1f}" font-size="{sub_size * S:.1f}" font-family="Helvetica, Arial, sans-serif" font-weight="bold" fill="{INK}" text-anchor="middle" dy="0.36em">{line}</text>')
         parts.append(front.svg_group((x + (w - front.w) / 2) * S, y_front * S, "Front (component side)", label_rise + 1.0, cap_size))
         parts.append(back.svg_group((x + (w - back.w) / 2) * S, y_back * S, "Back (mirrored)", label_rise + 1.0, cap_size))
         x += w + col_gap
-    for i, n in enumerate(notes):
-        parts.append(f'<text x="{total_w / 2:.1f}" y="{(y_notes0 + 1.5 * i) * S:.1f}" font-size="{note_size * S:.1f}" font-family="Helvetica, Arial, sans-serif" fill="{INK}" text-anchor="middle" dy="0.36em">{n}</text>')
     parts.append("</svg>")
     path.write_text("\n".join(parts) + "\n")
     print(f"wrote {path.relative_to(path.parents[2])}")
@@ -209,11 +204,8 @@ def write_svg(path: pathlib.Path, title: str, boards: list[tuple[list[str], View
 
 def main() -> None:
     OUT.mkdir(parents=True, exist_ok=True)
-    e07 = (["Ebyte E07-M1101D-SMA", "(CC1101)"], *e07_views(), 12.5,
-           ["The front view is what the carrier sees. E07-M1101D: pins 1.60 / 4.14 mm from the header edge, columns 3.70 mm from the long edges; pin 1 square. Dimensions from the Ebyte manual."])
-    ra02 = (["SX1278 LoRa 433MHz v4.0 breakout", "(Ai-Thinker Ra-02)"], *ra02_views(), 4.0,
-            ["Ra-02 breakout: the header is on the back, so the front view sees it through the board. Numbering is this repository's (odd pins outer row, pin 1 left).",
-             "Breakout size and offsets measured from photos, +/- 0.3 mm; the Ra-02 module itself from Ai-Thinker's Ra-02 Specifications V1.0."])
+    e07 = (["Ebyte E07-M1101D-SMA", "(CC1101)"], *e07_views(), 12.5)
+    ra02 = (["SX1278 LoRa 433MHz v4.0 breakout", "(Ai-Thinker Ra-02)"], *ra02_views(), 4.0)
     write_svg(OUT / "pinout-radio-boards.svg", "Radio board header pinouts (header edge at the top)", [e07, ra02])
 
 
