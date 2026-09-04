@@ -58,7 +58,7 @@ class View:
     def text(self, x, y, s, size=1.4, anchor="middle", angle=0, weight="normal", fill=INK, family="Helvetica, Arial, sans-serif", halo=False):
         t = f' transform="rotate({angle} {self.X(x):.1f} {self.Y(y):.1f})"' if angle else ""
         h = f' stroke="#ffffff" stroke-width="{0.35 * S:.1f}" paint-order="stroke" stroke-linejoin="round"' if halo else ""
-        self.items.append(f'<text x="{self.X(x):.1f}" y="{self.Y(y):.1f}" font-size="{size * S:.1f}" font-family="{family}" font-weight="{weight}" fill="{fill}" text-anchor="{anchor}" dominant-baseline="middle"{t}{h}>{s}</text>')
+        self.items.append(f'<text x="{self.X(x):.1f}" y="{self.Y(y):.1f}" font-size="{size * S:.1f}" font-family="{family}" font-weight="{weight}" fill="{fill}" text-anchor="{anchor}" dy="0.36em"{t}{h}>{s}</text>')
 
     def pin(self, x, y, number, label, square=False, label_dir=-1):
         """Header pin: pad ring with the number inside, signal name rotated
@@ -191,17 +191,17 @@ def write_svg(path: pathlib.Path, title: str, boards: list[tuple[list[str], View
     parts = [
         f'<svg xmlns="http://www.w3.org/2000/svg" width="{total_w:.0f}" height="{total_h:.0f}" viewBox="0 0 {total_w:.0f} {total_h:.0f}">',
         '<rect width="100%" height="100%" fill="#ffffff"/>',
-        f'<text x="{total_w / 2:.1f}" y="{y_title * S:.1f}" font-size="{title_size * S:.1f}" font-family="Helvetica, Arial, sans-serif" font-weight="bold" fill="{INK}" text-anchor="middle" dominant-baseline="middle">{title}</text>',
+        f'<text x="{total_w / 2:.1f}" y="{y_title * S:.1f}" font-size="{title_size * S:.1f}" font-family="Helvetica, Arial, sans-serif" font-weight="bold" fill="{INK}" text-anchor="middle" dy="0.36em">{title}</text>',
     ]
     x = (total_w / S - (sum(col_w) + col_gap * (len(boards) - 1))) / 2  # centre the columns under the title
     for (sub, front, back, _, _), w in zip(boards, col_w):
         for i, line in enumerate(sub):
-            parts.append(f'<text x="{(x + w / 2) * S:.1f}" y="{(y_sub0 + i * 2.0) * S:.1f}" font-size="{sub_size * S:.1f}" font-family="Helvetica, Arial, sans-serif" font-weight="bold" fill="{INK}" text-anchor="middle" dominant-baseline="middle">{line}</text>')
+            parts.append(f'<text x="{(x + w / 2) * S:.1f}" y="{(y_sub0 + i * 2.0) * S:.1f}" font-size="{sub_size * S:.1f}" font-family="Helvetica, Arial, sans-serif" font-weight="bold" fill="{INK}" text-anchor="middle" dy="0.36em">{line}</text>')
         parts.append(front.svg_group((x + (w - front.w) / 2) * S, y_front * S, "Front (component side)", label_rise + 1.0, cap_size))
         parts.append(back.svg_group((x + (w - back.w) / 2) * S, y_back * S, "Back (mirrored)", label_rise + 1.0, cap_size))
         x += w + col_gap
     for i, n in enumerate(notes):
-        parts.append(f'<text x="{total_w / 2:.1f}" y="{(y_notes0 + 1.5 * i) * S:.1f}" font-size="{note_size * S:.1f}" font-family="Helvetica, Arial, sans-serif" fill="{INK}" text-anchor="middle" dominant-baseline="middle">{n}</text>')
+        parts.append(f'<text x="{total_w / 2:.1f}" y="{(y_notes0 + 1.5 * i) * S:.1f}" font-size="{note_size * S:.1f}" font-family="Helvetica, Arial, sans-serif" fill="{INK}" text-anchor="middle" dy="0.36em">{n}</text>')
     parts.append("</svg>")
     path.write_text("\n".join(parts) + "\n")
     print(f"wrote {path.relative_to(path.parents[2])}")
