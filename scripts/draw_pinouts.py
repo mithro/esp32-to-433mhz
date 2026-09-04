@@ -4,8 +4,9 @@
 # dependencies = []
 # ///
 """Draw one pinout diagram (SVG) of the two socketed radio boards, as seen
-from the carrier: component side up with the header edge at the top, each
-with its mirrored back view.  Writes docs/images/pinout-radio-boards.svg.
+from the carrier: component side up with the header edge at the top.  The
+front views share the first row and the mirrored back views the second,
+one column per board.  Writes docs/images/pinout-radio-boards.svg.
 Geometry comes from the generators and the photo measurements recorded
 there.
 """
@@ -141,25 +142,27 @@ def ra02_views() -> tuple[View, View]:
 
 
 def write_svg(path: pathlib.Path, title: str, boards: list[tuple[str, View, View, list[str]]]) -> None:
-    """boards: (subtitle, front view, back view, footnote lines) per board,
-    laid out side by side."""
-    gap, board_gap = 8.0, 16.0  # mm between the views of a board / between boards
-    widths = [f.w + gap + b.w for _, f, b, _ in boards]
-    total_w = (PAD + sum(widths) + board_gap * (len(boards) - 1) + PAD) * S
-    body_h = max(max(f.h, b.h) for _, f, b, _ in boards)
+    """boards: (subtitle, front view, back view, footnote lines) per board.
+    Layout is a grid: one column per board, the front views in the first
+    row and the back views in the second."""
+    col_gap, row_gap = 10.0, 8.0  # mm between board columns / between the rows
+    col_w = [max(f.w, b.w, 0.55 * 1.6 * len(sub)) for sub, f, b, _ in boards]  # wide enough for the column title
+    row_h = [max(f.h for _, f, _, _ in boards) + 12, max(b.h for _, _, b, _ in boards) + 12]  # +12: SMA drawing and size caption
+    total_w = (PAD + sum(col_w) + col_gap * (len(boards) - 1) + PAD) * S
     notes = [n for *_, ns in boards for n in ns]
-    total_h = (PAD + body_h + 11 + 1.6 * len(notes)) * S
+    total_h = (PAD + row_h[0] + row_gap + 8 + row_h[1] + 1.6 * len(notes)) * S
     parts = [
         f'<svg xmlns="http://www.w3.org/2000/svg" width="{total_w:.0f}" height="{total_h:.0f}" viewBox="0 0 {total_w:.0f} {total_h:.0f}">',
         '<rect width="100%" height="100%" fill="#ffffff"/>',
         f'<text x="{total_w / 2:.1f}" y="{1.3 * S:.1f}" font-size="{2.0 * S:.1f}" font-family="Helvetica, Arial, sans-serif" font-weight="bold" fill="{INK}" text-anchor="middle" dominant-baseline="middle">{title}</text>',
     ]
     x = PAD
-    for (sub, front, back, _), w in zip(boards, widths):
+    y_front, y_back = PAD, PAD + row_h[0] + row_gap + 8
+    for (sub, front, back, _), w in zip(boards, col_w):
         parts.append(f'<text x="{(x + w / 2) * S:.1f}" y="{(PAD - 9.6) * S:.1f}" font-size="{1.6 * S:.1f}" font-family="Helvetica, Arial, sans-serif" font-weight="bold" fill="{INK}" text-anchor="middle" dominant-baseline="middle">{sub}</text>')
-        parts.append(front.svg_group(x * S, PAD * S, "Front (component side)"))
-        parts.append(back.svg_group((x + front.w + gap) * S, PAD * S, "Back (mirrored)"))
-        x += w + board_gap
+        parts.append(front.svg_group((x + (w - front.w) / 2) * S, y_front * S, "Front (component side)"))
+        parts.append(back.svg_group((x + (w - back.w) / 2) * S, y_back * S, "Back (mirrored)"))
+        x += w + col_gap
     for i, n in enumerate(notes):
         parts.append(f'<text x="{total_w / 2:.1f}" y="{total_h - (1.0 + 1.6 * (len(notes) - 1 - i)) * S:.1f}" font-size="{1.05 * S:.1f}" font-family="Helvetica, Arial, sans-serif" fill="{INK}" text-anchor="middle" dominant-baseline="middle">{n}</text>')
     parts.append("</svg>")
