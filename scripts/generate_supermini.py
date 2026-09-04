@@ -91,11 +91,18 @@ def build() -> Design:
     d.parts.append(Part("J2", header("right"), (bx + BOARD_W - PIN_EDGE_X, by + PIN_TOP_Y), conn, "Conn_01x08", {str(i + 1): n for i, n in enumerate(RIGHT_PINS)}, (127.0, 101.6), "Right header"))
 
     g = d.graphics
+    # Pin names (as printed on the SuperMini) beside every pad on both sides.
+    # Back copies share the anchor and are mirrored with the justification
+    # swapped so they still sit inboard of their pad when read from the back.
     label_in = PIN_EDGE_X + PAD_W / 2 + 0.35
     for i, t in enumerate(LEFT_SILK):
-        g.append(gr_text(f"silkL{i}", t, bx + label_in, by + PIN_TOP_Y + i * PITCH, "F.SilkS", 0.8, "left"))
+        y = by + PIN_TOP_Y + i * PITCH
+        g.append(gr_text(f"silkL{i}", t, bx + label_in, y, "F.SilkS", 0.8, "left"))
+        g.append(gr_text(f"silkL{i}:b", t, bx + label_in, y, "B.SilkS", 0.8, "right mirror"))
     for i, t in enumerate(RIGHT_SILK):
-        g.append(gr_text(f"silkR{i}", t, bx + BOARD_W - label_in, by + PIN_TOP_Y + i * PITCH, "F.SilkS", 0.8, "right"))
+        y = by + PIN_TOP_Y + i * PITCH
+        g.append(gr_text(f"silkR{i}", t, bx + BOARD_W - label_in, y, "F.SilkS", 0.8, "right"))
+        g.append(gr_text(f"silkR{i}:b", t, bx + BOARD_W - label_in, y, "B.SilkS", 0.8, "left mirror"))
     # Reference geometry of the original board on F.Fab (from the STEP model).
     usb_w = 9.0
     g.append(gr_rect("usb", bx + (BOARD_W - usb_w) / 2, by - 1.5, bx + (BOARD_W + usb_w) / 2, by + 5.85, "F.Fab", 0.1, "dash"))
