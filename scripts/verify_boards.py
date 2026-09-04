@@ -45,7 +45,7 @@ def main() -> None:
     define = ["--define-var", f"GIT_DESCRIBE={git_describe()}"]
     failed = False
     with tempfile.TemporaryDirectory(prefix="kicad-verify-", dir=ROOT) as tmp:
-        for proj in sorted(ROOT.glob("hardware/*/*.kicad_pro")):
+        for proj in sorted(ROOT.glob("hardware/**/*.kicad_pro")):
             name = proj.stem
             sch, pcb = proj.with_suffix(".kicad_sch"), proj.with_suffix(".kicad_pcb")
             erc = pathlib.Path(tmp) / f"{name}.erc.rpt"

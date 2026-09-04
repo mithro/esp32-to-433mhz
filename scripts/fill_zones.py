@@ -109,7 +109,7 @@ def fill_board(pcbnew, pcb: pathlib.Path) -> bool:
 
 def main() -> None:
     args = [pathlib.Path(a).resolve() for a in sys.argv[1:]]
-    pcbs = args or sorted(ROOT.glob("hardware/*/*.kicad_pcb"))
+    pcbs = args or sorted(ROOT.glob("hardware/**/*.kicad_pcb"))
     try:
         import pcbnew  # type: ignore
     except ImportError:

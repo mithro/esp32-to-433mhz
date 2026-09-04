@@ -138,7 +138,7 @@ def main() -> None:
     args = ap.parse_args()
     kicad = find_kicad_cli(args.kicad_cli)
     OUT.mkdir(parents=True, exist_ok=True)
-    pcbs = sorted(ROOT.glob("hardware/*/*.kicad_pcb"))
+    pcbs = sorted(ROOT.glob("hardware/**/*.kicad_pcb"))
     if args.boards:
         pcbs = [p for p in pcbs if p.stem in args.boards]
     for pcb in pcbs:

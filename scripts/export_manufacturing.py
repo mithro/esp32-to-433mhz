@@ -4,9 +4,9 @@
 # dependencies = []
 # ///
 """Build manufacturing packages (Gerber + Excellon drill zips) for the boards
-meant to be fabricated (by default the two adapters; the module replicas are
-reference models and are only exported when named explicitly), one zip per
-board per fab, ready to upload for a quote:
+meant to be fabricated (by default the two adapters under hardware/; the
+reference boards under hardware/parts/ are only exported when named
+explicitly), one zip per board per fab, ready to upload for a quote:
 
   <out>/<board>-<rev>-jlcpcb.zip
   <out>/<board>-<rev>-nextpcb.zip
@@ -140,7 +140,7 @@ def main() -> None:
     cli = kicad_cli()
     args.out.mkdir(parents=True, exist_ok=True)
     wanted = args.boards or DEFAULT_BOARDS
-    pcbs = [p for p in sorted(ROOT.glob("hardware/*/*.kicad_pcb")) if p.stem in wanted]
+    pcbs = [p for p in sorted(ROOT.glob("hardware/**/*.kicad_pcb")) if p.stem in wanted]
     missing = set(wanted) - {p.stem for p in pcbs}
     if missing:
         raise SystemExit(f"no such board(s): {', '.join(sorted(missing))}")
