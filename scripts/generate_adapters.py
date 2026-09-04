@@ -10,14 +10,14 @@
   SX1278 LoRa module (soldered onto SMD land pads) + a hole for the spring
   antenna wire.  Two-layer; the SuperMini sits at the top with its USB-C
   pointing off the top edge and its pins in 1.0 mm through-holes.
-* hardware/esp32c3-cc1101-adapter  - SuperMini + a 2x4 socket for the Ebyte
-  E07-M1101D-SMA CC1101 board.  Every track on B.Cu, GND pour on F.Cu, silk
-  on both sides, M2 holes in the corners.  The SuperMini lies on its side
-  with its USB-C hanging off the left edge; its pins land on keyhole pads
-  (1.0 mm hole plus copper extended past the SuperMini's edge) so it can be
-  fitted with header pins or soldered flat by its castellations.
-* hardware/esp32c3-ra02-adapter    - the same carrier with a 2x4 socket for
-  the "SX1278 LoRa 433MHz v4.0" Ra-02 breakout (DIO0 on GPIO1 there).
+* hardware/esp32c3-radio-adapter   - SuperMini + one 2x4 socket that takes
+  either the Ebyte E07-M1101D-SMA CC1101 board or the "SX1278 LoRa 433MHz
+  v4.0" Ra-02 breakout (their headers differ in only two positions).  Every
+  track on B.Cu, GND pour on F.Cu, silk on both sides, M2 holes in the
+  corners.  The SuperMini lies on its side with its USB-C hanging off the
+  left edge; its pins land on keyhole pads (1.0 mm hole plus copper extended
+  past the SuperMini's edge) so it can be fitted with header pins or
+  soldered flat by its castellations.
 
 Both use the same GPIO assignment (see PINMAP) so firmware can share the SPI
 setup.  Routing is done by hand in this file and checked by DRC
@@ -267,11 +267,8 @@ def build_sx1278() -> Design:
 
 
 # ---------------------------------------------------------------------------
-# Adapter B: SuperMini + 2x4 socket for the E07-M1101D CC1101 board
+# Adapter B: SuperMini + 2x4 socket for the E07-M1101D CC1101 board or the Ra-02 breakout
 # ---------------------------------------------------------------------------
-E07_PINS = {"1": "GND", "2": "+3V3", "3": "DIO0", "4": "NSS", "5": "SCK", "6": "MOSI", "7": "MISO", "8": "DIO1"}
-E07_LABELS = {"1": "GND", "2": "VCC", "3": "GDO0", "4": "CSN", "5": "SCK", "6": "MOSI", "7": "MISO", "8": "GDO2"}
-E07_NAMES = {"NSS": "CSN", "DIO0": "GDO0", "DIO1": "GDO2"}  # net name -> name printed on the CC1101 board
 
 # Board geometry (mm from the board's top-left corner).
 CC_W, CC_H = 27.0, 36.5
@@ -428,9 +425,11 @@ class Carrier:
             self.silk(f"esp_t{pin}", SM_RIGHT_SILK[pin - 1], px(pin), TOP - 3.1, 0.5)
             self.silk(f"esp_b{pin}", SM_LEFT_SILK[pin - 1], px(pin), BOT + 3.1, 0.5)
             if self.right[str(pin)] != SM_RIGHT_GPIO[pin - 1]:
-                self.silk(f"sig_t{pin}", self.sig_names.get(self.right[str(pin)], self.right[str(pin)]), px(pin), TOP + 2.7, 0.5, None, 90)
+                lab = self.sig_names.get(self.right[str(pin)], self.right[str(pin)])
+                self.silk(f"sig_t{pin}", lab, px(pin), TOP + 2.7 + 0.2 * max(0, len(lab) - 4), 0.5, None, 90)
             if self.left[str(pin)] != SM_LEFT_GPIO[pin - 1]:
-                self.silk(f"sig_b{pin}", self.sig_names.get(self.left[str(pin)], self.left[str(pin)]), px(pin), BOT - 2.7, 0.5, None, 90)
+                lab = self.sig_names.get(self.left[str(pin)], self.left[str(pin)])
+                self.silk(f"sig_b{pin}", lab, px(pin), BOT - 2.7 - 0.2 * max(0, len(lab) - 4), 0.5, None, 90)
 
     def title_silk(self, title: str) -> None:
         """Board title and layer note in the strip right of the SuperMini."""
@@ -443,51 +442,65 @@ class Carrier:
 # Lanes shared by both socket carriers (mm).  Keyhole copper reaches 2.6 mm
 # outboard of each SuperMini row, so lanes below the GPIO row start at
 # BOT + 3.05 and lanes above the power row end at TOP - 3.0.
-SOCKET_Y = 28.5  # socket outer row; inner row 2.54 below
+SOCKET_Y = 29.0  # socket outer row; inner row 2.54 below
 LANES_BELOW = [CC_BOT_Y + 3.05 + i * 0.5 for i in range(4)]  # 25.29, 25.79, 26.29, 26.79
 GND_Y, V33_Y = CC_TOP_Y + 2.0, CC_TOP_Y + 1.3  # power lanes between the SuperMini rows
 OVER_IN, OVER_OUT = CC_TOP_Y - 3.0, CC_TOP_Y - 3.5  # lanes over the top of the power row
 UNDER_IN, UNDER_OUT = SOCKET_Y + 2.54 + 1.3, SOCKET_Y + 2.54 + 1.8  # lanes under the socket
 
 
-def build_cc1101() -> Design:
-    """SuperMini + 2x4 socket for the E07-M1101D.  The SuperMini's right
-    column becomes the top row (5V at the left) and its left column the bottom
-    row (GPIO5 at the left), 15.24 mm apart; the socket sits below, shifted
-    right so the plugged-in E07 board clears the bottom-left mounting screw.
+RADIO_PINMAP = {"MOSI": "GPIO5", "SCK": "GPIO6", "CSN_NSS": "GPIO7", "GDO0_RST": "GPIO10", "MISO": "GPIO4", "GDO2_DIO0": "GPIO3"}
+# Socket pin -> net, numbered like the E07-M1101D header (pin 1 at the right
+# of the outer row, columns to -x, even pins in the inner row).  The Ra-02
+# breakout's header has the same layout apart from two positions, so it plugs
+# into the same socket: its RST lands on GDO0's pin and its DIO0 on GDO2's.
+RADIO_PINS = {"1": "GND", "2": "+3V3", "3": "GDO0_RST", "4": "CSN_NSS", "5": "SCK", "6": "MOSI", "7": "MISO", "8": "GDO2_DIO0"}
+E07_LABELS = {"1": "GND", "2": "VCC", "3": "GDO0", "4": "CSN", "5": "SCK", "6": "MOSI", "7": "MISO", "8": "GDO2"}
+RA02_AT_SOCKET = {"1": "GND", "2": "3V3", "3": "RST", "4": "NSS", "5": "SCK", "6": "MOSI", "7": "MISO", "8": "DIO0"}
+RADIO_NAMES = {"CSN_NSS": "CSN/NSS", "GDO0_RST": "GDO0/RST", "GDO2_DIO0": "GDO2/DIO0"}  # net -> silk beside the SuperMini
+RA02_W, RA02_H, RA02_ROW_IN = 17.5, 22.5, 1.3  # Ra-02 breakout outline for the fab drawing (see generate_ra02_breakout.py)
+E07_W, E07_H, E07_ROW_IN = 15.0, 30.0, 1.6
 
-    Routing: MOSI, SCK and CSN drop from the GPIO row into three lanes and
-    enter the socket from above; GDO0 goes straight down; GND and 3V3 run
-    between the SuperMini rows, drop through gaps in the GPIO row and enter
-    pin 1/2 from the right; MISO and GDO2 (radio outputs on the power row) go
-    over the top of the power row, down the right of the SuperMini (outside
-    its antenna) and under the socket to its left column."""
+
+def build_radio() -> Design:
+    """SuperMini + one 2x4 socket that takes either the E07-M1101D (CC1101)
+    board or the SX1278 Ra-02 breakout.  The SuperMini's right column becomes
+    the top row (5V at the left) and its left column the bottom row (GPIO5 at
+    the left), 15.24 mm apart; the socket sits below, shifted right so either
+    plugged-in board clears the bottom-left mounting screw.
+
+    Routing: MOSI, SCK and CSN/NSS drop from the GPIO row into three lanes
+    and enter the socket from above; GDO0/RST goes straight down; GND and
+    3V3 run between the SuperMini rows, drop through gaps in the GPIO row and
+    enter pin 1/2 from the right; MISO and GDO2/DIO0 (radio outputs on the
+    power row) go over the top of the power row, down the right of the
+    SuperMini (outside its antenna) and under the socket to its left column."""
     c = Carrier(
-        project="esp32c3-cc1101-adapter",
-        title="ESP32-C3 SuperMini to CC1101 E07-M1101D adapter",
-        comment="Carrier joining an ESP32-C3 SuperMini to an Ebyte E07-M1101D-SMA CC1101 433MHz board via a 2x4 socket; all tracks on the back, GND pour on the front",
-        sch_note="ESP32-C3 SuperMini (J1 = GPIO row, J2 = power row; through-hole or castellated) driving a CC1101 E07-M1101D board in socket J3.\\nSPI: MOSI=GPIO5 SCK=GPIO6 CSN=GPIO7 MISO=GPIO4; GDO0=GPIO10 GDO2=GPIO3.\\nH1-H4: M2 mounting holes.  All tracks on B.Cu; F.Cu carries a GND pour.",
-        mapping={k: v for k, v in PINMAP.items() if k != "RESET"},
-        sig_names=E07_NAMES,
+        project="esp32c3-radio-adapter",
+        title="ESP32-C3 SuperMini to CC1101 (E07-M1101D) or SX1278 Ra-02 breakout adapter",
+        comment="Carrier joining an ESP32-C3 SuperMini to an Ebyte E07-M1101D-SMA CC1101 board or an SX1278 Ra-02 breakout via one 2x4 socket; all tracks on the back, GND pour on the front",
+        sch_note="ESP32-C3 SuperMini (J1 = GPIO row, J2 = power row; through-hole or castellated) driving a CC1101 E07-M1101D board or an SX1278 Ra-02 breakout in socket J3.\\nSPI: MOSI=GPIO5 SCK=GPIO6 CSN/NSS=GPIO7 MISO=GPIO4; GDO0 (Ra-02: RST)=GPIO10, GDO2 (Ra-02: DIO0)=GPIO3.\\nH1-H4: M2 mounting holes.  All tracks on B.Cu; F.Cu carries a GND pour.",
+        mapping=RADIO_PINMAP,
+        sig_names=RADIO_NAMES,
     )
     px, gap, TOP, BOT = c.px, c.gap, CC_TOP_Y, CC_BOT_Y
     S1 = (16.48, SOCKET_Y)  # pin 1 (outer row, rightmost column); columns step -2.54
     sx = lambda pin: S1[0] - ((pin - 1) // 2) * SM_PITCH  # noqa: E731
     sy = lambda pin: S1[1] + ((pin - 1) % 2) * SM_PITCH  # noqa: E731
     SY0, SY1 = sy(1), sy(2)
-    c.add("J3", e07_socket_fp(), S1, CONN2X4, "E07-M1101D", E07_PINS, (127.0, 101.6), "CC1101 E07-M1101D socket")
+    c.add("J3", e07_socket_fp(), S1, CONN2X4, "E07-M1101D_or_Ra-02", RADIO_PINS, (127.0, 101.6), "Radio board socket (CC1101 E07-M1101D or SX1278 Ra-02 breakout)")
     c.holes()
 
     L_CSN, L_SCK, L_MOSI = LANES_BELOW[:3]
-    c.track("NSS", TRACK, [(px(3), BOT), (px(3), L_CSN), (gap(sx(5), sx(3)), L_CSN), (gap(sx(5), sx(3)), SY1), (sx(4), SY1)])
+    c.track("CSN_NSS", TRACK, [(px(3), BOT), (px(3), L_CSN), (gap(sx(5), sx(3)), L_CSN), (gap(sx(5), sx(3)), SY1), (sx(4), SY1)])
     c.track("SCK", TRACK, [(px(2), BOT), (px(2), L_SCK), (sx(5), L_SCK), (sx(5), SY0)])
     c.track("MOSI", TRACK, [(px(1), BOT), (px(1), L_MOSI), (gap(sx(7), sx(5)), L_MOSI), (gap(sx(7), sx(5)), SY1), (sx(6), SY1)])
-    assert abs(px(6) - sx(3)) < 1e-9, "GDO0 drops straight into socket pin 3"
-    c.track("DIO0", TRACK, [(px(6), BOT), (sx(3), SY0)])
+    assert abs(px(6) - sx(3)) < 1e-9, "GDO0/RST drops straight into socket pin 3"
+    c.track("GDO0_RST", TRACK, [(px(6), BOT), (sx(3), SY0)])
     c.track("GND", 0.4, [(px(2), TOP), (px(2), GND_Y), (gap(px(6), px(7)), GND_Y), (gap(px(6), px(7)), SY0), (sx(1), SY0)])
     c.track("+3V3", 0.4, [(px(3), TOP), (px(3), V33_Y), (gap(px(7), px(8)), V33_Y), (gap(px(7), px(8)), SY1), (sx(2), SY1)])
     R_IN, R_OUT = c.sm_right + 0.5, c.sm_right + 0.95  # descents right of the SuperMini body
-    c.track("DIO1", TRACK, [(px(5), TOP), (px(5), OVER_IN), (R_IN, OVER_IN), (R_IN, UNDER_IN), (sx(8), UNDER_IN), (sx(8), SY1)])
+    c.track("GDO2_DIO0", TRACK, [(px(5), TOP), (px(5), OVER_IN), (R_IN, OVER_IN), (R_IN, UNDER_IN), (sx(8), UNDER_IN), (sx(8), SY1)])
     c.track("MISO", TRACK, [(px(4), TOP), (px(4), OVER_OUT), (R_OUT, OVER_OUT), (R_OUT, UNDER_OUT), (sx(7) - 1.3, UNDER_OUT), (sx(7) - 1.3, SY0), (sx(7), SY0)])
     c.zones()
 
@@ -495,103 +508,21 @@ def build_cc1101() -> Design:
     c.both(gr_rect, "sockbox", (sx(7) - 1.3, SY0 - 1.3, sx(1) + 1.3, SY1 + 1.3), 0.12)
     c.silk("sock1", "1", sx(1) + 1.9, SY0, 0.6, "left")
     c.silk("sock2", "2", sx(1) + 1.9, SY1, 0.6, "left")
+    # Socket labels: the E07-M1101D's names next to the socket and, where the
+    # Ra-02 breakout's differ, its names in parentheses one line further out.
     for n, lab in E07_LABELS.items():
         pin = int(n)
-        c.silk(f"socklbl{n}", lab, sx(pin), SY0 - 2.0 if pin % 2 else SY1 + 2.0, 0.5)
-    c.silk("sockname", "CC1101 E07-M1101D", gap(sx(7), sx(1)), CC_H - 1.3, 0.7)
-    c.title_silk("ESP32-C3 + CC1101 433MHz")
-    return c.d
-
-
-# ---------------------------------------------------------------------------
-# Adapter C: SuperMini + 2x4 socket for the SX1278 Ra-02 breakout
-# ---------------------------------------------------------------------------
-# The blue "SX1278 LoRa 433MHz v4.0" breakout carries an Ai-Thinker Ra-02
-# (IPEX antenna) and a 2x4 male header on its back, centred on one short
-# edge.  Its silk grid, read on the back with the header at the bottom, is
-# MISO/DIO0, SCK/MOSI, RST/NSS, GND/3V3 per column (first name in the row
-# nearest the edge); turned over onto the carrier that order is unchanged.
-# Pins are numbered here like the Conn_02x04_Odd_Even symbol: odd pins in
-# the outer row (1 at the left), even pins below them.
-RA02_PINS = {"1": "MISO", "2": "DIO0", "3": "SCK", "4": "MOSI", "5": "RESET", "6": "NSS", "7": "GND", "8": "+3V3"}
-RA02_LABELS = {"1": "MISO", "2": "DIO0", "3": "SCK", "4": "MOSI", "5": "RST", "6": "NSS", "7": "GND", "8": "3V3"}
-RA02_NAMES = {"RESET": "RST"}
-RA02_W, RA02_H = 17.5, 22.5  # breakout outline, measured from photos (+/- 0.3 mm)
-RA02_ROW_IN = 1.3  # header outer row from the breakout's header edge
-# Same GPIOs as the other adapters except DIO0, which moves from GPIO10 to
-# GPIO1 (power row): with this socket pinout that is what lets every net
-# route on the back copper without a via (see build_ra02).
-RA02_PINMAP = {**{k: v for k, v in PINMAP.items() if k != "DIO1"}, "DIO0": "GPIO1"}
-
-
-def ra02_socket_fp() -> Footprint:
-    pads = []
-    for n in range(1, 9):
-        col, row = (n - 1) // 2, (n - 1) % 2
-        pads.append(Pad(str(n), (col * SM_PITCH, row * SM_PITCH), (1.6, 1.6), "thru_hole", "rect" if n == 1 else "circle", 1.0))
-    return Footprint(
-        name="PinSocket_2x04_P2.54mm_Ra02_Breakout",
-        descr="2x4 2.54 mm socket for the SX1278 Ra-02 breakout header: pin 1 square at the left of the outer row, pin 2 below it, columns stepping to +x",
-        tags="pin socket 2.54mm 2x04 SX1278 Ra-02",
-        pads=pads,
-        ref_pos=(3 * SM_PITCH + 1.8, SM_PITCH / 2, 90),
-        value_pos=(1.5 * SM_PITCH, SM_PITCH + 2.0),
-    )
-
-
-def build_ra02() -> Design:
-    """SuperMini + 2x4 socket for the SX1278 Ra-02 breakout, laid out like the
-    CC1101 adapter (socket at the same place; the breakout extends past the
-    bottom edge with its IPEX end away from the carrier).
-
-    Routing: RST, NSS, SCK and MOSI drop from the GPIO row into four nested
-    lanes and enter columns 2-3 from above (NSS/MOSI through the gaps to the
-    inner row); GND and 3V3 run between the SuperMini rows, drop through the
-    GPIO-row gaps either side of GPIO20 and enter column 4; MISO and DIO0
-    (both on the power row) go over the top, down the right of the SuperMini
-    and under the socket to column 1."""
-    c = Carrier(
-        project="esp32c3-ra02-adapter",
-        title="ESP32-C3 SuperMini to SX1278 Ra-02 breakout adapter",
-        comment="Carrier joining an ESP32-C3 SuperMini to an SX1278 Ra-02 433MHz breakout (2x4 header) via a 2x4 socket; all tracks on the back, GND pour on the front",
-        sch_note="ESP32-C3 SuperMini (J1 = GPIO row, J2 = power row; through-hole or castellated) driving an SX1278 Ra-02 breakout in socket J3.\\nSPI: MOSI=GPIO5 SCK=GPIO6 NSS=GPIO7 MISO=GPIO4; RST=GPIO8 DIO0=GPIO1.\\nH1-H4: M2 mounting holes.  All tracks on B.Cu; F.Cu carries a GND pour.",
-        mapping=RA02_PINMAP,
-        sig_names=RA02_NAMES,
-    )
-    px, gap, TOP, BOT = c.px, c.gap, CC_TOP_Y, CC_BOT_Y
-    S1 = (px(4), SOCKET_Y)  # pin 1 (outer row, leftmost column) under GPIO8; column 4 under GPIO20
-    sx = lambda pin: S1[0] + ((pin - 1) // 2) * SM_PITCH  # noqa: E731
-    sy = lambda pin: S1[1] + ((pin - 1) % 2) * SM_PITCH  # noqa: E731
-    SY0, SY1 = sy(1), sy(2)
-    c.add("J3", ra02_socket_fp(), S1, CONN2X4, "SX1278_Ra-02", RA02_PINS, (127.0, 101.6), "SX1278 Ra-02 breakout socket")
-    c.holes()
-
-    L_RST, L_NSS, L_SCK, L_MOSI = LANES_BELOW
-    c.track("RESET", TRACK, [(px(4), BOT), (px(4), L_RST), (sx(5), L_RST), (sx(5), SY0)])
-    c.track("NSS", TRACK, [(px(3), BOT), (px(3), L_NSS), (gap(sx(3), sx(5)), L_NSS), (gap(sx(3), sx(5)), SY1), (sx(6), SY1)])
-    c.track("SCK", TRACK, [(px(2), BOT), (px(2), L_SCK), (sx(3), L_SCK), (sx(3), SY0)])
-    c.track("MOSI", TRACK, [(px(1), BOT), (px(1), L_MOSI), (gap(sx(1), sx(3)), L_MOSI), (gap(sx(1), sx(3)), SY1), (sx(4), SY1)])
-    assert abs(sx(7) - px(7)) < 1e-9, "column 4 sits under GPIO20 so the power drops use the gaps either side of it"
-    c.track("GND", 0.4, [(px(2), TOP), (px(2), GND_Y), (gap(px(6), px(7)), GND_Y), (gap(px(6), px(7)), SY0), (sx(7), SY0)])
-    c.track("+3V3", 0.4, [(px(3), TOP), (px(3), V33_Y), (gap(px(7), px(8)), V33_Y), (gap(px(7), px(8)), SY1), (sx(8), SY1)])
-    R_IN, R_OUT = c.sm_right + 0.5, c.sm_right + 0.95
-    c.track("DIO0", TRACK, [(px(7), TOP), (px(7), OVER_IN), (R_IN, OVER_IN), (R_IN, UNDER_IN), (sx(2), UNDER_IN), (sx(2), SY1)])
-    c.track("MISO", TRACK, [(px(4), TOP), (px(4), OVER_OUT), (R_OUT, OVER_OUT), (R_OUT, UNDER_OUT), (sx(1) - 1.3, UNDER_OUT), (sx(1) - 1.3, SY0), (sx(1), SY0)])
-    c.zones()
-
-    c.supermini_silk()
-    c.both(gr_rect, "sockbox", (sx(1) - 1.3, SY0 - 1.3, sx(7) + 1.3, SY1 + 1.3), 0.12)
-    c.silk("sock1", "1", sx(1) - 1.9, SY0, 0.6, "right")
-    c.silk("sock2", "2", sx(1) - 1.9, SY1, 0.6, "right")
-    for n, lab in RA02_LABELS.items():
-        pin = int(n)
-        c.silk(f"socklbl{n}", lab, sx(pin), SY0 - 2.0 if pin % 2 else SY1 + 2.0, 0.5)
-    # Outline of the plugged-in breakout (header edge RA02_ROW_IN above the
-    # outer row; it extends past the bottom edge), on the fab layers.
-    mx = gap(sx(1), sx(7))
-    c.both(gr_rect, "ra02_outline", (mx - RA02_W / 2, SY0 - RA02_ROW_IN, mx + RA02_W / 2, CC_H - 0.3), 0.1, layers=("F.Fab", "B.Fab"), stype="dash")
-    c.silk("sockname", "SX1278 Ra-02 breakout", mx, CC_H - 1.3, 0.7)
-    c.title_silk("ESP32-C3 + SX1278 Ra-02 433MHz")
+        near, far = (SY0 - 2.0, SY0 - 2.85) if pin % 2 else (SY1 + 2.0, SY1 + 2.85)
+        c.silk(f"socklbl{n}", lab, sx(pin), near, 0.5)
+        if RA02_AT_SOCKET[n] != lab:
+            c.silk(f"socklbl_ra{n}", f"({RA02_AT_SOCKET[n]})", sx(pin), far, 0.5)
+    # Outlines of the two boards as plugged in (header edge above the outer
+    # row; both extend past the bottom edge), on the fab layers.
+    mx = gap(sx(7), sx(1))
+    c.both(gr_rect, "e07_outline", (mx - E07_W / 2, SY0 - E07_ROW_IN, mx + E07_W / 2, CC_H - 0.3), 0.1, layers=("F.Fab", "B.Fab"), stype="dash")
+    c.both(gr_rect, "ra02_outline", (mx - RA02_W / 2, SY0 - RA02_ROW_IN, mx + RA02_W / 2, CC_H - 0.5), 0.1, layers=("F.Fab", "B.Fab"), stype="dash")
+    c.silk("sockname", "E07-M1101D (Ra-02 breakout)", mx, CC_H - 0.9, 0.6)
+    c.title_silk("ESP32-C3 + CC1101 / Ra-02 433MHz")
     return c.d
 
 
@@ -599,7 +530,7 @@ def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--out", type=pathlib.Path, default=pathlib.Path(__file__).resolve().parent.parent / "hardware")
     args = ap.parse_args()
-    for d in (build_sx1278(), build_cc1101(), build_ra02()):
+    for d in (build_sx1278(), build_radio()):
         d.write(args.out / d.project)
 
 

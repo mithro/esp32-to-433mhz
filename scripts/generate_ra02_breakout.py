@@ -46,6 +46,7 @@ BOARD_W, BOARD_H = 17.5, 22.5
 PITCH = 2.54
 HDR_ROW_IN = 1.3  # outer row from the header edge (inner row 2.54 further)
 HDR_PAD, HDR_HOLE = 1.5, 0.9
+GRID_Y = 5.8  # top of the back-side name grid
 # Ra-02 module on the breakout (its 16 mm side across the board)
 MOD_W, MOD_H = 16.0, 17.0
 MOD_X, MOD_Y = 0.2, BOARD_H - MOD_H  # 0.2, 5.5: flush with the far edge
@@ -171,13 +172,29 @@ def build() -> Design:
     # Header labels on the back, as printed on the real board: a grid below
     # the header, outer-row names in the first line, inner-row names in the
     # second (the front is covered by the module there).
+    # Header pin numbers under each pad (outer-row numbers between the rows,
+    # inner-row numbers below the inner row) and the name grid below that.
     for n, lab in HDR_LABELS.items():
         pin = int(n)
-        yl = hdr_y(2) + 1.9 if pin % 2 else hdr_y(2) + 3.2
+        g.append(gr_text(f"hdr_bn{n}", n, X(hdr_x(pin)), Y(hdr_y(1) + PITCH / 2 if pin % 2 else hdr_y(2) + 1.25), "B.SilkS", 0.5, "mirror"))
+        yl = GRID_Y + 0.7 if pin % 2 else GRID_Y + 2.0
         g.append(gr_text(f"hdr_b{n}", lab, X(hdr_x(pin)), Y(yl), "B.SilkS", 0.5, "mirror"))
-    g.append(gr_rect("hdr_box", X(hdr_x(1) - 1.27), Y(0.3), X(hdr_x(7) + 1.27), Y(hdr_y(2) + 1.27), "B.SilkS", 0.12))
-    g.append(gr_rect("lbl_box", X(hdr_x(1) - 1.27), Y(hdr_y(2) + 1.27), X(hdr_x(7) + 1.27), Y(hdr_y(2) + 3.9), "B.SilkS", 0.12))
-    g.append(gr_text("name_b", "SX1278 LoRa 433MHz v4.0", X(BOARD_W / 2), Y(15.0), "B.SilkS", 0.7, "mirror", 90))
+    g.append(gr_rect("hdr_box", X(hdr_x(1) - 1.27), Y(0.3), X(hdr_x(7) + 2.4), Y(GRID_Y), "B.SilkS", 0.12))
+    g.append(gr_rect("lbl_box", X(hdr_x(1) - 1.27), Y(GRID_Y), X(hdr_x(7) + 2.4), Y(GRID_Y + 2.7), "B.SilkS", 0.12))
+    # Pin names, rotated, in the gap right of each header column (outer-row
+    # name level with the outer pad, inner-row name with the inner pad), on
+    # both sides: the only part of the front the module leaves visible.
+    for n, lab in HDR_LABELS.items():
+        pin = int(n)
+        xg = hdr_x(pin) + PITCH / 2
+        yn = hdr_y(pin) + (0.2 if pin % 2 else 0)
+        g.append(gr_text(f"pn_f{n}", lab, X(xg), Y(yn), "F.SilkS", 0.5, None, 90))
+        g.append(gr_text(f"pn_b{n}", lab, X(xg), Y(yn), "B.SilkS", 0.5, "mirror", 270))
+    # Ra-02 pin numbers beside each land, on the back (the module covers the front).
+    for pin in range(1, 17):
+        xn = mx(pin) - 1.9 if pin <= 8 else mx(pin) + 2.0
+        g.append(gr_text(f"mod_bn{pin}", str(pin), X(xn), Y(my(pin)), "B.SilkS", 0.5, "mirror"))
+    g.append(gr_text("name_b", "SX1278 LoRa 433MHz v4.0", X(BOARD_W / 2), Y(15.0), "B.SilkS", 0.6, "mirror", 90))
     g.append(gr_text("name_f", "SX1278 LoRa 433MHz v4.0", X(BOARD_W / 2), Y(BOARD_H - 1.2), "F.Fab", 0.6))
     return d
 

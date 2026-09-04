@@ -137,11 +137,28 @@ def build() -> Design:
     # Silkscreen as on the original: pin 1/2/7/8 markers and a box around the header.
     g.append(gr_text("s1", "1", pin1_x + 1.6, by + HDR_ROW_Y, "F.SilkS", 0.8, "left"))
     g.append(gr_text("s2", "2", pin1_x + 1.6, by + HDR_ROW_Y + PITCH, "F.SilkS", 0.8, "left"))
-    g.append(gr_text("s7", "7", pin1_x - 3 * PITCH - 1.6, by + HDR_ROW_Y, "F.SilkS", 0.8, "right"))
-    g.append(gr_text("s8", "8", pin1_x - 3 * PITCH - 1.6, by + HDR_ROW_Y + PITCH, "F.SilkS", 0.8, "right"))
-    g.append(gr_rect("hdrbox", pin1_x - 3 * PITCH - 1.2, by + HDR_ROW_Y - 1.2, pin1_x + 1.2, by + HDR_ROW_Y + PITCH + 1.2, "F.SilkS", 0.12))
+    g.append(gr_text("s7", "7", pin1_x - 3 * PITCH - 2.4, by + HDR_ROW_Y, "F.SilkS", 0.8, "right"))
+    g.append(gr_text("s8", "8", pin1_x - 3 * PITCH - 2.4, by + HDR_ROW_Y + PITCH, "F.SilkS", 0.8, "right"))
+    g.append(gr_rect("hdrbox", pin1_x - 3 * PITCH - 2.2, by + HDR_ROW_Y - 1.2, pin1_x + 1.2, by + HDR_ROW_Y + PITCH + 1.2, "F.SilkS", 0.12))
+    # Back-side copies (mirrored) of the pin-1/2/7/8 markers and the box.
+    g.append(gr_text("s1b", "1", pin1_x + 1.6, by + HDR_ROW_Y, "B.SilkS", 0.8, "right mirror"))
+    g.append(gr_text("s2b", "2", pin1_x + 1.6, by + HDR_ROW_Y + PITCH, "B.SilkS", 0.8, "right mirror"))
+    g.append(gr_text("s7b", "7", pin1_x - 3 * PITCH - 2.4, by + HDR_ROW_Y, "B.SilkS", 0.8, "left mirror"))
+    g.append(gr_text("s8b", "8", pin1_x - 3 * PITCH - 2.4, by + HDR_ROW_Y + PITCH, "B.SilkS", 0.8, "left mirror"))
+    g.append(gr_rect("hdrboxb", pin1_x - 3 * PITCH - 2.2, by + HDR_ROW_Y - 1.2, pin1_x + 1.2, by + HDR_ROW_Y + PITCH + 1.2, "B.SilkS", 0.12))
+    # Pin names, rotated, in the gap left of each header column (outer-row
+    # name level with the outer pad, inner-row name with the inner pad), on
+    # both sides.
+    for n, name in PIN_NAMES.items():
+        pin = int(n)
+        col, row = (pin - 1) // 2, (pin - 1) % 2
+        xg = pin1_x - col * PITCH - PITCH / 2
+        yn = by + HDR_ROW_Y + row * PITCH + (0.1 if row == 0 else 0)
+        g.append(gr_text(f"pn_f{n}", name, xg, yn, "F.SilkS", 0.5, None, 90))
+        g.append(gr_text(f"pn_b{n}", name, xg, yn, "B.SilkS", 0.5, "mirror", 270))
     for i, (n, name) in enumerate(PIN_NAMES.items()):
         g.append(gr_text(f"name{n}", f"{n} {name}", bx + 1.0, by + 7.5 + i * 1.1, "F.SilkS", 0.6, "left"))
+        g.append(gr_text(f"nameb{n}", f"{n} {name}", bx + 1.0, by + 7.5 + i * 1.1, "B.SilkS", 0.6, "right mirror"))
     g.append(gr_text("433m", "433M", bx + BOARD_W - 1.0, by + 12.0, "F.SilkS", 0.8, "right"))
     g.append(gr_text("title", "E07-M1101D form factor", bx + BOARD_W / 2, by + 16.5, "F.Fab", 0.5))
     # CC1101 QFN-20 (4x4) sits roughly centred between header and holes.

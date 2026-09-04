@@ -294,7 +294,7 @@
     "pinned_symbol_libs": []
   },
   "meta": {
-    "filename": "esp32c3-ra02-adapter.kicad_pro",
+    "filename": "esp32c3-radio-adapter.kicad_pro",
     "version": 3
   },
   "net_settings": {

@@ -3,11 +3,11 @@
 # requires-python = ">=3.11"
 # dependencies = []
 # ///
-"""Draw pinout diagrams (SVG) of the two socketed radio boards, as seen from
-the carrier: component side up with the header edge at the top, plus the
-mirrored back view.  Writes docs/images/pinout-e07-m1101d.svg and
-docs/images/pinout-ra02-breakout.svg.  Geometry comes from the generators
-and the photo measurements recorded there.
+"""Draw one pinout diagram (SVG) of the two socketed radio boards, as seen
+from the carrier: component side up with the header edge at the top, each
+with its mirrored back view.  Writes docs/images/pinout-radio-boards.svg.
+Geometry comes from the generators and the photo measurements recorded
+there.
 """
 
 from __future__ import annotations
@@ -16,8 +16,8 @@ import pathlib
 import sys
 
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
-import generate_adapters as ga  # noqa: E402
 import generate_cc1101 as cc  # noqa: E402
+import generate_ra02_breakout as rb  # noqa: E402
 
 OUT = pathlib.Path(__file__).resolve().parent.parent / "docs" / "images"
 S = 11.0  # px per mm
@@ -111,7 +111,7 @@ def e07_views() -> tuple[View, View]:
 
 
 def ra02_views() -> tuple[View, View]:
-    W, H = ga.RA02_W, ga.RA02_H
+    W, H = rb.BOARD_W, rb.BOARD_H
     views = []
     for mirror in (False, True):
         v = View(W, H, mirror)
@@ -133,44 +133,48 @@ def ra02_views() -> tuple[View, View]:
             v.text(cx + 1.0, 15.0, "433MHz v4.0", size=1.2, fill="#ffffff", angle=-90, anchor="middle")
         for n in range(1, 9):
             col, row = (n - 1) // 2, (n - 1) % 2
-            x = cx - 3 * ga.SM_PITCH / 2 + col * ga.SM_PITCH
-            y = ga.RA02_ROW_IN + row * ga.SM_PITCH
-            v.pin(x, y, str(n), ga.RA02_LABELS[str(n)], square=(n == 1), label_dir=-1 if row == 0 else +1)
+            x = rb.hdr_x(n)
+            y = rb.hdr_y(n)
+            v.pin(x, y, str(n), rb.HDR_LABELS[str(n)], square=(n == 1), label_dir=-1 if row == 0 else +1)
         views.append(v)
     return views[0], views[1]
 
 
-def write_svg(path: pathlib.Path, title: str, front: View, back: View, notes: list[str]) -> None:
-    gap = 10.0  # mm between views
-    total_w = (PAD + front.w + gap + back.w + PAD) * S
-    total_h = (PAD + max(front.h, back.h) + 11 + 1.6 * len(notes)) * S
-    note_svg = "".join(
-        f'<text x="{total_w / 2:.1f}" y="{total_h - (1.0 + 1.6 * (len(notes) - 1 - i)) * S:.1f}" font-size="{1.05 * S:.1f}" font-family="Helvetica, Arial, sans-serif" fill="{INK}" text-anchor="middle" dominant-baseline="middle">{n}</text>'
-        for i, n in enumerate(notes)
-    )
+def write_svg(path: pathlib.Path, title: str, boards: list[tuple[str, View, View, list[str]]]) -> None:
+    """boards: (subtitle, front view, back view, footnote lines) per board,
+    laid out side by side."""
+    gap, board_gap = 8.0, 16.0  # mm between the views of a board / between boards
+    widths = [f.w + gap + b.w for _, f, b, _ in boards]
+    total_w = (PAD + sum(widths) + board_gap * (len(boards) - 1) + PAD) * S
+    body_h = max(max(f.h, b.h) for _, f, b, _ in boards)
+    notes = [n for *_, ns in boards for n in ns]
+    total_h = (PAD + body_h + 11 + 1.6 * len(notes)) * S
     parts = [
         f'<svg xmlns="http://www.w3.org/2000/svg" width="{total_w:.0f}" height="{total_h:.0f}" viewBox="0 0 {total_w:.0f} {total_h:.0f}">',
-        f'<rect width="100%" height="100%" fill="#ffffff"/>',
-        f'<text x="{total_w / 2:.1f}" y="{1.2 * S:.1f}" font-size="{1.9 * S:.1f}" font-family="Helvetica, Arial, sans-serif" font-weight="bold" fill="{INK}" text-anchor="middle" dominant-baseline="middle">{title}</text>',
-        front.svg_group(PAD * S, PAD * S, "Front (component side)"),
-        back.svg_group((PAD + front.w + gap) * S, PAD * S, "Back (mirrored)"),
-        note_svg,
-        "</svg>",
+        '<rect width="100%" height="100%" fill="#ffffff"/>',
+        f'<text x="{total_w / 2:.1f}" y="{1.3 * S:.1f}" font-size="{2.0 * S:.1f}" font-family="Helvetica, Arial, sans-serif" font-weight="bold" fill="{INK}" text-anchor="middle" dominant-baseline="middle">{title}</text>',
     ]
+    x = PAD
+    for (sub, front, back, _), w in zip(boards, widths):
+        parts.append(f'<text x="{(x + w / 2) * S:.1f}" y="{(PAD - 9.6) * S:.1f}" font-size="{1.6 * S:.1f}" font-family="Helvetica, Arial, sans-serif" font-weight="bold" fill="{INK}" text-anchor="middle" dominant-baseline="middle">{sub}</text>')
+        parts.append(front.svg_group(x * S, PAD * S, "Front (component side)"))
+        parts.append(back.svg_group((x + front.w + gap) * S, PAD * S, "Back (mirrored)"))
+        x += w + board_gap
+    for i, n in enumerate(notes):
+        parts.append(f'<text x="{total_w / 2:.1f}" y="{total_h - (1.0 + 1.6 * (len(notes) - 1 - i)) * S:.1f}" font-size="{1.05 * S:.1f}" font-family="Helvetica, Arial, sans-serif" fill="{INK}" text-anchor="middle" dominant-baseline="middle">{n}</text>')
+    parts.append("</svg>")
     path.write_text("\n".join(parts) + "\n")
     print(f"wrote {path.relative_to(path.parents[2])}")
 
 
 def main() -> None:
     OUT.mkdir(parents=True, exist_ok=True)
-    f, b = e07_views()
-    write_svg(OUT / "pinout-e07-m1101d.svg", "Ebyte E07-M1101D-SMA (CC1101) header pinout", f, b,
-              ["Header edge at the top in both views; the front view is what the carrier sees.",
-               "Pins 1.60 / 4.14 mm from that edge, columns 3.70 mm from the long edges; pin 1 square."])
-    f, b = ra02_views()
-    write_svg(OUT / "pinout-ra02-breakout.svg", "SX1278 LoRa 433MHz v4.0 breakout (Ai-Thinker Ra-02) header pinout", f, b,
-              ["Header edge at the top in both views; the header itself is on the back, so the front view sees it through the board.",
-               "Numbering is this repository's (odd pins outer row, pin 1 left). Size and offsets measured from photos, +/- 0.3 mm."])
+    e07 = ("Ebyte E07-M1101D-SMA (CC1101)", *e07_views(),
+           ["E07-M1101D: pins 1.60 / 4.14 mm from the header edge, columns 3.70 mm from the long edges; pin 1 square. Dimensions from the Ebyte manual."])
+    ra02 = ("SX1278 LoRa 433MHz v4.0 breakout (Ai-Thinker Ra-02)", *ra02_views(),
+            ["Ra-02 breakout: the header is on the back, so the front view sees it through the board. Numbering is this repository's (odd pins outer row, pin 1 left).",
+             "Breakout size and offsets measured from photos, +/- 0.3 mm; the Ra-02 module itself from Ai-Thinker's Ra-02 Specifications V1.0."])
+    write_svg(OUT / "pinout-radio-boards.svg", "Radio board header pinouts, header edge at the top (the front view is what the carrier sees)", [e07, ra02])
 
 
 if __name__ == "__main__":

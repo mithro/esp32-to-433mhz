@@ -37,7 +37,7 @@ import tempfile
 import zipfile
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
-DEFAULT_BOARDS = ["esp32c3-sx1278-adapter", "esp32c3-cc1101-adapter", "esp32c3-ra02-adapter"]
+DEFAULT_BOARDS = ["esp32c3-sx1278-adapter", "esp32c3-radio-adapter"]
 LAYERS = "F.Cu,B.Cu,F.Paste,B.Paste,F.SilkS,B.SilkS,F.Mask,B.Mask,Edge.Cuts"
 FABS = {
     "jlcpcb": {"name": "JLCPCB", "drill": ["--excellon-oval-format", "route"]},
@@ -49,8 +49,7 @@ NOTES = {
     "sx1278-lora-module": "Castellated holes / edge plating REQUIRED (keyhole pads on the left and right edges, two castellation-only notches on the bottom edge).",
     "cc1101-e07-m1101d": "SMA jack pads reach the bottom board edge (edge-mount connector); no castellations otherwise.",
     "esp32c3-sx1278-adapter": "Optional SMA pads reach the bottom board edge (edge-mount connector). No castellations.",
-    "esp32c3-cc1101-adapter": "All signal tracks are on the bottom copper; the top copper is a GND pour plus pads. No castellations.",
-    "esp32c3-ra02-adapter": "All signal tracks are on the bottom copper; the top copper is a GND pour plus pads. No castellations.",
+    "esp32c3-radio-adapter": "All signal tracks are on the bottom copper; the top copper is a GND pour plus pads. No castellations.",
 }
 
 
