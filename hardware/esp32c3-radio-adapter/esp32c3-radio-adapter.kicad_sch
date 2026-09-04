@@ -929,27 +929,24 @@
 			)
 			(embedded_fonts no)
 		)
-	(symbol "Jumper:SolderJumper_2_Open"
-			(pin_numbers
-				(hide yes)
-			)
+	(symbol "Connector_Generic:Conn_01x02"
 			(pin_names
-				(offset 0)
+				(offset 1.016)
 				(hide yes)
 			)
 			(exclude_from_sim no)
-			(in_bom no)
+			(in_bom yes)
 			(on_board yes)
-			(property "Reference" "JP"
-				(at 0 2.032 0)
+			(property "Reference" "J"
+				(at 0 2.54 0)
 				(effects
 					(font
 						(size 1.27 1.27)
 					)
 				)
 			)
-			(property "Value" "SolderJumper_2_Open"
-				(at 0 -2.54 0)
+			(property "Value" "Conn_01x02"
+				(at 0 -5.08 0)
 				(effects
 					(font
 						(size 1.27 1.27)
@@ -974,7 +971,7 @@
 					(hide yes)
 				)
 			)
-			(property "Description" "Solder Jumper, 2-pole, open"
+			(property "Description" "Generic connector, single row, 01x02, script generated (kicad-library-utils/schlib/autogen/connector/)"
 				(at 0 0 0)
 				(effects
 					(font
@@ -983,7 +980,7 @@
 					(hide yes)
 				)
 			)
-			(property "ki_keywords" "solder jumper SPST"
+			(property "ki_keywords" "connector"
 				(at 0 0 0)
 				(effects
 					(font
@@ -992,7 +989,7 @@
 					(hide yes)
 				)
 			)
-			(property "ki_fp_filters" "SolderJumper*Open*"
+			(property "ki_fp_filters" "Connector*:*_1x??_*"
 				(at 0 0 0)
 				(effects
 					(font
@@ -1001,85 +998,44 @@
 					(hide yes)
 				)
 			)
-			(symbol "SolderJumper_2_Open_0_1"
-				(polyline
-					(pts
-						(xy -0.254 1.016) (xy -0.254 -1.016)
-					)
+			(symbol "Conn_01x02_1_1"
+				(rectangle
+					(start -1.27 1.27)
+					(end 1.27 -3.81)
 					(stroke
-						(width 0)
+						(width 0.254)
+						(type default)
+					)
+					(fill
+						(type background)
+					)
+				)
+				(rectangle
+					(start -1.27 0.127)
+					(end 0 -0.127)
+					(stroke
+						(width 0.1524)
 						(type default)
 					)
 					(fill
 						(type none)
 					)
 				)
-				(arc
-					(start -0.254 -1.016)
-					(mid -1.2656 0)
-					(end -0.254 1.016)
+				(rectangle
+					(start -1.27 -2.413)
+					(end 0 -2.667)
 					(stroke
-						(width 0)
+						(width 0.1524)
 						(type default)
 					)
 					(fill
 						(type none)
 					)
 				)
-				(arc
-					(start -0.254 -1.016)
-					(mid -1.2656 0)
-					(end -0.254 1.016)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type outline)
-					)
-				)
-				(arc
-					(start 0.254 1.016)
-					(mid 1.2656 0)
-					(end 0.254 -1.016)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(arc
-					(start 0.254 1.016)
-					(mid 1.2656 0)
-					(end 0.254 -1.016)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type outline)
-					)
-				)
-				(polyline
-					(pts
-						(xy 0.254 1.016) (xy 0.254 -1.016)
-					)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-			)
-			(symbol "SolderJumper_2_Open_1_1"
 				(pin passive line
-					(at -3.81 0 0)
-					(length 2.54)
-					(name "A"
+					(at -5.08 0 0)
+					(length 3.81)
+					(name "Pin_1"
 						(effects
 							(font
 								(size 1.27 1.27)
@@ -1095,9 +1051,133 @@
 					)
 				)
 				(pin passive line
-					(at 3.81 0 180)
-					(length 2.54)
-					(name "B"
+					(at -5.08 -2.54 0)
+					(length 3.81)
+					(name "Pin_2"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "2"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+			)
+			(embedded_fonts no)
+		)
+	(symbol "Device:R"
+			(pin_numbers
+				(hide yes)
+			)
+			(pin_names
+				(offset 0)
+			)
+			(exclude_from_sim no)
+			(in_bom yes)
+			(on_board yes)
+			(property "Reference" "R"
+				(at 2.032 0 90)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Value" "R"
+				(at 0 0 90)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Footprint" ""
+				(at -1.778 0 90)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Datasheet" "~"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Description" "Resistor"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "ki_keywords" "R res resistor"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "ki_fp_filters" "R_*"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(symbol "R_0_1"
+				(rectangle
+					(start -1.016 -2.54)
+					(end 1.016 2.54)
+					(stroke
+						(width 0.254)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+			)
+			(symbol "R_1_1"
+				(pin passive line
+					(at 0 3.81 270)
+					(length 1.27)
+					(name "~"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at 0 -3.81 90)
+					(length 1.27)
+					(name "~"
 						(effects
 							(font
 								(size 1.27 1.27)
@@ -2186,7 +2266,7 @@
 			)
 		)
 	)
-	(global_label "GPIO21"
+	(global_label "GPIO0"
 		(shape bidirectional)
 		(at 147.32 132.08 180)
 		(fields_autoplaced yes)
@@ -2208,7 +2288,7 @@
 			)
 		)
 	)
-	(global_label "GPIO0"
+	(global_label "GPIO21"
 		(shape bidirectional)
 		(at 147.32 134.62 180)
 		(fields_autoplaced yes)
@@ -2231,7 +2311,7 @@
 		)
 	)
 	(symbol
-		(lib_id "Jumper:SolderJumper_2_Open")
+		(lib_id "Connector_Generic:Conn_01x02")
 		(at 177.8 127 0)
 		(unit 1)
 		(exclude_from_sim no)
@@ -2258,7 +2338,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "Adapter:SolderJumper-2_P1.3mm_Open_Pad1.2x1.0mm"
+		(property "Footprint" "Adapter:PinHeader_1x02_P2.54mm_Vertical_AlongY"
 			(at 177.8 127 0)
 			(effects
 				(font
@@ -2276,7 +2356,7 @@
 				(hide yes)
 			)
 		)
-		(property "Description" "Radio-type strap: bridge for the Ra-02 breakout, leave open for the CC1101"
+		(property "Description" "Radio-type strap: fit a jumper for the Ra-02 breakout, leave open for the CC1101"
 			(at 177.8 127 0)
 			(effects
 				(font
@@ -2302,7 +2382,7 @@
 	)
 	(global_label "RADIO_ID"
 		(shape bidirectional)
-		(at 173.99 127 180)
+		(at 172.72 127 180)
 		(fields_autoplaced yes)
 		(effects
 			(font
@@ -2312,7 +2392,7 @@
 		)
 		(uuid "f3a7b38e-5e9e-5ff3-96df-fed561373e93")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 173.99 127 0)
+			(at 172.72 127 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -2324,7 +2404,99 @@
 	)
 	(global_label "GND"
 		(shape bidirectional)
-		(at 181.61 127 0)
+		(at 172.72 129.54 180)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right)
+		)
+		(uuid "18035fd0-07ac-5c5c-8c49-ce98639772a1")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 172.72 129.54 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+				(hide yes)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:R")
+		(at 203.2 127 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "eb12a7ba-73c1-523f-b323-c554901152a4")
+		(property "Reference" "R1"
+			(at 205.74 114.3 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "0R"
+			(at 205.74 139.7 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "Adapter:R_0805_2012Metric_HandSolder_AlongY"
+			(at 203.2 127 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 203.2 127 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Radio-type strap, alternative to JP1: fit 0R for the Ra-02 breakout"
+			(at 203.2 127 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "a3a86fc6-9b0a-53aa-8b89-53d5f353e644")
+		)
+		(pin "2"
+			(uuid "95f1b51a-a846-51e7-9e2a-02a04e159c90")
+		)
+		(instances
+			(project "esp32c3-radio-adapter"
+				(path "/b71943b6-a88f-5429-bfd6-fb1a52f93b27"
+					(reference "R1")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(global_label "RADIO_ID"
+		(shape bidirectional)
+		(at 203.2 123.19 90)
 		(fields_autoplaced yes)
 		(effects
 			(font
@@ -2332,14 +2504,36 @@
 			)
 			(justify left)
 		)
-		(uuid "18035fd0-07ac-5c5c-8c49-ce98639772a1")
+		(uuid "8d777950-9bff-53dc-9a71-915764768bdf")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 181.61 127 0)
+			(at 203.2 123.19 0)
 			(effects
 				(font
 					(size 1.27 1.27)
 				)
 				(justify left)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "GND"
+		(shape bidirectional)
+		(at 203.2 130.81 270)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right)
+		)
+		(uuid "ce134adb-be88-5c49-a6ad-e121bc9d5972")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 203.2 130.81 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
 				(hide yes)
 			)
 		)
@@ -2604,7 +2798,7 @@
 			)
 		)
 	)
-	(text "ESP32-C3 SuperMini (J1 = GPIO row, J2 = power row; through-hole or castellated) driving a CC1101 E07-M1101D board or an SX1278 Ra-02 breakout in socket J3.\nSPI: MOSI=GPIO5 SCK=GPIO6 CSN/NSS=GPIO7 MISO=GPIO4; GDO0 (Ra-02: RST)=GPIO10, GDO2 (Ra-02: DIO0)=GPIO3.\nJ4: the unused SuperMini pins.  JP1: radio-type strap on GPIO1 (RADIO_ID), open = CC1101, bridged to GND = Ra-02.\nH1-H4: M2 mounting holes.  Radio tracks on B.Cu; F.Cu carries the GND pour, J4's tracks and the strap."
+	(text "ESP32-C3 SuperMini (J1 = GPIO row, J2 = power row; through-hole or castellated) driving a CC1101 E07-M1101D board or an SX1278 Ra-02 breakout in socket J3.\nSPI: MOSI=GPIO5 SCK=GPIO6 CSN/NSS=GPIO7 MISO=GPIO4; GDO0 (Ra-02: RST)=GPIO10, GDO2 (Ra-02: DIO0)=GPIO3.\nJ4: the unused SuperMini pins.  JP1 (jumper) or R1 (0R): radio-type strap on GPIO1 (RADIO_ID) to GND, open = CC1101, fitted = Ra-02.\nH1-H4: M2 mounting holes.  Radio tracks on B.Cu; F.Cu carries the GND pour, J4's tracks and the strap."
 		(exclude_from_sim no)
 		(at 60 90 0)
 		(effects

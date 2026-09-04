@@ -1,0 +1,94 @@
+(footprint "PinHeader_1x02_P2.54mm_Vertical_AlongY"
+	(version 20241229)
+	(generator "kicadgen.py")
+	(generator_version "9.0")
+	(layer "F.Cu")
+	(descr "1x2 2.54 mm pin header, 1.0 mm holes, 1.7 mm pads; pin 1 square")
+	(tags "pin header 2.54mm")
+	(property "Reference" "REF**"
+		(at 0 -2 0)
+		(layer "F.SilkS")
+		(uuid "6c349250-d0d7-560a-9279-02743d0ce41c")
+		(effects
+			(font
+				(size 0.8 0.8)
+				(thickness 0.12)
+			)
+		)
+	)
+	(property "Value" "PinHeader_1x02_P2.54mm_Vertical_AlongY"
+		(at 0 4.54 0)
+		(layer "F.Fab")
+		(uuid "b13868bd-3251-5def-8122-eb418eb11cb3")
+		(effects
+			(font
+				(size 0.8 0.8)
+				(thickness 0.12)
+			)
+		)
+	)
+	(property "Datasheet" ""
+		(at 0 0 0)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "7c0eff66-fd4e-5cdd-b38d-559c34c80b29")
+		(effects
+			(font
+				(size 1.27 1.27)
+				(thickness 0.1905)
+			)
+		)
+	)
+	(property "Description" ""
+		(at 0 0 0)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "d9a47956-cedb-5225-af13-5f63b9e3a047")
+		(effects
+			(font
+				(size 1.27 1.27)
+				(thickness 0.1905)
+			)
+		)
+	)
+	(attr through_hole)
+	(fp_rect
+		(start -1.1 -1.1)
+		(end 1.1 3.64)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(fill no)
+		(layer "F.CrtYd")
+		(uuid "97ef7db1-ffd5-54a2-8f72-af6a8d8cb66c")
+	)
+	(fp_text user "${REFERENCE}"
+		(at 0 -2 0)
+		(layer "F.Fab")
+		(uuid "a7c3a80e-03cf-5dc8-9626-5cc658b9435d")
+		(effects
+			(font
+				(size 0.6 0.6)
+				(thickness 0.09)
+			)
+		)
+	)
+	(pad "1" thru_hole rect
+		(at 0 0)
+		(size 1.7 1.7)
+		(drill 1)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+		(uuid "f5711258-0e4f-5eec-a47e-966b2aa75562")
+	)
+	(pad "2" thru_hole circle
+		(at 0 2.54)
+		(size 1.7 1.7)
+		(drill 1)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+		(uuid "9a5a5ab4-b3ea-52cd-9dc3-03272b739129")
+	)
+	(embedded_fonts no)
+)

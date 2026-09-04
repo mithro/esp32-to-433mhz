@@ -1,14 +1,14 @@
-(footprint "SolderJumper-2_P1.3mm_Open_Pad1.2x1.0mm"
+(footprint "R_0805_2012Metric_HandSolder_AlongY"
 	(version 20241229)
 	(generator "kicadgen.py")
 	(generator_version "9.0")
 	(layer "F.Cu")
-	(descr "Open solder jumper, two 1.2 x 1.0 mm pads 1.3 mm apart (0.3 mm gap)")
-	(tags "solder jumper")
+	(descr "0805 chip resistor, 1.4 x 1.2 mm pads 2.0 mm apart, pins along +y")
+	(tags "resistor 0805 hand solder")
 	(property "Reference" "REF**"
-		(at 0 -2 0)
+		(at 0 -2.4 0)
 		(layer "F.SilkS")
-		(uuid "01c6a3d4-6759-5da7-afa3-fed4c4105a04")
+		(uuid "aa39d824-e005-5f49-bc86-f8c348265d5a")
 		(effects
 			(font
 				(size 0.8 0.8)
@@ -16,10 +16,10 @@
 			)
 		)
 	)
-	(property "Value" "SolderJumper-2_P1.3mm_Open_Pad1.2x1.0mm"
-		(at 0 2 0)
+	(property "Value" "R_0805_2012Metric_HandSolder_AlongY"
+		(at 0 2.4 0)
 		(layer "F.Fab")
-		(uuid "8554acc5-de7d-5a0f-8aec-0f392663f7ea")
+		(uuid "c03c210d-060c-5bea-88d7-a9f15a1dd056")
 		(effects
 			(font
 				(size 0.8 0.8)
@@ -31,7 +31,7 @@
 		(at 0 0 0)
 		(layer "F.Fab")
 		(hide yes)
-		(uuid "0c7618fc-b1cd-5cde-b41c-57ff05936442")
+		(uuid "a2cba71f-da58-5115-ac0a-77631159818c")
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -43,7 +43,7 @@
 		(at 0 0 0)
 		(layer "F.Fab")
 		(hide yes)
-		(uuid "43f8116c-7f65-572e-8bed-e76446aed3e6")
+		(uuid "7e7bc43c-e12b-5c7e-8d66-c1a3534be90c")
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -53,20 +53,20 @@
 	)
 	(attr smd)
 	(fp_rect
-		(start -0.85 -1.4)
-		(end 0.85 1.4)
+		(start -0.95 -1.85)
+		(end 0.95 1.85)
 		(stroke
 			(width 0.05)
 			(type solid)
 		)
 		(fill no)
 		(layer "F.CrtYd")
-		(uuid "7572a22d-ee69-58a3-b3ad-4b012481c3d3")
+		(uuid "b1075ff0-00f1-59f2-b6b1-00f546d89f4e")
 	)
 	(fp_text user "${REFERENCE}"
-		(at 0 -2 0)
+		(at 0 -2.4 0)
 		(layer "F.Fab")
-		(uuid "a153ea36-0eac-5c40-b77a-964f0bd0b429")
+		(uuid "a98c0a64-1db0-52f9-a24e-13eddcb29871")
 		(effects
 			(font
 				(size 0.6 0.6)
@@ -74,17 +74,28 @@
 			)
 		)
 	)
+	(fp_rect
+		(start -0.65 -1)
+		(end 0.65 1)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(fill no)
+		(layer "F.Fab")
+		(uuid "5964af00-a308-5a85-9976-c81569e23d54")
+	)
 	(pad "1" smd rect
-		(at 0 -0.65)
-		(size 1.2 1)
+		(at 0 -1)
+		(size 1.4 1.2)
 		(layers "F.Cu" "F.Mask" "F.Paste")
-		(uuid "0a38fbe0-c757-5424-ae34-9954ae77610d")
+		(uuid "9798bbcb-a75f-5969-ae22-59a55728ece1")
 	)
 	(pad "2" smd rect
-		(at 0 0.65)
-		(size 1.2 1)
+		(at 0 1)
+		(size 1.4 1.2)
 		(layers "F.Cu" "F.Mask" "F.Paste")
-		(uuid "f3d373f4-3409-593e-9782-05b33cb61d9e")
+		(uuid "18c0e1b3-3785-5d7b-8bff-dfcda68cfa25")
 	)
 	(embedded_fonts no)
 )
