@@ -49,6 +49,9 @@ class View:
         d = f' stroke-dasharray="{dash}"' if dash else ""
         self.items.append(f'<rect x="{xa:.1f}" y="{self.Y(y0):.1f}" width="{xb - xa:.1f}" height="{(y1 - y0) * S:.1f}" rx="{rx * S:.1f}" fill="{fill}" stroke="{stroke}" stroke-width="{width * S:.2f}"{d}/>')
 
+    def line(self, x0, y0, x1, y1, stroke=INK, width=0.15):
+        self.items.append(f'<line x1="{self.X(x0):.1f}" y1="{self.Y(y0):.1f}" x2="{self.X(x1):.1f}" y2="{self.Y(y1):.1f}" stroke="{stroke}" stroke-width="{width * S:.2f}"/>')
+
     def circle(self, x, y, r, fill="none", stroke=INK, width=0.15):
         self.items.append(f'<circle cx="{self.X(x):.1f}" cy="{self.Y(y):.1f}" r="{r * S:.1f}" fill="{fill}" stroke="{stroke}" stroke-width="{width * S:.2f}"/>')
 
@@ -82,6 +85,23 @@ def board_base(v: View, w: float, h: float) -> None:
     v.text(w / 2, h + 3.0, f"{w:g} x {h:g} mm", size=1.2, fill=INK)
 
 
+def sma_plan(v: View, x: float, edge_y: float, centre_pin: bool) -> None:
+    """Edge-mount SMA jack seen from above: legs soldered on the board's pads
+    (ground legs 4.25 mm either side on both faces; the centre pin only on the
+    component side), a square body straddling the edge and the threaded barrel
+    pointing away from the board."""
+    legs = (-cc.SMA_GND_OFFSET, cc.SMA_GND_OFFSET) + ((0.0,) if centre_pin else ())
+    for dx in legs:
+        v.rect(x + dx - cc.SMA_PAD_W / 2, edge_y - cc.SMA_PAD_L, x + dx + cc.SMA_PAD_W / 2, edge_y, fill="#c9c9c9", stroke=INK, width=0.1)
+    body, barrel, body_len, total = 3.2, 2.9, 2.6, 9.5
+    v.rect(x - body, edge_y - 0.4, x + body, edge_y + body_len, fill="#b8b8b8", stroke=INK, width=0.12, rx=0.2)
+    v.rect(x - barrel, edge_y + body_len, x + barrel, edge_y + total, fill="#dedede", stroke=INK, width=0.12)
+    y = edge_y + body_len + 0.7
+    while y < edge_y + total - 0.3:
+        v.line(x - barrel, y, x + barrel, y, width=0.08)
+        y += 0.7
+
+
 def e07_views() -> tuple[View, View]:
     W, H = cc.BOARD_W, cc.BOARD_H
     labels = cc.PIN_NAMES
@@ -103,11 +123,9 @@ def e07_views() -> tuple[View, View]:
         if not mirror:
             v.rect(3.0, 9.5, 12.0, 15.5, fill=GHOST, stroke=INK, width=0.1, dash="1 1")
             v.text(7.5, 12.5, "CC1101", size=1.3, weight="bold")
-        v.rect(W / 2 - 3.2, H, W / 2 + 3.2, H + 6.5, fill="#d9d9d9", stroke=INK, width=0.12, rx=0.5)
-        v.circle(W / 2, H + 3.2, 1.6, fill="#ffffff", stroke=INK, width=0.12)
-        v.circle(W / 2, H + 3.2, 0.5, fill=PIN, stroke=INK, width=0.08)
-        v.text(W / 2, H + 8.0, "SMA jack", size=1.1)
-        v.text(W / 2, H - 4.0 if not mirror else H - 4.0, "433M" if not mirror else "E07-M1101D V2.0", size=1.1, fill="#ffffff")
+        sma_plan(v, W / 2, H, centre_pin=not mirror)
+        v.text(W / 2, H + 11.3, "SMA jack", size=1.1)
+        v.text(W / 2, H - cc.SMA_PAD_L - 1.4, "433M" if not mirror else "E07-M1101D V2.0", size=1.1, fill="#ffffff")
         views.append(v)
     return views[0], views[1]
 
@@ -191,7 +209,7 @@ def write_svg(path: pathlib.Path, title: str, boards: list[tuple[list[str], View
 
 def main() -> None:
     OUT.mkdir(parents=True, exist_ok=True)
-    e07 = (["Ebyte E07-M1101D-SMA", "(CC1101)"], *e07_views(), 9.0,
+    e07 = (["Ebyte E07-M1101D-SMA", "(CC1101)"], *e07_views(), 12.5,
            ["The front view is what the carrier sees. E07-M1101D: pins 1.60 / 4.14 mm from the header edge, columns 3.70 mm from the long edges; pin 1 square. Dimensions from the Ebyte manual."])
     ra02 = (["SX1278 LoRa 433MHz v4.0 breakout", "(Ai-Thinker Ra-02)"], *ra02_views(), 4.0,
             ["Ra-02 breakout: the header is on the back, so the front view sees it through the board. Numbering is this repository's (odd pins outer row, pin 1 left).",
