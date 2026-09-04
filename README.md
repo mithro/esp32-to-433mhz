@@ -221,6 +221,40 @@ SuperMini, power and reset on the bottom copper, with vias to the SMD module
 pads. The two socket adapters (CC1101 and Ra-02) route everything on the
 back copper and carry a ground pour on the front (see below).
 
+### CC1101 board pins versus Ra-02 breakout pins
+
+Both radio boards have a 2x4 2.54 mm header, and seen from the carrier (radio
+board plugged in component side up, its header edge at the top) they are
+laid out almost identically. Pin numbers are the E07-M1101D's own and the
+odd/even numbering used for the Ra-02 breakout in this repository:
+
+| Socket position | E07-M1101D (CC1101) | Ra-02 breakout | Same signal? |
+| --- | --- | --- | --- |
+| Outer row, column 1 (left) | 7 MISO | 1 MISO | yes |
+| Outer row, column 2 | 5 SCK | 3 SCK | yes |
+| Outer row, column 3 | 3 GDO0 | 5 RST | no |
+| Outer row, column 4 (right) | 1 GND | 7 GND | yes |
+| Inner row, column 1 (left) | 8 GDO2 | 2 DIO0 | no |
+| Inner row, column 2 | 6 MOSI | 4 MOSI | yes |
+| Inner row, column 3 | 4 CSN | 6 NSS | yes (chip select) |
+| Inner row, column 4 (right) | 2 VCC | 8 3V3 | yes |
+
+Only column 3's outer pin and column 1's inner pin differ: the CC1101 board
+puts its two interrupt outputs there (GDO0, GDO2) while the Ra-02 breakout
+has its reset input and its single interrupt (RST, DIO0). By signal:
+
+| Signal | E07-M1101D pin | Ra-02 breakout pin | ESP32-C3 GPIO (CC1101 adapter) | ESP32-C3 GPIO (Ra-02 adapter) |
+| --- | --- | --- | --- | --- |
+| GND | 1 | 7 | GND | GND |
+| 3.3 V | 2 VCC | 8 3V3 | 3V3 | 3V3 |
+| MOSI | 6 | 4 | GPIO5 | GPIO5 |
+| SCK | 5 | 3 | GPIO6 | GPIO6 |
+| Chip select | 4 CSN | 6 NSS | GPIO7 | GPIO7 |
+| MISO | 7 | 1 | GPIO4 | GPIO4 |
+| Interrupt / packet | 3 GDO0 | 2 DIO0 | GPIO10 | GPIO1 |
+| Second interrupt | 8 GDO2 | - | GPIO3 | - |
+| Reset | - | 5 RST | - | GPIO8 |
+
 ### Adapter: ESP32-C3 SuperMini to SX1278 module
 
 | 3D render, top | 3D render, bottom | Layout (copper, silk, fab, outline) |
