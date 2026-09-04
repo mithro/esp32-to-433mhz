@@ -241,7 +241,14 @@ odd/even numbering used for the Ra-02 breakout in this repository:
 
 Only column 3's outer pin and column 1's inner pin differ: the CC1101 board
 puts its two interrupt outputs there (GDO0, GDO2) while the Ra-02 breakout
-has its reset input and its single interrupt (RST, DIO0). By signal:
+has its reset input and its single interrupt (RST, DIO0).
+
+![E07-M1101D header pinout, front and back](docs/images/pinout-e07-m1101d.svg)
+
+![Ra-02 breakout header pinout, front and back](docs/images/pinout-ra02-breakout.svg)
+
+(Diagrams drawn by `scripts/draw_pinouts.py` from the generators' geometry.)
+By signal:
 
 | Signal | E07-M1101D pin | Ra-02 breakout pin | ESP32-C3 GPIO (CC1101 adapter) | ESP32-C3 GPIO (Ra-02 adapter) |
 | --- | --- | --- | --- | --- |
