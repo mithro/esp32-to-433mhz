@@ -101,6 +101,14 @@ static const CcPins CC_MAP_BLUE  = { 3, 7, 4, 9, 10, 6 };   // blue E07:    SCK3
 static const CcPins CC_MAP_GREEN = { 9, 3, 10, 6, 7, 4 };   // green D-Sun: SCK9 MISO3 MOSI10 CSN6 GDO0=7  GDO2=4
 static const SxPins SX_MAP_RA02  = { 3, 7, 4, 9, 10, 6 };   // RA-02:       SCK3 MISO7 MOSI4 NSS9  RST=10  DIO0=6
 #define CC_STRAP_PIN 5
+/* Boot-strap safety (see firmware/docs/bootloader-recovery.md): no pin map above touches GPIO2
+ * or GPIO8 (ESP32-C3 strapping pins) or GPIO18/19 (USB D-/D+). GPIO9 (the BOOT strap) appears
+ * only as the blue-board CSN or the green-board SCK and is driven solely by the SPI bring-up
+ * that runs at FUNC_INIT -- long after the ROM/2nd-stage bootloader has sampled the straps and
+ * brought USB up. ArduinoSpiBus::begin() sets CS to OUTPUT and idles it HIGH, and every SPI op
+ * ends with deselect() (CS HIGH), so GPIO9 rests HIGH between transactions. No gpio_hold / RTC
+ * hold / deep-sleep hold is used, so no pin state persists across a reset to change boot mode;
+ * the driver also does no pin I/O before FUNC_INIT (there is no FUNC_PRE_INIT hook). */
 
 /* ---------- driver state ---------- */
 struct CcState {
