@@ -1,8 +1,8 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1122" height="1308" viewBox="0 0 1122 1308">
+<svg xmlns="http://www.w3.org/2000/svg" width="1122" height="1288" viewBox="0 0 1122 1288">
 <rect width="100%" height="100%" fill="#ffffff"/>
 <text x="561.0" y="33.0" font-size="22.0" font-family="Helvetica, Arial, sans-serif" font-weight="bold" fill="#1a1a2e" text-anchor="middle" dy="0.36em">ESP32-C3 SuperMini to the blue CC1101 E07-M1101D-SMA with jumper wires</text>
 <text x="561.0" y="61.6" font-size="13.2" font-family="Helvetica, Arial, sans-serif" fill="#1a1a2e" text-anchor="middle" dy="0.36em">Same pins as the socket adapter. Both boards seen from the back, header pins towards you.</text>
-<g transform="translate(546.7 532.6)"><text x="82.5" y="0.0" font-size="0.0" font-family="Helvetica, Arial, sans-serif" font-weight="bold" fill="#1a1a2e" text-anchor="middle"></text>
+<g transform="translate(546.7 512.8)"><text x="82.5" y="0.0" font-size="0.0" font-family="Helvetica, Arial, sans-serif" font-weight="bold" fill="#1a1a2e" text-anchor="middle"></text>
 <rect x="0.0" y="0.0" width="165.0" height="330.0" rx="6.6" fill="#1c6b9c" stroke="#0d3f5e" stroke-width="2.75"/>
 <text x="82.5" y="475.2" font-size="13.2" font-family="Helvetica, Arial, sans-serif" font-weight="normal" fill="#1a1a2e" text-anchor="middle" dy="0.36em">15 x 30 mm</text>
 <rect x="31.9" y="8.8" width="17.6" height="17.6" rx="0.0" fill="#f2c94c" stroke="#1a1a2e" stroke-width="1.32"/>
@@ -121,44 +121,44 @@
 <circle cx="15.2" cy="214.7" r="5.0" fill="#ffffff" stroke="#1a1a2e" stroke-width="0.88"/>
 <text x="28.6" y="214.7" font-size="10.4" font-family="Helvetica, Arial, sans-serif" font-weight="bold" fill="#ffffff" text-anchor="start" dy="0.36em">0</text>
 </g>
-<path d="M 358.8 201.1 L 474.1 201.1 Q 491.7 201.1 491.7 218.7 L 491.7 406.1 Q 491.7 423.7 509.3 423.7 L 667.6 423.7 Q 685.2 423.7 685.2 441.3 L 685.2 571.2 Q 685.2 578.2 678.2 578.2 L 671.2 578.2" fill="none" stroke="#1a1a2e" stroke-width="14.3" stroke-linecap="round"/>
-<path d="M 358.8 201.1 L 474.1 201.1 Q 491.7 201.1 491.7 218.7 L 491.7 406.1 Q 491.7 423.7 509.3 423.7 L 667.6 423.7 Q 685.2 423.7 685.2 441.3 L 685.2 571.2 Q 685.2 578.2 678.2 578.2 L 671.2 578.2" fill="none" stroke="#f2d21e" stroke-width="9.3" stroke-linecap="round"/>
+<path d="M 358.8 201.1 L 474.1 201.1 Q 491.7 201.1 491.7 218.7 L 491.7 406.1 Q 491.7 423.7 509.3 423.7 L 667.6 423.7 Q 685.2 423.7 685.2 441.3 L 685.2 551.4 Q 685.2 558.4 678.2 558.4 L 671.2 558.4" fill="none" stroke="#1a1a2e" stroke-width="14.3" stroke-linecap="round"/>
+<path d="M 358.8 201.1 L 474.1 201.1 Q 491.7 201.1 491.7 218.7 L 491.7 406.1 Q 491.7 423.7 509.3 423.7 L 667.6 423.7 Q 685.2 423.7 685.2 441.3 L 685.2 551.4 Q 685.2 558.4 678.2 558.4 L 671.2 558.4" fill="none" stroke="#f2d21e" stroke-width="9.3" stroke-linecap="round"/>
 <circle cx="358.8" cy="201.1" r="8.8" fill="#f2d21e" stroke="#1a1a2e" stroke-width="1.6"/>
-<circle cx="671.2" cy="578.2" r="8.8" fill="#f2d21e" stroke="#1a1a2e" stroke-width="1.6"/>
-<path d="M 358.8 229.0 L 454.3 229.0 Q 471.9 229.0 471.9 246.6 L 471.9 425.9 Q 471.9 443.5 489.5 443.5 L 653.6 443.5 Q 671.2 443.5 671.2 461.1 L 671.2 550.2" fill="none" stroke="#1a1a2e" stroke-width="14.3" stroke-linecap="round"/>
-<path d="M 358.8 229.0 L 454.3 229.0 Q 471.9 229.0 471.9 246.6 L 471.9 425.9 Q 471.9 443.5 489.5 443.5 L 653.6 443.5 Q 671.2 443.5 671.2 461.1 L 671.2 550.2" fill="none" stroke="#2e9e4f" stroke-width="9.3" stroke-linecap="round"/>
+<circle cx="671.2" cy="558.4" r="8.8" fill="#f2d21e" stroke="#1a1a2e" stroke-width="1.6"/>
+<path d="M 358.8 229.0 L 454.3 229.0 Q 471.9 229.0 471.9 246.6 L 471.9 425.9 Q 471.9 443.5 489.5 443.5 L 653.6 443.5 Q 671.2 443.5 671.2 461.1 L 671.2 530.4" fill="none" stroke="#1a1a2e" stroke-width="14.3" stroke-linecap="round"/>
+<path d="M 358.8 229.0 L 454.3 229.0 Q 471.9 229.0 471.9 246.6 L 471.9 425.9 Q 471.9 443.5 489.5 443.5 L 653.6 443.5 Q 671.2 443.5 671.2 461.1 L 671.2 530.4" fill="none" stroke="#2e9e4f" stroke-width="9.3" stroke-linecap="round"/>
 <circle cx="358.8" cy="229.0" r="8.8" fill="#2e9e4f" stroke="#1a1a2e" stroke-width="1.6"/>
-<circle cx="671.2" cy="550.2" r="8.8" fill="#2e9e4f" stroke="#1a1a2e" stroke-width="1.6"/>
-<path d="M 358.8 257.0 L 434.5 257.0 Q 452.1 257.0 452.1 274.6 L 452.1 445.7 Q 452.1 463.3 469.7 463.3 L 639.7 463.3 Q 657.3 463.3 657.3 480.9 L 657.3 571.2 Q 657.3 578.2 650.3 578.2 L 643.3 578.2" fill="none" stroke="#1a1a2e" stroke-width="14.3" stroke-linecap="round"/>
-<path d="M 358.8 257.0 L 434.5 257.0 Q 452.1 257.0 452.1 274.6 L 452.1 445.7 Q 452.1 463.3 469.7 463.3 L 639.7 463.3 Q 657.3 463.3 657.3 480.9 L 657.3 571.2 Q 657.3 578.2 650.3 578.2 L 643.3 578.2" fill="none" stroke="#2464c8" stroke-width="9.3" stroke-linecap="round"/>
-<circle cx="358.8" cy="257.0" r="8.8" fill="#2464c8" stroke="#1a1a2e" stroke-width="1.6"/>
-<circle cx="643.3" cy="578.2" r="8.8" fill="#2464c8" stroke="#1a1a2e" stroke-width="1.6"/>
-<path d="M 358.8 284.9 L 414.7 284.9 Q 432.3 284.9 432.3 302.5 L 432.3 465.5 Q 432.3 483.1 449.9 483.1 L 625.7 483.1 Q 643.3 483.1 643.3 500.7 L 643.3 550.2" fill="none" stroke="#1a1a2e" stroke-width="14.3" stroke-linecap="round"/>
-<path d="M 358.8 284.9 L 414.7 284.9 Q 432.3 284.9 432.3 302.5 L 432.3 465.5 Q 432.3 483.1 449.9 483.1 L 625.7 483.1 Q 643.3 483.1 643.3 500.7 L 643.3 550.2" fill="none" stroke="#7d3fa8" stroke-width="9.3" stroke-linecap="round"/>
+<circle cx="671.2" cy="530.4" r="8.8" fill="#2e9e4f" stroke="#1a1a2e" stroke-width="1.6"/>
+<path d="M 358.8 284.9 L 414.7 284.9 Q 432.3 284.9 432.3 302.5 L 432.3 445.7 Q 432.3 463.3 449.9 463.3 L 611.7 463.3 Q 629.3 463.3 629.3 480.9 L 629.3 551.4 Q 629.3 558.4 622.3 558.4 L 615.3 558.4" fill="none" stroke="#1a1a2e" stroke-width="14.3" stroke-linecap="round"/>
+<path d="M 358.8 284.9 L 414.7 284.9 Q 432.3 284.9 432.3 302.5 L 432.3 445.7 Q 432.3 463.3 449.9 463.3 L 611.7 463.3 Q 629.3 463.3 629.3 480.9 L 629.3 551.4 Q 629.3 558.4 622.3 558.4 L 615.3 558.4" fill="none" stroke="#7d3fa8" stroke-width="9.3" stroke-linecap="round"/>
 <circle cx="358.8" cy="284.9" r="8.8" fill="#7d3fa8" stroke="#1a1a2e" stroke-width="1.6"/>
-<circle cx="643.3" cy="550.2" r="8.8" fill="#7d3fa8" stroke="#1a1a2e" stroke-width="1.6"/>
-<path d="M 358.8 312.8 L 394.9 312.8 Q 412.5 312.8 412.5 330.4 L 412.5 485.3 Q 412.5 502.9 430.1 502.9 L 597.7 502.9 Q 615.3 502.9 615.3 520.5 L 615.3 550.2" fill="none" stroke="#1a1a2e" stroke-width="14.3" stroke-linecap="round"/>
-<path d="M 358.8 312.8 L 394.9 312.8 Q 412.5 312.8 412.5 330.4 L 412.5 485.3 Q 412.5 502.9 430.1 502.9 L 597.7 502.9 Q 615.3 502.9 615.3 520.5 L 615.3 550.2" fill="none" stroke="#8c8c8c" stroke-width="9.3" stroke-linecap="round"/>
+<circle cx="615.3" cy="558.4" r="8.8" fill="#7d3fa8" stroke="#1a1a2e" stroke-width="1.6"/>
+<path d="M 358.8 312.8 L 394.9 312.8 Q 412.5 312.8 412.5 330.4 L 412.5 465.5 Q 412.5 483.1 430.1 483.1 L 597.7 483.1 Q 615.3 483.1 615.3 500.7 L 615.3 530.4" fill="none" stroke="#1a1a2e" stroke-width="14.3" stroke-linecap="round"/>
+<path d="M 358.8 312.8 L 394.9 312.8 Q 412.5 312.8 412.5 330.4 L 412.5 465.5 Q 412.5 483.1 430.1 483.1 L 597.7 483.1 Q 615.3 483.1 615.3 500.7 L 615.3 530.4" fill="none" stroke="#8c8c8c" stroke-width="9.3" stroke-linecap="round"/>
 <circle cx="358.8" cy="312.8" r="8.8" fill="#8c8c8c" stroke="#1a1a2e" stroke-width="1.6"/>
-<circle cx="615.3" cy="550.2" r="8.8" fill="#8c8c8c" stroke="#1a1a2e" stroke-width="1.6"/>
-<path d="M 191.2 201.1 L 126.5 201.1 Q 108.9 201.1 108.9 218.7 L 108.9 532.6 Q 108.9 550.2 126.5 550.2 L 587.4 550.2" fill="none" stroke="#1a1a2e" stroke-width="14.3" stroke-linecap="round"/>
-<path d="M 191.2 201.1 L 126.5 201.1 Q 108.9 201.1 108.9 218.7 L 108.9 532.6 Q 108.9 550.2 126.5 550.2 L 587.4 550.2" fill="none" stroke="#7b4a1e" stroke-width="9.3" stroke-linecap="round"/>
+<circle cx="615.3" cy="530.4" r="8.8" fill="#8c8c8c" stroke="#1a1a2e" stroke-width="1.6"/>
+<path d="M 191.2 201.1 L 106.7 201.1 Q 89.1 201.1 89.1 218.7 L 89.1 512.8 Q 89.1 530.4 106.7 530.4 L 587.4 530.4" fill="none" stroke="#1a1a2e" stroke-width="14.3" stroke-linecap="round"/>
+<path d="M 191.2 201.1 L 106.7 201.1 Q 89.1 201.1 89.1 218.7 L 89.1 512.8 Q 89.1 530.4 106.7 530.4 L 587.4 530.4" fill="none" stroke="#7b4a1e" stroke-width="9.3" stroke-linecap="round"/>
 <circle cx="191.2" cy="201.1" r="8.8" fill="#7b4a1e" stroke="#1a1a2e" stroke-width="1.6"/>
-<circle cx="587.4" cy="550.2" r="8.8" fill="#7b4a1e" stroke="#1a1a2e" stroke-width="1.6"/>
-<path d="M 191.2 229.0 L 146.3 229.0 Q 128.7 229.0 128.7 246.6 L 128.7 560.6 Q 128.7 578.2 146.3 578.2 L 587.4 578.2" fill="none" stroke="#1a1a2e" stroke-width="14.3" stroke-linecap="round"/>
-<path d="M 191.2 229.0 L 146.3 229.0 Q 128.7 229.0 128.7 246.6 L 128.7 560.6 Q 128.7 578.2 146.3 578.2 L 587.4 578.2" fill="none" stroke="#d81e1e" stroke-width="9.3" stroke-linecap="round"/>
+<circle cx="587.4" cy="530.4" r="8.8" fill="#7b4a1e" stroke="#1a1a2e" stroke-width="1.6"/>
+<path d="M 191.2 229.0 L 126.5 229.0 Q 108.9 229.0 108.9 246.6 L 108.9 540.8 Q 108.9 558.4 126.5 558.4 L 587.4 558.4" fill="none" stroke="#1a1a2e" stroke-width="14.3" stroke-linecap="round"/>
+<path d="M 191.2 229.0 L 126.5 229.0 Q 108.9 229.0 108.9 246.6 L 108.9 540.8 Q 108.9 558.4 126.5 558.4 L 587.4 558.4" fill="none" stroke="#d81e1e" stroke-width="9.3" stroke-linecap="round"/>
 <circle cx="191.2" cy="229.0" r="8.8" fill="#d81e1e" stroke="#1a1a2e" stroke-width="1.6"/>
-<circle cx="587.4" cy="578.2" r="8.8" fill="#d81e1e" stroke="#1a1a2e" stroke-width="1.6"/>
-<path d="M 191.2 368.7 L 166.1 368.7 Q 148.5 368.7 148.5 386.3 L 148.5 505.1 Q 148.5 522.7 166.1 522.7 L 583.8 522.7 Q 601.4 522.7 601.4 540.3 L 601.4 571.2 Q 601.4 578.2 608.4 578.2 L 615.3 578.2" fill="none" stroke="#1a1a2e" stroke-width="14.3" stroke-linecap="round"/>
-<path d="M 191.2 368.7 L 166.1 368.7 Q 148.5 368.7 148.5 386.3 L 148.5 505.1 Q 148.5 522.7 166.1 522.7 L 583.8 522.7 Q 601.4 522.7 601.4 540.3 L 601.4 571.2 Q 601.4 578.2 608.4 578.2 L 615.3 578.2" fill="none" stroke="#f4f4f4" stroke-width="9.3" stroke-linecap="round"/>
-<circle cx="191.2" cy="368.7" r="8.8" fill="#f4f4f4" stroke="#1a1a2e" stroke-width="1.6"/>
-<circle cx="615.3" cy="578.2" r="8.8" fill="#f4f4f4" stroke="#1a1a2e" stroke-width="1.6"/>
+<circle cx="587.4" cy="558.4" r="8.8" fill="#d81e1e" stroke="#1a1a2e" stroke-width="1.6"/>
+<path d="M 191.2 257.0 L 166.1 257.0 Q 148.5 257.0 148.5 274.6 L 148.5 573.8 Q 148.5 591.4 166.1 591.4 L 626.8 591.4 Q 643.3 591.4 643.3 574.9 L 643.3 558.4" fill="none" stroke="#1a1a2e" stroke-width="14.3" stroke-linecap="round"/>
+<path d="M 191.2 257.0 L 166.1 257.0 Q 148.5 257.0 148.5 274.6 L 148.5 573.8 Q 148.5 591.4 166.1 591.4 L 626.8 591.4 Q 643.3 591.4 643.3 574.9 L 643.3 558.4" fill="none" stroke="#f4f4f4" stroke-width="9.3" stroke-linecap="round"/>
+<circle cx="191.2" cy="257.0" r="8.8" fill="#f4f4f4" stroke="#1a1a2e" stroke-width="1.6"/>
+<circle cx="643.3" cy="558.4" r="8.8" fill="#f4f4f4" stroke="#1a1a2e" stroke-width="1.6"/>
+<path d="M 191.2 284.9 L 146.3 284.9 Q 128.7 284.9 128.7 302.5 L 128.7 485.3 Q 128.7 502.9 146.3 502.9 L 629.5 502.9 Q 643.3 502.9 643.3 516.7 L 643.3 530.4" fill="none" stroke="#9a9a9a" stroke-width="14.3" stroke-linecap="round"/>
+<path d="M 191.2 284.9 L 146.3 284.9 Q 128.7 284.9 128.7 302.5 L 128.7 485.3 Q 128.7 502.9 146.3 502.9 L 629.5 502.9 Q 643.3 502.9 643.3 516.7 L 643.3 530.4" fill="none" stroke="#1a1a1a" stroke-width="9.3" stroke-linecap="round"/>
+<circle cx="191.2" cy="284.9" r="8.8" fill="#1a1a1a" stroke="#9a9a9a" stroke-width="1.6"/>
+<circle cx="643.3" cy="530.4" r="8.8" fill="#1a1a1a" stroke="#9a9a9a" stroke-width="1.6"/>
 <path d="M 358.8 173.1 L 394.9 173.1 Q 412.5 173.1 412.5 155.5 L 412.5 134.6" fill="none" stroke="#1a1a2e" stroke-width="14.3" stroke-linecap="round"/>
 <path d="M 358.8 173.1 L 394.9 173.1 Q 412.5 173.1 412.5 155.5 L 412.5 134.6" fill="none" stroke="#f28c1e" stroke-width="9.3" stroke-linecap="round"/>
 <circle cx="358.8" cy="173.1" r="8.8" fill="#f28c1e" stroke="#1a1a2e" stroke-width="1.6"/>
 <circle cx="412.5" cy="134.6" r="8.8" fill="#f28c1e" stroke="#1a1a2e" stroke-width="1.6"/>
 <text x="425.7" y="118.1" font-size="10.4" font-family="Helvetica, Arial, sans-serif" fill="#1a1a2e" text-anchor="middle" dy="0.36em">GPIO5: leave open</text>
-<g transform="translate(546.7 532.6)"><text x="82.5" y="0.0" font-size="0.0" font-family="Helvetica, Arial, sans-serif" font-weight="bold" fill="#1a1a2e" text-anchor="middle"></text>
+<g transform="translate(546.7 512.8)"><text x="82.5" y="0.0" font-size="0.0" font-family="Helvetica, Arial, sans-serif" font-weight="bold" fill="#1a1a2e" text-anchor="middle"></text>
 <text x="40.7" y="1.1" font-size="11.6" font-family="Helvetica, Arial, sans-serif" font-weight="bold" fill="#1a1a2e" text-anchor="start" dy="0.36em" transform="rotate(-90 40.7 1.1)" stroke="#ffffff" stroke-width="3.8" paint-order="stroke" stroke-linejoin="round">GND</text>
 <text x="40.7" y="62.0" font-size="11.6" font-family="Helvetica, Arial, sans-serif" font-weight="bold" fill="#1a1a2e" text-anchor="end" dy="0.36em" transform="rotate(-90 40.7 62.0)" stroke="#ffffff" stroke-width="3.8" paint-order="stroke" stroke-linejoin="round">VCC</text>
 <text x="68.6" y="1.1" font-size="11.6" font-family="Helvetica, Arial, sans-serif" font-weight="bold" fill="#1a1a2e" text-anchor="start" dy="0.36em" transform="rotate(-90 68.6 1.1)" stroke="#ffffff" stroke-width="3.8" paint-order="stroke" stroke-linejoin="round">GDO0</text>
@@ -186,53 +186,53 @@
 <text x="169.4" y="214.7" font-size="10.4" font-family="Helvetica, Arial, sans-serif" font-weight="bold" fill="#1a1a2e" text-anchor="end" dy="0.36em" stroke="#ffffff" stroke-width="3.8" paint-order="stroke" stroke-linejoin="round">21</text>
 <text x="28.6" y="214.7" font-size="10.4" font-family="Helvetica, Arial, sans-serif" font-weight="bold" fill="#1a1a2e" text-anchor="start" dy="0.36em" stroke="#ffffff" stroke-width="3.8" paint-order="stroke" stroke-linejoin="round">0</text>
 </g>
-<text x="88.0" y="1066.1" font-size="13.2" font-family="Helvetica, Arial, sans-serif" font-weight="bold" fill="#1a1a2e" dy="0.36em">Wire</text>
-<text x="220.0" y="1066.1" font-size="13.2" font-family="Helvetica, Arial, sans-serif" font-weight="bold" fill="#1a1a2e" dy="0.36em">SuperMini</text>
-<text x="352.0" y="1066.1" font-size="13.2" font-family="Helvetica, Arial, sans-serif" font-weight="bold" fill="#1a1a2e" dy="0.36em">E07-M1101D</text>
-<text x="528.0" y="1066.1" font-size="13.2" font-family="Helvetica, Arial, sans-serif" font-weight="bold" fill="#1a1a2e" dy="0.36em">Signal</text>
-<rect x="88.0" y="1081.5" width="44.0" height="13.2" fill="#7b4a1e" stroke="#1a1a2e" stroke-width="1.1" rx="5.5"/>
-<text x="143.0" y="1088.1" font-size="12.1" font-family="Helvetica, Arial, sans-serif" fill="#1a1a2e" dy="0.36em">brown</text>
-<text x="220.0" y="1088.1" font-size="12.1" font-family="Helvetica, Arial, sans-serif" fill="#1a1a2e" dy="0.36em">G</text>
-<text x="352.0" y="1088.1" font-size="12.1" font-family="Helvetica, Arial, sans-serif" fill="#1a1a2e" dy="0.36em">GND</text>
-<text x="528.0" y="1088.1" font-size="12.1" font-family="Helvetica, Arial, sans-serif" fill="#1a1a2e" dy="0.36em">ground</text>
-<rect x="88.0" y="1103.5" width="44.0" height="13.2" fill="#d81e1e" stroke="#1a1a2e" stroke-width="1.1" rx="5.5"/>
-<text x="143.0" y="1110.1" font-size="12.1" font-family="Helvetica, Arial, sans-serif" fill="#1a1a2e" dy="0.36em">red</text>
-<text x="220.0" y="1110.1" font-size="12.1" font-family="Helvetica, Arial, sans-serif" fill="#1a1a2e" dy="0.36em">3V3</text>
-<text x="352.0" y="1110.1" font-size="12.1" font-family="Helvetica, Arial, sans-serif" fill="#1a1a2e" dy="0.36em">VCC</text>
-<text x="528.0" y="1110.1" font-size="12.1" font-family="Helvetica, Arial, sans-serif" fill="#1a1a2e" dy="0.36em">3.3 V</text>
-<rect x="88.0" y="1125.5" width="44.0" height="13.2" fill="#f28c1e" stroke="#1a1a2e" stroke-width="1.1" rx="5.5"/>
-<text x="143.0" y="1132.1" font-size="12.1" font-family="Helvetica, Arial, sans-serif" fill="#1a1a2e" dy="0.36em">orange</text>
-<text x="220.0" y="1132.1" font-size="12.1" font-family="Helvetica, Arial, sans-serif" fill="#1a1a2e" dy="0.36em">5 (GPIO5)</text>
-<text x="352.0" y="1132.1" font-size="12.1" font-family="Helvetica, Arial, sans-serif" fill="#1a1a2e" dy="0.36em">(none)</text>
-<text x="528.0" y="1132.1" font-size="12.1" font-family="Helvetica, Arial, sans-serif" fill="#1a1a2e" dy="0.36em">radio-type strap: to GPIO4 for the Ra-02, open for a CC1101</text>
-<rect x="88.0" y="1147.5" width="44.0" height="13.2" fill="#f2d21e" stroke="#1a1a2e" stroke-width="1.1" rx="5.5"/>
-<text x="143.0" y="1154.1" font-size="12.1" font-family="Helvetica, Arial, sans-serif" fill="#1a1a2e" dy="0.36em">yellow</text>
-<text x="220.0" y="1154.1" font-size="12.1" font-family="Helvetica, Arial, sans-serif" fill="#1a1a2e" dy="0.36em">6 (GPIO6)</text>
-<text x="352.0" y="1154.1" font-size="12.1" font-family="Helvetica, Arial, sans-serif" fill="#1a1a2e" dy="0.36em">GDO2</text>
-<text x="528.0" y="1154.1" font-size="12.1" font-family="Helvetica, Arial, sans-serif" fill="#1a1a2e" dy="0.36em">second IRQ (GDO2 / DIO0)</text>
-<rect x="88.0" y="1169.5" width="44.0" height="13.2" fill="#2e9e4f" stroke="#1a1a2e" stroke-width="1.1" rx="5.5"/>
-<text x="143.0" y="1176.1" font-size="12.1" font-family="Helvetica, Arial, sans-serif" fill="#1a1a2e" dy="0.36em">green</text>
-<text x="220.0" y="1176.1" font-size="12.1" font-family="Helvetica, Arial, sans-serif" fill="#1a1a2e" dy="0.36em">7 (GPIO7)</text>
-<text x="352.0" y="1176.1" font-size="12.1" font-family="Helvetica, Arial, sans-serif" fill="#1a1a2e" dy="0.36em">MISO</text>
-<text x="528.0" y="1176.1" font-size="12.1" font-family="Helvetica, Arial, sans-serif" fill="#1a1a2e" dy="0.36em">SPI MISO</text>
-<rect x="88.0" y="1191.5" width="44.0" height="13.2" fill="#2464c8" stroke="#1a1a2e" stroke-width="1.1" rx="5.5"/>
-<text x="143.0" y="1198.1" font-size="12.1" font-family="Helvetica, Arial, sans-serif" fill="#1a1a2e" dy="0.36em">blue</text>
-<text x="220.0" y="1198.1" font-size="12.1" font-family="Helvetica, Arial, sans-serif" fill="#1a1a2e" dy="0.36em">8 (GPIO8)</text>
-<text x="352.0" y="1198.1" font-size="12.1" font-family="Helvetica, Arial, sans-serif" fill="#1a1a2e" dy="0.36em">MOSI</text>
-<text x="528.0" y="1198.1" font-size="12.1" font-family="Helvetica, Arial, sans-serif" fill="#1a1a2e" dy="0.36em">SPI MOSI</text>
-<rect x="88.0" y="1213.5" width="44.0" height="13.2" fill="#7d3fa8" stroke="#1a1a2e" stroke-width="1.1" rx="5.5"/>
-<text x="143.0" y="1220.1" font-size="12.1" font-family="Helvetica, Arial, sans-serif" fill="#1a1a2e" dy="0.36em">purple</text>
-<text x="220.0" y="1220.1" font-size="12.1" font-family="Helvetica, Arial, sans-serif" fill="#1a1a2e" dy="0.36em">9 (GPIO9)</text>
-<text x="352.0" y="1220.1" font-size="12.1" font-family="Helvetica, Arial, sans-serif" fill="#1a1a2e" dy="0.36em">SCK</text>
-<text x="528.0" y="1220.1" font-size="12.1" font-family="Helvetica, Arial, sans-serif" fill="#1a1a2e" dy="0.36em">SPI clock</text>
-<rect x="88.0" y="1235.5" width="44.0" height="13.2" fill="#8c8c8c" stroke="#1a1a2e" stroke-width="1.1" rx="5.5"/>
-<text x="143.0" y="1242.1" font-size="12.1" font-family="Helvetica, Arial, sans-serif" fill="#1a1a2e" dy="0.36em">grey</text>
-<text x="220.0" y="1242.1" font-size="12.1" font-family="Helvetica, Arial, sans-serif" fill="#1a1a2e" dy="0.36em">10 (GPIO10)</text>
-<text x="352.0" y="1242.1" font-size="12.1" font-family="Helvetica, Arial, sans-serif" fill="#1a1a2e" dy="0.36em">GDO0</text>
-<text x="528.0" y="1242.1" font-size="12.1" font-family="Helvetica, Arial, sans-serif" fill="#1a1a2e" dy="0.36em">IRQ (CC1101 GDO0) / reset (Ra-02 RST)</text>
-<rect x="88.0" y="1257.5" width="44.0" height="13.2" fill="#f4f4f4" stroke="#1a1a2e" stroke-width="1.1" rx="5.5"/>
-<text x="143.0" y="1264.1" font-size="12.1" font-family="Helvetica, Arial, sans-serif" fill="#1a1a2e" dy="0.36em">white</text>
-<text x="220.0" y="1264.1" font-size="12.1" font-family="Helvetica, Arial, sans-serif" fill="#1a1a2e" dy="0.36em">0 (GPIO0)</text>
-<text x="352.0" y="1264.1" font-size="12.1" font-family="Helvetica, Arial, sans-serif" fill="#1a1a2e" dy="0.36em">CSN</text>
-<text x="528.0" y="1264.1" font-size="12.1" font-family="Helvetica, Arial, sans-serif" fill="#1a1a2e" dy="0.36em">SPI chip select</text>
+<text x="88.0" y="1046.3" font-size="13.2" font-family="Helvetica, Arial, sans-serif" font-weight="bold" fill="#1a1a2e" dy="0.36em">Wire</text>
+<text x="220.0" y="1046.3" font-size="13.2" font-family="Helvetica, Arial, sans-serif" font-weight="bold" fill="#1a1a2e" dy="0.36em">SuperMini</text>
+<text x="352.0" y="1046.3" font-size="13.2" font-family="Helvetica, Arial, sans-serif" font-weight="bold" fill="#1a1a2e" dy="0.36em">E07-M1101D</text>
+<text x="528.0" y="1046.3" font-size="13.2" font-family="Helvetica, Arial, sans-serif" font-weight="bold" fill="#1a1a2e" dy="0.36em">Signal</text>
+<rect x="88.0" y="1061.7" width="44.0" height="13.2" fill="#7b4a1e" stroke="#1a1a2e" stroke-width="1.1" rx="5.5"/>
+<text x="143.0" y="1068.3" font-size="12.1" font-family="Helvetica, Arial, sans-serif" fill="#1a1a2e" dy="0.36em">brown</text>
+<text x="220.0" y="1068.3" font-size="12.1" font-family="Helvetica, Arial, sans-serif" fill="#1a1a2e" dy="0.36em">G</text>
+<text x="352.0" y="1068.3" font-size="12.1" font-family="Helvetica, Arial, sans-serif" fill="#1a1a2e" dy="0.36em">GND</text>
+<text x="528.0" y="1068.3" font-size="12.1" font-family="Helvetica, Arial, sans-serif" fill="#1a1a2e" dy="0.36em">ground</text>
+<rect x="88.0" y="1083.7" width="44.0" height="13.2" fill="#d81e1e" stroke="#1a1a2e" stroke-width="1.1" rx="5.5"/>
+<text x="143.0" y="1090.3" font-size="12.1" font-family="Helvetica, Arial, sans-serif" fill="#1a1a2e" dy="0.36em">red</text>
+<text x="220.0" y="1090.3" font-size="12.1" font-family="Helvetica, Arial, sans-serif" fill="#1a1a2e" dy="0.36em">3V3</text>
+<text x="352.0" y="1090.3" font-size="12.1" font-family="Helvetica, Arial, sans-serif" fill="#1a1a2e" dy="0.36em">VCC</text>
+<text x="528.0" y="1090.3" font-size="12.1" font-family="Helvetica, Arial, sans-serif" fill="#1a1a2e" dy="0.36em">3.3 V</text>
+<rect x="88.0" y="1105.7" width="44.0" height="13.2" fill="#8c8c8c" stroke="#1a1a2e" stroke-width="1.1" rx="5.5"/>
+<text x="143.0" y="1112.3" font-size="12.1" font-family="Helvetica, Arial, sans-serif" fill="#1a1a2e" dy="0.36em">grey</text>
+<text x="220.0" y="1112.3" font-size="12.1" font-family="Helvetica, Arial, sans-serif" fill="#1a1a2e" dy="0.36em">10 (GPIO10)</text>
+<text x="352.0" y="1112.3" font-size="12.1" font-family="Helvetica, Arial, sans-serif" fill="#1a1a2e" dy="0.36em">GDO0</text>
+<text x="528.0" y="1112.3" font-size="12.1" font-family="Helvetica, Arial, sans-serif" fill="#1a1a2e" dy="0.36em">IRQ / packet (CC1101 GDO0)</text>
+<rect x="88.0" y="1127.7" width="44.0" height="13.2" fill="#7d3fa8" stroke="#1a1a2e" stroke-width="1.1" rx="5.5"/>
+<text x="143.0" y="1134.3" font-size="12.1" font-family="Helvetica, Arial, sans-serif" fill="#1a1a2e" dy="0.36em">purple</text>
+<text x="220.0" y="1134.3" font-size="12.1" font-family="Helvetica, Arial, sans-serif" fill="#1a1a2e" dy="0.36em">9 (GPIO9)</text>
+<text x="352.0" y="1134.3" font-size="12.1" font-family="Helvetica, Arial, sans-serif" fill="#1a1a2e" dy="0.36em">CSN</text>
+<text x="528.0" y="1134.3" font-size="12.1" font-family="Helvetica, Arial, sans-serif" fill="#1a1a2e" dy="0.36em">SPI chip select</text>
+<rect x="88.0" y="1149.7" width="44.0" height="13.2" fill="#1a1a1a" stroke="#1a1a2e" stroke-width="1.1" rx="5.5"/>
+<text x="143.0" y="1156.3" font-size="12.1" font-family="Helvetica, Arial, sans-serif" fill="#1a1a2e" dy="0.36em">black</text>
+<text x="220.0" y="1156.3" font-size="12.1" font-family="Helvetica, Arial, sans-serif" fill="#1a1a2e" dy="0.36em">3 (GPIO3)</text>
+<text x="352.0" y="1156.3" font-size="12.1" font-family="Helvetica, Arial, sans-serif" fill="#1a1a2e" dy="0.36em">SCK</text>
+<text x="528.0" y="1156.3" font-size="12.1" font-family="Helvetica, Arial, sans-serif" fill="#1a1a2e" dy="0.36em">SPI clock</text>
+<rect x="88.0" y="1171.7" width="44.0" height="13.2" fill="#f4f4f4" stroke="#1a1a2e" stroke-width="1.1" rx="5.5"/>
+<text x="143.0" y="1178.3" font-size="12.1" font-family="Helvetica, Arial, sans-serif" fill="#1a1a2e" dy="0.36em">white</text>
+<text x="220.0" y="1178.3" font-size="12.1" font-family="Helvetica, Arial, sans-serif" fill="#1a1a2e" dy="0.36em">4 (GPIO4)</text>
+<text x="352.0" y="1178.3" font-size="12.1" font-family="Helvetica, Arial, sans-serif" fill="#1a1a2e" dy="0.36em">MOSI</text>
+<text x="528.0" y="1178.3" font-size="12.1" font-family="Helvetica, Arial, sans-serif" fill="#1a1a2e" dy="0.36em">SPI MOSI</text>
+<rect x="88.0" y="1193.7" width="44.0" height="13.2" fill="#2e9e4f" stroke="#1a1a2e" stroke-width="1.1" rx="5.5"/>
+<text x="143.0" y="1200.3" font-size="12.1" font-family="Helvetica, Arial, sans-serif" fill="#1a1a2e" dy="0.36em">green</text>
+<text x="220.0" y="1200.3" font-size="12.1" font-family="Helvetica, Arial, sans-serif" fill="#1a1a2e" dy="0.36em">7 (GPIO7)</text>
+<text x="352.0" y="1200.3" font-size="12.1" font-family="Helvetica, Arial, sans-serif" fill="#1a1a2e" dy="0.36em">MISO</text>
+<text x="528.0" y="1200.3" font-size="12.1" font-family="Helvetica, Arial, sans-serif" fill="#1a1a2e" dy="0.36em">SPI MISO</text>
+<rect x="88.0" y="1215.7" width="44.0" height="13.2" fill="#f2d21e" stroke="#1a1a2e" stroke-width="1.1" rx="5.5"/>
+<text x="143.0" y="1222.3" font-size="12.1" font-family="Helvetica, Arial, sans-serif" fill="#1a1a2e" dy="0.36em">yellow</text>
+<text x="220.0" y="1222.3" font-size="12.1" font-family="Helvetica, Arial, sans-serif" fill="#1a1a2e" dy="0.36em">6 (GPIO6)</text>
+<text x="352.0" y="1222.3" font-size="12.1" font-family="Helvetica, Arial, sans-serif" fill="#1a1a2e" dy="0.36em">GDO2</text>
+<text x="528.0" y="1222.3" font-size="12.1" font-family="Helvetica, Arial, sans-serif" fill="#1a1a2e" dy="0.36em">second IRQ (CC1101 GDO2)</text>
+<rect x="88.0" y="1237.7" width="44.0" height="13.2" fill="#f28c1e" stroke="#1a1a2e" stroke-width="1.1" rx="5.5"/>
+<text x="143.0" y="1244.3" font-size="12.1" font-family="Helvetica, Arial, sans-serif" fill="#1a1a2e" dy="0.36em">orange</text>
+<text x="220.0" y="1244.3" font-size="12.1" font-family="Helvetica, Arial, sans-serif" fill="#1a1a2e" dy="0.36em">5 (GPIO5)</text>
+<text x="352.0" y="1244.3" font-size="12.1" font-family="Helvetica, Arial, sans-serif" fill="#1a1a2e" dy="0.36em">(none)</text>
+<text x="528.0" y="1244.3" font-size="12.1" font-family="Helvetica, Arial, sans-serif" fill="#1a1a2e" dy="0.36em">radio-type strap: to GPIO1 for the Ra-02, open for a CC1101</text>
 </svg>

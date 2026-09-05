@@ -7,23 +7,27 @@
 using the socket adapter's GPIO assignment, as docs/images/wiring-<radio>.svg.
 
 Wire colours follow the rainbow ribbon order the user asked for (brown GND,
-red 3V3, then orange..grey for GPIO5..GPIO10); the chip select on GPIO0 gets
-the next colour, white.  GPIO5 is the radio-type strap: for the Ra-02
-breakout it goes to GPIO4, which the firmware drives low while it reads the
-strap (the SuperMini's only GND pin is taken by the brown wire); for a
+red 3V3, orange GPIO5, yellow GPIO6, green GPIO7, purple GPIO9, grey GPIO10);
+the two power-row pins the socket uses, GPIO4 and GPIO3, take the ribbon's
+remaining colours, white and black.  GPIO5 is the radio-type strap: for the
+Ra-02 breakout it goes to GPIO1, which the firmware drives low while it reads
+the strap (the SuperMini's only GND pin is taken by the brown wire); for a
 CC1101 board it is left open.
 
 Boards: the blue E07-M1101D and the green D-Sun CC1101 boards, and the Ra-02
-breakout.  The E07 and the Ra-02 share a header layout (the socket adapter's);
-the D-Sun's signal columns are permuted, so its wires cannot all nest and a
-few cross.
+breakout.  All three plug into the same socket positions; only the names of
+the signals at each position differ (the firmware uses a pin map per board),
+so the three diagrams share one wiring layout.
 
 Both boards are drawn from the back (deadbug style, the way they sit with
 header pins pointing at you): the SuperMini top left, USB-C up, and the
 radio board lower right with its header edge up.  Wires from the SuperMini's
 GPIO column (on the right in this view) turn down the gap and along lanes
-into the header from above; GND, 3V3 and GPIO0 come down the SuperMini's
-left side and into the header's first column from the left.
+into the header from above; GND, 3V3, GPIO4 and GPIO3 come down the
+SuperMini's left side.  GND and 3V3 enter the header's first column from the
+left; GPIO4 runs along the back of the radio board below the header and up
+into its pin; GPIO3 takes the lowest lane and drops into its pin, crossing
+the two wires of the second column, which cannot be avoided.
 """
 
 from __future__ import annotations
@@ -40,35 +44,37 @@ from draw_pinouts import INK, PIN, S, View, dsun_views, e07_views, ra02_views  #
 
 OUT = pathlib.Path(__file__).resolve().parent.parent / "docs" / "images"
 
-# net -> (colour name, fill, SuperMini pin name)
+# SuperMini pin -> (colour name, fill).  Keyed by the GPIO number as printed
+# on the SuperMini ("G" and "3V3" for the supplies).
 WIRES = {
-    "GND": ("brown", "#7b4a1e", "G"),
-    "+3V3": ("red", "#d81e1e", "3V3"),
-    "RADIO_ID": ("orange", "#f28c1e", "5"),
-    "GDO2_DIO0": ("yellow", "#f2d21e", "6"),
-    "MISO": ("green", "#2e9e4f", "7"),
-    "MOSI": ("blue", "#2464c8", "8"),
-    "SCK": ("purple", "#7d3fa8", "9"),
-    "GDO0_RST": ("grey", "#8c8c8c", "10"),
-    "CSN_NSS": ("white", "#f4f4f4", "0"),
+    "G": ("brown", "#7b4a1e"),
+    "3V3": ("red", "#d81e1e"),
+    "5": ("orange", "#f28c1e"),
+    "6": ("yellow", "#f2d21e"),
+    "7": ("green", "#2e9e4f"),
+    "9": ("purple", "#7d3fa8"),
+    "10": ("grey", "#8c8c8c"),
+    "4": ("white", "#f4f4f4"),
+    "3": ("black", "#1a1a1a"),
 }
 # SuperMini columns, top to bottom (front view, USB-C up).
 SM_LEFT = ["5", "6", "7", "8", "9", "10", "20", "21"]
 SM_RIGHT = ["5V", "G", "3V3", "4", "3", "2", "1", "0"]
-# Radio header position (front view) -> net, numbered like the E07-M1101D:
-# pin 1 right of the outer row, even pins in the inner row, columns to -x.
-E07_NETS = {1: "GND", 2: "+3V3", 3: "GDO0_RST", 4: "CSN_NSS", 5: "SCK", 6: "MOSI", 7: "MISO", 8: "GDO2_DIO0"}
-DSUN_NETS = {1: "GND", 2: "+3V3", 3: "MOSI", 4: "SCK", 5: "MISO", 6: "GDO2_DIO0", 7: "GDO0_RST", 8: "CSN_NSS"}
-# Wire plans for the GPIO-column nets: (net, gap lane index, horizontal lane
-# index, side of the inner-row drop).  Lanes are numbered from the SuperMini
-# outwards / from the top down; the E07 layout nests without crossings, the
-# D-Sun's cannot (GPIO10 goes to the far column) so it is ordered by pin.
-E07_PLAN = [("GDO2_DIO0", 4, 0, +1), ("MISO", 3, 1, +1), ("MOSI", 2, 2, +1), ("SCK", 1, 3, +1), ("GDO0_RST", 0, 4, +1)]
-DSUN_PLAN = [("GDO2_DIO0", 4, 0, +1), ("MISO", 3, 1, +1), ("MOSI", 2, 2, +1), ("SCK", 1, 3, -1), ("GDO0_RST", 0, 4, +1)]
-RADIOS = {  # name -> (title, radio column heading, nets by E07-style pin number, plan, chip-select route)
-    "cc1101": ("blue CC1101 E07-M1101D-SMA", "E07-M1101D", E07_NETS, E07_PLAN, "lane"),
-    "cc1101-dsun": ("green D-Sun CC1101", "D-Sun CC1101", DSUN_NETS, DSUN_PLAN, "below"),
-    "ra02": ("SX1278 Ra-02 breakout", "Ra-02 breakout", E07_NETS, E07_PLAN, "lane"),
+# Socket position (numbered like the E07-M1101D: pin 1 right of the outer
+# row seen from the front, even pins in the inner row, columns to -x) ->
+# SuperMini pin, as on the socket adapter.
+POS_PIN = {1: "G", 2: "3V3", 3: "10", 4: "9", 5: "3", 6: "4", 7: "7", 8: "6"}
+# ... and -> the signal name printed on each radio board.
+E07_NAMES = {1: "GND", 2: "VCC", 3: "GDO0", 4: "CSN", 5: "SCK", 6: "MOSI", 7: "MISO", 8: "GDO2"}
+DSUN_NAMES = {1: "GND", 2: "VCC", 3: "MOSI", 4: "SCK", 5: "MISO", 6: "GDO2", 7: "GDO0", 8: "CSN"}
+RA02_NAMES = {1: "GND", 2: "3V3", 3: "RST", 4: "NSS", 5: "SCK", 6: "MOSI", 7: "MISO", 8: "DIO0"}
+SIGNAL = {"GND": "ground", "VCC": "3.3 V", "3V3": "3.3 V", "MOSI": "SPI MOSI", "MISO": "SPI MISO", "SCK": "SPI clock",
+          "CSN": "SPI chip select", "NSS": "SPI chip select", "GDO0": "IRQ / packet (CC1101 GDO0)", "GDO2": "second IRQ (CC1101 GDO2)",
+          "RST": "reset (drive as an output)", "DIO0": "IRQ / packet (SX1278 DIO0)"}
+RADIOS = {  # name -> (title, radio column heading, signal name at each socket position)
+    "cc1101": ("blue CC1101 E07-M1101D-SMA", "E07-M1101D", E07_NAMES),
+    "cc1101-dsun": ("green D-Sun CC1101", "D-Sun CC1101", DSUN_NAMES),
+    "ra02": ("SX1278 Ra-02 breakout", "Ra-02 breakout", RA02_NAMES),
 }
 
 
@@ -113,42 +119,33 @@ LANE = 1.8  # mm between parallel wires
 
 
 def draw(radio: str) -> None:
-    title, radio_col, nets, plan, csn_route = RADIOS[radio]
-    net_pin = {net: n for n, net in nets.items()}
-    # Header pin positions in the back view (mirrored x) and pin names.
+    title, radio_col, names = RADIOS[radio]
+    # Header pin positions in the back view (mirrored x).
     if radio == "cc1101":
         board = e07_views()[1]
         W = cc.BOARD_W
         hdr = {n: (W - (W - cc.HDR_COL_X - ((n - 1) // 2) * cc.PITCH), cc.HDR_ROW_Y + ((n - 1) % 2) * cc.PITCH) for n in range(1, 9)}
-        names = cc.PIN_NAMES
     elif radio == "cc1101-dsun":
         board = dsun_views()[1]
         W = ds.BOARD_W
         hdr = {n: (W - (W - ds.HDR_COL_X - ((n - 1) // 2) * ds.PITCH), ds.HDR_ROW_Y + ((n - 1) % 2) * ds.PITCH) for n in range(1, 9)}
-        names = ds.PIN_NAMES
     else:
         board = ra02_views()[1]
         pos = {n: (rb.BOARD_W - rb.hdr_x(n), rb.hdr_y(n)) for n in range(1, 9)}
         remap = {1: 7, 2: 8, 3: 5, 4: 6, 5: 3, 6: 4, 7: 1, 8: 2}
         hdr = {n: pos[remap[n]] for n in range(1, 9)}
-        names = {str(n): rb.HDR_LABELS[str(remap[n])] for n in range(1, 9)}
     smv, sm_pins = supermini_view()
 
     # Layout (mm).  SuperMini top left, back view: GPIO column on the right.
     # Radio board lower right, back view with the header up: its GND/VCC
-    # column is the one nearest the gap.  GPIO wires leave to the right, turn
-    # down the gap and run along lanes between the SuperMini's bottom and the
-    # header; GND and 3V3 go down the SuperMini's left side and straight into
-    # their pins from the left; GPIO0 the same way via the lowest lane (or,
-    # where its pin is in the far column, along the back of the radio board
-    # below the header and up into the pin).
+    # column is the one nearest the gap.
     sx, sy = 16.0, 14.0
     sm_bot = sy + smv.h
     gap_x = [sx + smv.w + 3.5 + i * LANE for i in range(5)]  # vertical lanes in the gap, innermost first
-    lane_y = [sm_bot + 2.0 + k * LANE for k in range(6)]  # horizontal lanes, highest first
+    lane_y = [sm_bot + 2.0 + k * LANE for k in range(5)]  # horizontal lanes, highest first
     bx = gap_x[-1] + 5.0
     by = lane_y[-1] + 2.5 - cc.HDR_ROW_Y
-    left_x = [sx - 2.5 - i * LANE for i in range(3)]  # left-side lanes: GPIO0, 3V3, GND
+    left_x = [sx - 2.5 - i * LANE for i in range(4)]  # left-side lanes, innermost first: GPIO4, GPIO3, 3V3, GND
     total_w = max(bx + board.w + 8.0, 102.0)  # room for the legend's signal column
     hang = 4.0 if radio == "ra02" else 14.5  # the SMA jack and size caption below the outline
     legend_y = by + board.h + hang + 4.0
@@ -168,60 +165,63 @@ def draw(radio: str) -> None:
 
     half = cc.PITCH / 2 * S
     wires: list[tuple[str, list[tuple[float, float]]]] = []
-    for net, gi, li, side in plan:
-        n = net_pin[net]
-        fill, pin = WIRES[net][1], WIRES[net][2]
+    # GPIO column: positions 7/8 (column D, from the top pins GPIO7/6) take
+    # the outer gap lanes and the top horizontal lanes, positions 3/4 (column
+    # B, GPIO10/9) the inner and lower ones, so none of them cross.  Inner-row
+    # pins are entered by a drop just right of their column.
+    for n, gi, li in ((8, 4, 0), (7, 3, 1), (4, 1, 2), (3, 0, 3)):
+        pin = POS_PIN[n]
         (smx, smy), (hx, hy) = sp(pin), hp(n)
         gx, ly = gap_x[gi] * S, lane_y[li] * S
-        if n % 2:  # outer row: straight down into the pin
+        if n % 2:
             pts = [(smx, smy), (gx, smy), (gx, ly), (hx, ly), (hx, hy)]
-        else:  # inner row: drop beside the column, then sideways into the pin
-            pts = [(smx, smy), (gx, smy), (gx, ly), (hx + side * half, ly), (hx + side * half, hy), (hx, hy)]
-        wires.append((fill, pts))
-    # Left column: GND and 3V3 straight into the header's first column from
-    # the left (they cross once, unavoidably).
-    for net, lx_i in (("GND", 2), ("+3V3", 1)):
-        fill, pin = WIRES[net][1], WIRES[net][2]
-        (smx, smy), (hx, hy) = sp(pin), hp(net_pin[net])
-        wires.append((fill, [(smx, smy), (left_x[lx_i] * S, smy), (left_x[lx_i] * S, hy), (hx, hy)]))
-    # GPIO0 (chip select).
-    fill, pin = WIRES["CSN_NSS"][1], WIRES["CSN_NSS"][2]
-    (smx, smy), (hx, hy) = sp(pin), hp(net_pin["CSN_NSS"])
-    if csn_route == "lane":  # lowest lane, drop between the first two columns
-        ly = lane_y[5] * S
-        wires.append((fill, [(smx, smy), (left_x[0] * S, smy), (left_x[0] * S, ly), (hx - half, ly), (hx - half, hy), (hx, hy)]))
-    else:  # along the back of the radio board just below the header, up into the pin
-        ly = hy + 3.0 * S
-        wires.append((fill, [(smx, smy), (left_x[0] * S, smy), (left_x[0] * S, ly), (hx, ly), (hx, hy)]))
-    # Strap: GPIO5 over the top of the SuperMini to GPIO4 (Ra-02), or a free end (CC1101).
-    fill = WIRES["RADIO_ID"][1]
+        else:
+            pts = [(smx, smy), (gx, smy), (gx, ly), (hx + half, ly), (hx + half, hy), (hx, hy)]
+        wires.append((WIRES[pin][1], pts))
+    # Left column.  GND and 3V3 straight into the first column from the left
+    # (they cross once, unavoidably).
+    for n, lx_i in ((1, 3), (2, 2)):
+        pin = POS_PIN[n]
+        (smx, smy), (hx, hy) = sp(pin), hp(n)
+        wires.append((WIRES[pin][1], [(smx, smy), (left_x[lx_i] * S, smy), (left_x[lx_i] * S, hy), (hx, hy)]))
+    # GPIO4 -> position 6 (column C, inner row): along the back of the radio
+    # board just below the header, then up into the pin.
+    (smx, smy), (hx, hy) = sp("4"), hp(6)
+    ly = hy + 3.0 * S
+    wires.append((WIRES["4"][1], [(smx, smy), (left_x[0] * S, smy), (left_x[0] * S, ly), (hx, ly), (hx, hy)]))
+    # GPIO3 -> position 5 (column C, outer row): the lowest lane and a drop
+    # from above, across column B's two drops.
+    (smx, smy), (hx, hy) = sp("3"), hp(5)
+    ly = lane_y[4] * S
+    wires.append((WIRES["3"][1], [(smx, smy), (left_x[1] * S, smy), (left_x[1] * S, ly), (hx, ly), (hx, hy)]))
+    # Strap: GPIO5 over the top of the SuperMini to GPIO1 (Ra-02), or a free end (CC1101).
     (smx, smy) = sp("5")
     if radio == "ra02":
-        gx, gy = sp("4")
+        gx, gy = sp("1")
         over = (sy - 3.0) * S
-        wires.append((fill, [(smx, smy), (smx, over), (gx + 5.5 * S, over), (gx + 5.5 * S, gy), (gx, gy)]))
+        wires.append((WIRES["5"][1], [(smx, smy), (smx, over), (gx + 4.3 * S, over), (gx + 4.3 * S, gy), (gx, gy)]))
     else:
-        wires.append((fill, [(smx, smy), (gap_x[0] * S, smy), (gap_x[0] * S, smy - 3.5 * S)]))
+        wires.append((WIRES["5"][1], [(smx, smy), (gap_x[0] * S, smy), (gap_x[0] * S, smy - 3.5 * S)]))
     for fill, pts in wires:
         d = rounded_path(pts, 1.6 * S)
-        parts.append(f'<path d="{d}" fill="none" stroke="{INK}" stroke-width="{1.3 * S:.1f}" stroke-linecap="round"/>')
+        outline = "#9a9a9a" if fill == "#1a1a1a" else INK  # the black wire gets a light edge
+        parts.append(f'<path d="{d}" fill="none" stroke="{outline}" stroke-width="{1.3 * S:.1f}" stroke-linecap="round"/>')
         parts.append(f'<path d="{d}" fill="none" stroke="{fill}" stroke-width="{0.85 * S:.1f}" stroke-linecap="round"/>')
         for x, y in (pts[0], pts[-1]):  # crimp ends
-            parts.append(f'<circle cx="{x:.1f}" cy="{y:.1f}" r="{0.8 * S:.1f}" fill="{fill}" stroke="{INK}" stroke-width="{0.15 * S:.1f}"/>')
+            parts.append(f'<circle cx="{x:.1f}" cy="{y:.1f}" r="{0.8 * S:.1f}" fill="{fill}" stroke="{outline}" stroke-width="{0.15 * S:.1f}"/>')
     note_x = (gap_x[0] + 1.2) * S
     if radio == "ra02":
-        parts.append(f'<text x="{(sx + smv.w / 2) * S:.1f}" y="{(sy - 4.6) * S:.1f}" font-size="{0.95 * S:.1f}" font-family="Helvetica, Arial, sans-serif" fill="{INK}" text-anchor="middle" dy="0.36em">GPIO5 strap to GPIO4 (firmware drives GPIO4 low to read it)</text>')
+        parts.append(f'<text x="{(sx + smv.w / 2) * S:.1f}" y="{(sy - 4.6) * S:.1f}" font-size="{0.95 * S:.1f}" font-family="Helvetica, Arial, sans-serif" fill="{INK}" text-anchor="middle" dy="0.36em">GPIO5 strap to GPIO1 (firmware drives GPIO1 low to read it)</text>')
     else:
         parts.append(f'<text x="{note_x:.1f}" y="{smy - 5.0 * S:.1f}" font-size="{0.95 * S:.1f}" font-family="Helvetica, Arial, sans-serif" fill="{INK}" text-anchor="middle" dy="0.36em">GPIO5: leave open</text>')
     # The header's pin names again, on top of the wires (with a halo).
     overlay = View(board.w, board.h, False)
     for n in range(1, 9):
         hx, hy = hdr[n]
-        name = names[str(n)]
         outer = n % 2 == 1
-        overlay.text(hx, hy + (-1.5 if outer else 1.5), name, size=1.05, anchor="start" if outer else "end", angle=-90, weight="bold", halo=True)
+        overlay.text(hx, hy + (-1.5 if outer else 1.5), names[n], size=1.05, anchor="start" if outer else "end", angle=-90, weight="bold", halo=True)
     parts.append(overlay.svg_group(bx * S, by * S, "", 0, 0))
-    # ... and the SuperMini's pin names (the strap wire runs over two of them).
+    # ... and the SuperMini's pin names (the strap wire runs over some of them).
     overlay = View(smv.w, smv.h, True)
     for i in range(8):
         y = sm.PIN_TOP_Y + i * sm.PITCH
@@ -229,23 +229,21 @@ def draw(radio: str) -> None:
         overlay.text(smv.w - 2.6, y, SM_RIGHT[i], size=0.95, anchor="start", weight="bold", halo=True)
     parts.append(overlay.svg_group(sx * S, sy * S, "", 0, 0))
 
-    # Legend
+    # Legend: one row per wire, in socket-position order plus the strap.
     ly0 = legend_y
     margin = 8.0
-    parts.append(f'<text x="{margin * S:.1f}" y="{ly0 * S:.1f}" font-size="{1.2 * S:.1f}" font-family="Helvetica, Arial, sans-serif" font-weight="bold" fill="{INK}" dy="0.36em">Wire</text>')
     cols = ((margin + 12, "SuperMini"), (margin + 24, radio_col), (margin + 40, "Signal"))
+    parts.append(f'<text x="{margin * S:.1f}" y="{ly0 * S:.1f}" font-size="{1.2 * S:.1f}" font-family="Helvetica, Arial, sans-serif" font-weight="bold" fill="{INK}" dy="0.36em">Wire</text>')
     for x, t in cols:
         parts.append(f'<text x="{x * S:.1f}" y="{ly0 * S:.1f}" font-size="{1.2 * S:.1f}" font-family="Helvetica, Arial, sans-serif" font-weight="bold" fill="{INK}" dy="0.36em">{t}</text>')
-    radio_names = {net: names[str(n)] for n, net in nets.items()}
-    radio_names["RADIO_ID"] = "(to the SuperMini's GPIO4)" if radio == "ra02" else "(none)"
-    signal = {"GND": "ground", "+3V3": "3.3 V", "RADIO_ID": "radio-type strap: to GPIO4 for the Ra-02, open for a CC1101",
-              "GDO2_DIO0": "second IRQ (GDO2 / DIO0)", "MISO": "SPI MISO", "MOSI": "SPI MOSI", "SCK": "SPI clock",
-              "GDO0_RST": "IRQ (CC1101 GDO0) / reset (Ra-02 RST)", "CSN_NSS": "SPI chip select"}
-    for i, (net, (colour, fill, pin)) in enumerate(WIRES.items()):
+    rows = [(POS_PIN[n], names[n], SIGNAL[names[n]]) for n in range(1, 9)]
+    rows.append(("5", "(to the SuperMini's GPIO1)" if radio == "ra02" else "(none)", "radio-type strap: to GPIO1 for the Ra-02, open for a CC1101"))
+    for i, (pin, name, signal) in enumerate(rows):
+        colour, fill = WIRES[pin]
         y = ly0 + 2.0 + i * 2.0
         parts.append(f'<rect x="{margin * S:.1f}" y="{(y - 0.6) * S:.1f}" width="{4.0 * S:.1f}" height="{1.2 * S:.1f}" fill="{fill}" stroke="{INK}" stroke-width="{0.1 * S:.1f}" rx="{0.5 * S:.1f}"/>')
         parts.append(f'<text x="{(margin + 5.0) * S:.1f}" y="{y * S:.1f}" font-size="{1.1 * S:.1f}" font-family="Helvetica, Arial, sans-serif" fill="{INK}" dy="0.36em">{colour}</text>')
-        for (x, _), t in zip(cols, (f"{pin}" + ("" if pin in ("G", "3V3") else f" (GPIO{pin})"), radio_names[net], signal[net])):
+        for (x, _), t in zip(cols, (pin + ("" if pin in ("G", "3V3") else f" (GPIO{pin})"), name, signal)):
             parts.append(f'<text x="{x * S:.1f}" y="{y * S:.1f}" font-size="{1.1 * S:.1f}" font-family="Helvetica, Arial, sans-serif" fill="{INK}" dy="0.36em">{t}</text>')
     parts.append("</svg>")
     path = OUT / f"wiring-{radio}.svg"
