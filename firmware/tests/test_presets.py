@@ -65,10 +65,22 @@ def c_patable(L, pid):
     return [p[i] for i in range(n.value)]
 
 
+PKTCTRL0 = 0x08
+
+
 def test_fineoffset_preset_matches_cc1101_py(lib):
+    # Every modem/RF register must match the Pi's bench-proven cc1101.py config EXCEPT
+    # PKTCTRL0: the firmware runs infinite packet-length mode (0x02) where the reference
+    # uses fixed length (0x00). Fixed length can only complete one frame size; infinite
+    # length lets the driver drain a fixed count and receive WH51/WS69/WS85 with one config.
     m = load_cc1101_py(); r = Recorder()
     m.configure_fineoffset_fsk_rx(r, packet_length=25)        # the Pi's proven WS69 RX config (25-byte frames)
-    assert c_preset(lib, 0) == r.regs, "CC_PRESET_FINEOFFSET_FSK differs from cc1101.py"
+    fw = c_preset(lib, 0)
+    assert r.regs[PKTCTRL0] == 0x00, "reference cc1101.py should program fixed length"
+    assert fw[PKTCTRL0] == 0x02, "firmware Fine Offset preset must use CC1101 infinite length mode"
+    fw_rest = {a: v for a, v in fw.items() if a != PKTCTRL0}
+    ref_rest = {a: v for a, v in r.regs.items() if a != PKTCTRL0}
+    assert fw_rest == ref_rest, "CC_PRESET_FINEOFFSET_FSK diverges from cc1101.py outside PKTCTRL0"
 
 
 def test_ook_rx_preset_matches_cc1101_py(lib):

@@ -28,6 +28,8 @@ def build_radio_host():
     os.makedirs(BUILD, exist_ok=True)
     subprocess.run(["c++", "-std=c++14", "-Wall", "-Wextra", "-Werror", "-O1", "-I", FW, "-I", DEC,
                     "-o", RADIO_HOST, os.path.join(FW, "cc1101_radio.cpp"), os.path.join(FW, "cc1101_presets.c"),
+                    os.path.join(FW, "cc1101_weather.cpp"),
+                    os.path.join(DEC, "decode_fineoffset.c"), os.path.join(DEC, "decode_common.c"),
                     os.path.join(HERE, "radio_host.cpp")], check=True)
     return RADIO_HOST
 

@@ -57,10 +57,10 @@ def test_wh51_glitch_frame_is_rejected(lib):
     assert rc == -1   # RF_DECODE_BAD_MIC
 
 
-def test_wh51_decoded_inside_longer_fixed_length_read(lib):
-    # On the CC1101 the FSK RX preset uses a fixed 25-byte packet (WS69-sized).
-    # A 14-byte WH51 frame therefore arrives in the first 14 bytes of a longer
-    # buffer with trailing demodulated noise. The decoder must ignore the tail.
+def test_wh51_decoded_inside_longer_drained_read(lib):
+    # On the CC1101 the FSK RX preset runs infinite length mode and the driver drains a
+    # fixed 30 bytes, so a 14-byte WH51 frame arrives at the head of a longer buffer with
+    # trailing demodulated noise behind it. The decoder must ignore the tail.
     pk = load_packets("wh51_id0f5c54_2026-09-05.json")[0]
     frame = bytes.fromhex(pk["hex"])                 # 14 real bytes
     padded = frame + bytes.fromhex("DEADBEEFCAFE1122334455")  # +11 noise -> 25 bytes
