@@ -102,7 +102,7 @@ struct CcState {
   CcPins pins = { -1, -1, -1, -1, -1, -1 };             // resolved by the SPI probe
   bool present = false; uint8_t partnum = 0, version = 0;
   int preset = -1; uint32_t rx = 0, decoded = 0, tx = 0, reinit = 0, overflow = 0;
-  uint32_t bad_state_ms = 0; int last_rssi = -128;
+  uint32_t bad_state_ms = 0; int last_rssi = -128; uint8_t last_fifo = 0;  // FSK RX short-frame drain: last RX FIFO depth
   char last_key[RF_JSON_MAX] = {0}; uint32_t last_key_ms = 0; uint32_t repeats = 0;  // intra-node repeat collapsing (full-length key: a decoded event can be up to RF_JSON_MAX)
   uint32_t tx_window_ms = 0; uint8_t tx_in_window = 0;                        // rate limit
 };
@@ -411,24 +411,35 @@ static bool CcLoadPresetAndRx(int preset) {
 }
 
 /* ---------- FSK weather path ---------- */
-// LIMITATION (WS85): fixed 25-byte packets are tuned to the bench-proven WS69/WH65B frame.
-// A WS85 frame is longer (>=28 bytes), so decode_ws85()'s 28-byte branch is unreachable on
-// this path. Supporting WS85 needs a variable/longer-length FSK RX config validated against a
-// real WS85 capture (none on the bench yet) — see the runbook and ruling R8. Do NOT just raise
-// this constant: a longer fixed PKTLEN stops the CC1101 from completing the shorter WS69 frame.
+// Fineoffset FSK RX packet-length handling. The CC1101 runs a FIXED 25-byte packet
+// (CC_FSK_PKTLEN) sized to the WS69/WH65B frame, which needs all 25 bytes for its tail CRC.
+// Shorter and longer Fineoffset frames are handled as follows:
+//   * WH51 soil moisture (14 bytes): the frame lands in the first 14 bytes of the fixed
+//     packet. Usually the transmitter tail / ambient noise lets the CC1101 demodulate the
+//     remaining bytes, completing the 25-byte packet, and it is decoded on the full-packet
+//     path below (fineoffset_decode ignores the bytes past the 14-byte WH51 frame). If the
+//     channel falls quiet first and the packet stalls, the short-frame drain below rescues
+//     it -- gated to family 0x51 so a partially-filled WS69/WS85 can never be mis-decoded
+//     there (those arrive in one <=12 ms burst, faster than the 50 ms poll).
+//   * WS85 (>=28 bytes): LONGER than the fixed packet, so decode_ws85()'s branch is
+//     unreachable here; WS85 is validated only by the host tests + Renode, not live (WS85 is
+//     not audible at Welland). Raising CC_FSK_PKTLEN to fit WS85 would stop the CC1101
+//     completing the shorter WS69 frame, so it is left at 25 -- see runbook / ruling R8.
 #define CC_FSK_PKTLEN 25
+#define CC_FSK_WH51_LEN 14   // shortest Fineoffset frame we decode (WH51)
 static void CcWeatherPoll(void) {
   bool overflow = false;
   uint8_t m = Cc.radio->marcstate();
-  if (m == MARC_RXFIFO_OVERFLOW) { Cc.overflow++; Cc.radio->flush_rx(); Cc.radio->enter_rx(); return; }
+  if (m == MARC_RXFIFO_OVERFLOW) { Cc.overflow++; Cc.radio->flush_rx(); Cc.radio->enter_rx(); Cc.last_fifo = 0; return; }
   uint8_t n = Cc.radio->rxbytes(&overflow);
-  if (n >= CC_FSK_PKTLEN + 2) {
+
+  if (n >= CC_FSK_PKTLEN + 2) {                          // full fixed-length packet + 2 appended status bytes
     uint8_t buf[CC_FSK_PKTLEN + 2];
     Cc.radio->read_fifo(buf, sizeof buf);
     int rssi = ((int8_t)buf[CC_FSK_PKTLEN]) / 2 - 74;
-    Cc.rx++; Cc.last_rssi = rssi;
+    Cc.rx++; Cc.last_rssi = rssi; Cc.last_fifo = 0;
     char dec[RF_JSON_MAX];
-    int rc = fineoffset_decode(buf, CC_FSK_PKTLEN, dec, sizeof dec);
+    int rc = fineoffset_decode(buf, CC_FSK_PKTLEN, dec, sizeof dec);   // dispatches WS69 / WH51 by family byte
     if (rc == RF_DECODE_OK) {
       Cc.decoded++;
       if (!CcRepeatSuppressed(dec, millis())) { char ev[RF_JSON_MAX + 96]; CcWrapEvent(dec, rssi, ev, sizeof ev); CcPublishEvent(ev); }
@@ -438,7 +449,32 @@ static void CcWeatherPoll(void) {
       snprintf_P(raw + l, sizeof raw - l, PSTR("\",\"RSSI\":%d,\"LQI\":%d}"), rssi, buf[CC_FSK_PKTLEN + 1] & 0x7F);
       MqttPublishPayloadPrefixTopicRulesProcess_P(TELE, PSTR("CCRAW"), raw);
     }
+    return;
   }
+
+  // Short-frame (WH51) rescue: a 14-byte WH51 can leave the fixed-25 packet incomplete if the
+  // channel goes quiet before 25 bytes are demodulated. When the FIFO stops growing with at
+  // least a whole WH51 frame present, drain and decode it -- only when it starts with the WH51
+  // family byte (0x51), so a partially-filled WS69/WS85 is never truncated into a false decode.
+  if (n >= CC_FSK_WH51_LEN && n == Cc.last_fifo) {
+    uint8_t buf[CC_FSK_PKTLEN + 2];
+    uint8_t take = n > (uint8_t)sizeof buf ? (uint8_t)sizeof buf : n;
+    Cc.radio->read_fifo(buf, take);
+    Cc.last_fifo = 0;
+    if (buf[0] == 0x51) {
+      int rssi = Cc.radio->rssi_dbm();                  // frame already in FIFO; RSSI reg now reads the noise floor
+      Cc.rx++; Cc.last_rssi = rssi;
+      char dec[RF_JSON_MAX];
+      int rc = fineoffset_decode(buf, take, dec, sizeof dec);
+      if (rc == RF_DECODE_OK) {
+        Cc.decoded++;
+        if (!CcRepeatSuppressed(dec, millis())) { char ev[RF_JSON_MAX + 96]; CcWrapEvent(dec, rssi, ev, sizeof ev); CcPublishEvent(ev); }
+      }
+    }
+    Cc.radio->flush_rx(); Cc.radio->enter_rx();          // clear the stalled partial packet
+    return;
+  }
+  Cc.last_fifo = n;
 }
 
 /* ---------- mode entry (Task 5 adds the OOK capture start/stop) ---------- */
