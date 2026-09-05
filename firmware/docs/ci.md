@@ -27,19 +27,28 @@ conversion. 128 tests.
 ### `renode` — instruction-level emulation tests
 Checks out `mithro/renode-espemu` at ref `feature/renode-433-air`, installs
 Renode (portable), robotframework, the ESP32-C3 ROM ELF, and ESP-IDF
-`v5.4.1`. It then builds the six ESP-IDF test firmwares
-(`spi2`, `gpio`, `cc1101`, `sx1278`, `cc1101_rx`, `sx1278_rx`; `hello_world`
-ships prebuilt binaries) and runs `renode-test` **once per Robot suite**
-(seven suites total: `spi2`, `gpio`, `hello_world`, `cc1101`, `sx1278`,
-`cc1101_rx`, `sx1278_rx`) — every suite file is named `test.robot`, and Robot
+`v5.4.1`. It then builds the seven ESP-IDF test firmwares
+(`spi2`, `gpio`, `cc1101`, `sx1278`, `cc1101_rx`, `sx1278_rx`, `cc1101_decode`;
+`hello_world` ships prebuilt binaries) and runs `renode-test` **once per Robot
+suite** (eight suites total: `spi2`, `gpio`, `hello_world`, `cc1101`, `sx1278`,
+`cc1101_rx`, `sx1278_rx`, `cc1101_decode`) — every suite file is named
+`test.robot`, and Robot
 refuses to run multiple suites that share a basename in one invocation, so
 each runs into its own `results/<name>/` directory and the job fails if any
 suite fails. These run the real ESP-IDF `spi_master` / GPIO / interrupt path
 against emulated CC1101 and SX1278 register models on a shared virtual
 433 MHz "air" medium: an injected FSK frame lands in the radio's RX FIFO and
 raises the packet-ready interrupt into the firmware ISR — end to end, no
-hardware. `robot_output.xml`, `log.html` and `report.html` for every suite are
-uploaded together as the `renode-test-results` artifact.
+hardware. The `cc1101_decode` suite goes one step further: its test firmware
+**compiles the actual shipped product decoders** (`decode_fineoffset.c` +
+`decode_common.c`, vendored into `renode-espemu` from this repo's
+`firmware/decoders/`) and runs `fineoffset_decode()` in-emulation against REAL
+captured WS69 weather and WH51 soil-moisture frames drained from the emulated
+CC1101 RX FIFO, asserting the decoded model/id/fields (WS69 id 174,
+temperature 13.1 C, humidity 82; WH51 id 0f5c54, moisture 40). This exercises
+the real product decoder in emulation, not a reimplemented proxy.
+`robot_output.xml`, `log.html` and `report.html` for every suite are uploaded
+together as the `renode-test-results` artifact.
 
 ## Run it locally
 
@@ -60,7 +69,7 @@ basename `test.robot`:
 
 ```bash
 . "$HOME/esp/esp-idf/export.sh"
-for p in spi2 gpio cc1101 sx1278 cc1101_rx sx1278_rx; do
+for p in spi2 gpio cc1101 sx1278 cc1101_rx sx1278_rx cc1101_decode; do
   idf.py -C peripherals/$p/firmware set-target esp32c3
   idf.py -C peripherals/$p/firmware build
 done
@@ -68,7 +77,8 @@ done
 fail=0
 for suite in peripherals/spi2 peripherals/gpio hello_world \
              peripherals/cc1101 peripherals/sx1278 \
-             peripherals/cc1101_rx peripherals/sx1278_rx; do
+             peripherals/cc1101_rx peripherals/sx1278_rx \
+             peripherals/cc1101_decode; do
   name=$(echo "$suite" | tr '/' '_')
   renode-test \
     --variable "BASE:$PWD" \
@@ -81,7 +91,7 @@ exit $fail
 
 ## Notes and caveats
 
-- The `renode` job is heavy: the ESP-IDF install plus six `idf.py` builds plus
+- The `renode` job is heavy: the ESP-IDF install plus seven `idf.py` builds plus
   Renode startup dominate its runtime. It is generously bounded
   (`timeout-minutes: 120`).
 - The individual commands in every job were dry-run on

@@ -92,7 +92,7 @@ jobs:
         working-directory: renode-espemu
         run: |
           . "$HOME/esp/esp-idf/export.sh"
-          for p in spi2 gpio cc1101 sx1278 cc1101_rx sx1278_rx; do
+          for p in spi2 gpio cc1101 sx1278 cc1101_rx sx1278_rx cc1101_decode; do
             idf.py -C peripherals/$p/firmware set-target esp32c3
             idf.py -C peripherals/$p/firmware build
           done
@@ -106,7 +106,8 @@ jobs:
           fail=0
           for suite in peripherals/spi2 peripherals/gpio hello_world \
                        peripherals/cc1101 peripherals/sx1278 \
-                       peripherals/cc1101_rx peripherals/sx1278_rx; do
+                       peripherals/cc1101_rx peripherals/sx1278_rx \
+                       peripherals/cc1101_decode; do
             name=$(echo "$suite" | tr '/' '_')
             echo "::group::renode-test $suite"
             renode-test \
