@@ -64,7 +64,7 @@ SM_BODY = (SM_LEFT_X - 1.38, SM_PIN1_Y - 1.74, SM_RIGHT_X + 1.38, SM_PIN1_Y - 1.
 SM_LEFT_GPIO = ["GPIO5", "GPIO6", "GPIO7", "GPIO8", "GPIO9", "GPIO10", "GPIO20", "GPIO21"]
 SM_RIGHT_GPIO = ["+5V", "GND", "+3V3", "GPIO4", "GPIO3", "GPIO2", "GPIO1", "GPIO0"]
 SM_LEFT_SILK = ["5", "6", "7", "8", "9", "10", "20", "21"]  # as printed on the SuperMini
-SM_RIGHT_SILK = ["5V", "G", "3.3", "4", "3", "2", "1", "0"]
+SM_RIGHT_SILK = ["5V", "G", "3V3", "4", "3", "2", "1", "0"]
 SM_PAD = 1.6
 SM_DRILL = 1.0
 TRACK = 0.25
@@ -517,7 +517,8 @@ RADIO_PINMAP = {"MOSI": "GPIO8", "SCK": "GPIO9", "CSN_NSS": "GPIO0", "GDO0_RST":
 # layer: the top-left hole sits over its pad).  GPIO4..1 rise straight from
 # the power row; GPIO21/20 come from the GPIO row up the right-hand strip.
 EXP_PINS = ["+3V3", "GPIO4", "GPIO3", "GPIO2", "GPIO1", "GPIO21", "GPIO20"]
-EXP_LABELS = {"+3V3": "3.3", "GPIO4": "4", "GPIO3": "3", "GPIO2": "2", "GPIO1": "1", "GPIO21": "21", "GPIO20": "20"}
+EXP_UART = {"GPIO21": "TX", "GPIO20": "RX"}  # UART0 on the ESP32-C3
+EXP_LABELS = {"+3V3": "3V3", "GPIO4": "4", "GPIO3": "3", "GPIO2": "2", "GPIO1": "1", "GPIO21": "21", "GPIO20": "20"}
 EXP_Y = 2.55  # header row: pads clear the top lanes above and the jog row below
 EXP_X1 = CC_W / 2 - 3 * SM_PITCH  # 6.88: pin 1 of the 7-pin header, so pin 4 is on the board's centre line
 EXP_JOG_Y = CC_TOP_Y - 3.0  # 4.0: jogs between the power-row keyhole copper (to 4.4) and the header
@@ -620,8 +621,8 @@ def build_radio() -> Design:
     c.both(gr_rect, "e07_outline", (mx - E07_W / 2, SY0 - E07_ROW_IN, mx + E07_W / 2, CC_H - 0.3), 0.1, layers=("F.Fab", "B.Fab"), stype="dash")
     c.both(gr_rect, "ra02_outline", (mx - RA02_W / 2, SY0 - RA02_ROW_IN, mx + RA02_W / 2, CC_H - 0.5), 0.1, layers=("F.Fab", "B.Fab"), stype="dash")
     c.silk("sockname", "E07-M1101D (Ra-02 breakout)", mx, CC_H - 0.9, 0.6)
-    for i, net in enumerate(EXP_PINS, 1):
-        c.silk(f"exp{i}", EXP_LABELS[net], ex(i), EXP_Y - 1.3, 0.5)
+    for i, net in enumerate(EXP_PINS, 1):  # the UART pins carry their function too (21TX, 20RX)
+        c.silk(f"exp{i}", EXP_LABELS[net] + EXP_UART.get(net, ""), ex(i), EXP_Y - 1.3, 0.5)
     c.silk("jp1", "RA-02", JP1_X + 0.5, JP1_Y - 1.7, 0.5)
     c.title_silk("ESP32-C3 + CC1101 / Ra-02 433MHz")
     return c.d

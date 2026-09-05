@@ -47,7 +47,7 @@ OVAL_SHIFT = OVAL_LEN / 2 - PAD_W / 2  # 0.29: oval centre sits this far toward 
 LEFT_PINS = ["GPIO5", "GPIO6", "GPIO7", "GPIO8", "GPIO9", "GPIO10", "GPIO20", "GPIO21"]
 RIGHT_PINS = ["+5V", "GND", "+3V3", "GPIO4", "GPIO3", "GPIO2", "GPIO1", "GPIO0"]
 LEFT_SILK = ["5", "6", "7", "8", "9", "10", "20", "21"]
-RIGHT_SILK = ["5V", "G", "3.3", "4", "3", "2", "1", "0"]
+RIGHT_SILK = ["5V", "G", "3V3", "4", "3", "2", "1", "0"]
 
 PROJECT = "esp32-c3-supermini"
 

@@ -116,8 +116,8 @@ shows the back-copper tracks in blue.
 J4 is a 1x7 2.54 mm header on the top edge, centred between the mounting
 holes, carrying 3V3 and every GPIO the radio does not use in the order 3V3,
 GPIO4, GPIO3, GPIO2, GPIO1, GPIO21, GPIO20 (pin 1, square, at the left; the
-silk names them the way the SuperMini does, and GPIO20/21 are the spare
-UART). GPIO4..1 rise straight from the power row; GPIO21 and GPIO20 leave
+silk names them the way the SuperMini does, with the spare UART marked
+"21TX" and "20RX"). GPIO4..1 rise straight from the power row; GPIO21 and GPIO20 leave
 the GPIO row's right end and come up the strip right of the SuperMini, the
 same strip GND and 3V3 come down. 5V is not on the header: its pad sits
 under the top-left mounting hole and cannot be reached on one layer.
