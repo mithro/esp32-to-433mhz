@@ -32,3 +32,29 @@ int rf_json_append(char *json, size_t json_len, int len, const char *fmt, ...)
     if (r < 0 || (size_t)r >= json_len - (size_t)len) return -1;
     return len + r;
 }
+
+/* Fixed-point decimal formatter (see decode_common.h for why %f is avoided).
+ * Splits the rounded, scaled value into whole and fractional parts and prints
+ * them with %d, so it depends only on integer printf. Rounds half away from
+ * zero, matching the %.Nf output these decoders used previously. Only one or two
+ * fractional digits are needed here (weather values); the whole part fits int.
+ * Fixed-width conversions keep gcc -Wformat-truncation happy for a 32-byte buf. */
+const char *rf_ftoa(char *buf, size_t bufsz, double value, int decimals)
+{
+    long scale = 1;
+    for (int i = 0; i < decimals; ++i) scale *= 10;
+    double rounded = value * (double)scale + (value >= 0 ? 0.5 : -0.5);
+    long scaled = (long)rounded;
+    int neg = scaled < 0;
+    long mag = neg ? -scaled : scaled;
+    int whole = (int)(mag / scale);
+    int frac = (int)(mag % scale);
+    const char *sign = neg ? "-" : "";
+    if (decimals == 2)
+        snprintf(buf, bufsz, "%s%d.%02d", sign, whole, frac);
+    else if (decimals == 1)
+        snprintf(buf, bufsz, "%s%d.%d", sign, whole, frac);
+    else
+        snprintf(buf, bufsz, "%s%d", sign, whole);
+    return buf;
+}

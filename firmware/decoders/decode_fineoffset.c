@@ -40,18 +40,20 @@ static int decode_wh24_family(const uint8_t *b, size_t n, char *json, size_t jso
     int uvi = 0;
     while (uvi < 13 && uvi_upper[uvi] < uv_raw) ++uvi;
 
+    /* picolibc's integer-only printf renders %f as "*float*"; format decimals via rf_ftoa. */
+    char f1[32];
     int len = 0;
     len = rf_json_append(json, json_len, len, "{\"model\":\"%s\",\"id\":%d,\"battery_ok\":%d",
                          ws69 ? "Fineoffset-WS69" : "Fineoffset-WH65B", id, !low_batt);
-    if (temp_raw != 0x7FF)   len = rf_json_append(json, json_len, len, ",\"temperature_C\":%.1f", (temp_raw - 400) * 0.1);
+    if (temp_raw != 0x7FF)   len = rf_json_append(json, json_len, len, ",\"temperature_C\":%s", rf_ftoa(f1, sizeof f1, (temp_raw - 400) * 0.1, 1));
     if (humidity != 0xFF)    len = rf_json_append(json, json_len, len, ",\"humidity\":%d", humidity);
-    if (pressure_hpa >= 0)   len = rf_json_append(json, json_len, len, ",\"pressure_hPa\":%.2f", pressure_hpa);
+    if (pressure_hpa >= 0)   len = rf_json_append(json, json_len, len, ",\"pressure_hPa\":%s", rf_ftoa(f1, sizeof f1, pressure_hpa, 2));
     if (wind_dir != 0x1FF)   len = rf_json_append(json, json_len, len, ",\"wind_dir_deg\":%d", wind_dir);
-    if (wind_raw != 0x1FF)   len = rf_json_append(json, json_len, len, ",\"wind_avg_m_s\":%.1f", wind_raw * 0.125 * wind_factor);
-    if (gust_raw != 0xFF)    len = rf_json_append(json, json_len, len, ",\"wind_max_m_s\":%.1f", gust_raw * wind_factor);
-    len = rf_json_append(json, json_len, len, ",\"rain_mm\":%.1f", rain_raw * rain_cup_mm);
+    if (wind_raw != 0x1FF)   len = rf_json_append(json, json_len, len, ",\"wind_avg_m_s\":%s", rf_ftoa(f1, sizeof f1, wind_raw * 0.125 * wind_factor, 1));
+    if (gust_raw != 0xFF)    len = rf_json_append(json, json_len, len, ",\"wind_max_m_s\":%s", rf_ftoa(f1, sizeof f1, gust_raw * wind_factor, 1));
+    len = rf_json_append(json, json_len, len, ",\"rain_mm\":%s", rf_ftoa(f1, sizeof f1, rain_raw * rain_cup_mm, 1));
     if (uv_raw != 0xFFFF)    len = rf_json_append(json, json_len, len, ",\"uv\":%d,\"uvi\":%d", uv_raw, uvi);
-    if (light_raw != 0xFFFFFF) len = rf_json_append(json, json_len, len, ",\"light_lux\":%.1f", light_raw * 0.1);
+    if (light_raw != 0xFFFFFF) len = rf_json_append(json, json_len, len, ",\"light_lux\":%s", rf_ftoa(f1, sizeof f1, light_raw * 0.1, 1));
     len = rf_json_append(json, json_len, len, ",\"mic\":\"CRC\"}");
     return len < 0 ? RF_DECODE_TRUNCATED : RF_DECODE_OK;
 }
@@ -76,16 +78,19 @@ static int decode_ws85(const uint8_t *b, size_t n, char *json, size_t json_len)
     int battery_pct = battery_mv < 1400 ? 0 : (battery_mv - 1400) / 16;
     if (battery_pct > 100) battery_pct = 100;
 
+    /* picolibc's integer-only printf renders %f as "*float*"; format decimals via rf_ftoa. */
+    char f1[32], f2[32];
     int len = 0;
     len = rf_json_append(json, json_len, len,
         "{\"model\":\"Fineoffset-WS85\",\"id\":%ld,\"battery_ok\":%d,\"battery_pct\":%d,\"battery_mV\":%d",
         id, battery_ok, battery_pct, battery_mv);
     if (wind_dir != 0x1FF) len = rf_json_append(json, json_len, len, ",\"wind_dir_deg\":%d", wind_dir);
-    if (wind_avg != 0x1FF) len = rf_json_append(json, json_len, len, ",\"wind_avg_m_s\":%.1f", wind_avg * 0.1);
-    if (wind_max != 0x1FF) len = rf_json_append(json, json_len, len, ",\"wind_max_m_s\":%.1f", wind_max * 0.1);
+    if (wind_avg != 0x1FF) len = rf_json_append(json, json_len, len, ",\"wind_avg_m_s\":%s", rf_ftoa(f1, sizeof f1, wind_avg * 0.1, 1));
+    if (wind_max != 0x1FF) len = rf_json_append(json, json_len, len, ",\"wind_max_m_s\":%s", rf_ftoa(f1, sizeof f1, wind_max * 0.1, 1));
     len = rf_json_append(json, json_len, len,
-        ",\"flags\":%d,\"rain_mm\":%.1f,\"rain_start\":%d,\"supercap_V\":%.1f,\"firmware\":%d,\"mic\":\"CRC\"}",
-        flags, rain_raw * 0.1, rain_start, supercap * 0.1, firmware);
+        ",\"flags\":%d,\"rain_mm\":%s,\"rain_start\":%d,\"supercap_V\":%s,\"firmware\":%d,\"mic\":\"CRC\"}",
+        flags, rf_ftoa(f1, sizeof f1, rain_raw * 0.1, 1), rain_start,
+        rf_ftoa(f2, sizeof f2, supercap * 0.1, 1), firmware);
     return len < 0 ? RF_DECODE_TRUNCATED : RF_DECODE_OK;
 }
 
@@ -112,11 +117,13 @@ static int decode_wh51(const uint8_t *b, size_t n, char *json, size_t json_len)
                          : battery_bits == 14 ? 0.5
                          : battery_bits == 13 ? 0.1 : 0.0;
 
+    /* picolibc's integer-only printf renders %f as "*float*"; format decimals via rf_ftoa. */
+    char f1[32];
     int len = 0;
     len = rf_json_append(json, json_len, len,
-        "{\"model\":\"Fineoffset-WH51\",\"id\":\"%02x%02x%02x\",\"battery_ok\":%.1f,\"battery_mV\":%d,"
+        "{\"model\":\"Fineoffset-WH51\",\"id\":\"%02x%02x%02x\",\"battery_ok\":%s,\"battery_mV\":%d,"
         "\"moisture\":%d,\"boost\":%d,\"ad_raw\":%d,\"mic\":\"CRC\"}",
-        b[1], b[2], b[3], battery_level, battery_mv, moisture, boost, ad_raw);
+        b[1], b[2], b[3], rf_ftoa(f1, sizeof f1, battery_level, 1), battery_mv, moisture, boost, ad_raw);
     return len < 0 ? RF_DECODE_TRUNCATED : RF_DECODE_OK;
 }
 
