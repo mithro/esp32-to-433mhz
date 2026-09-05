@@ -26,8 +26,14 @@ Confirm boot over USB-CDC console (persistent pyserial, `dtr=False rts=False`): 
 - Capture the console several minutes → confirm decoded **Fineoffset-WS69 id 174** (valid float temperature_C/wind/rain) and **Fineoffset-WH51** (a live id, moisture/battery). No `*float*`.
 - Cross-check the same window against rpi5 `~/wh51-watch/lilygo.hits.jsonl` + `cc1101.hits.jsonl` (always-on reference receivers): same ids/values. This closes (b) for CC1101; SX1278 already proven (WAVE-A2/FIX-A), and both CC1101 boards share one template-driven binary.
 
-## 4. Pluto cross-check (b) — user decision
-The Pluto (`rpi-sdr-pluto`) is a single tuner shared with GPS-SDR and is currently deaf on 433 (0 decodes/20 min even free) — needs a VDD power-cycle. Either: coordinate with the "ten64 gps setup" session + get user approval to power-cycle the Pluto, run `rtl_433 -d driver=plutosdr -f 433.92M -s 1024k -g 73 -M level -M time:iso -F json` for ~30 min to catch a WS69, and cross-check vs rpi5; **or** accept the byte-identical rpi5 LilyGo/CC1101 cross-check as (b)'s "other 433 MHz receivers" and note the Pluto's known poor broadband 433 sensitivity.
+## 4. Pluto cross-check (b) — status + user decision
+The Pluto (`rpi-sdr-pluto`) is a single tuner shared with the GPS-SDR session. Its RX hardware is **proven good** (2026-09-06): after a genuine VDD mains power-cycle, (i) the GPS session acquired 6 satellites through it, and (ii) a wide-IQ FFT (`pluto_fdiag.py`, SoapySDR, staged on `rpi-sdr-pluto`) shows the 433.92 MHz Fine Offset weather/moisture carrier at **~44 dB over noise** — reception is not the problem.
+
+However, `rtl_433` on the Pluto produces **zero output across every tuning/gain tried** (433.92 and offset centres, 250k–1024k, gain 55–73) despite that strong signal. The "no pulses at all with a 44 dB signal present" pattern points to an rtl_433↔Pluto **IQ-scaling / CS16-threshold integration issue** (SoapySDR samples arriving below rtl_433's pulse-detector threshold) — not hardware, antenna, TCXO, or DC offset. It is a software integration bug to fix, not a hardware fault.
+
+Two ways to satisfy (b)'s Pluto clause:
+- **Fix the rtl_433/Pluto integration** (sample scaling) or write a small custom FSK demod on the raw IQ (the firmware's `decode_fineoffset.c` can parse the resulting frame), then cross-check a decoded WS69/WH51 against the rpi5 references; **or**
+- **Accept the rpi5 LilyGo SX1276 + CC1101 receivers** as (b)'s independent "other 433 MHz receivers" cross-check — they catch WS69+WH51 abundantly (246 WS69 + ~200 WH51 frames in a 10-min window) and SX1278 already cross-checked byte-identical against them.
 
 ## 5. Close (e) — live HA MQTT (see firmware/docs/mqtt-home-assistant.md)
 Confirmed procedure from the gdoc2netcfg session (verify against its CLAUDE.md "Per-device MQTT broker credentials", ~line 620). gdoc2netcfg runs on **ten64 (welland)** from `/opt/gdoc2netcfg` as root via `.venv/bin/gdoc2netcfg` (NOT `uv run`). Creds are *derived*, not stored: user `tas-<hostname_with_underscores>`, password from `[tasmota] mqtt_secret` in `gdoc2netcfg.toml` — so the device must exist in inventory first.
