@@ -4,16 +4,23 @@ Branch `add-tasmota-firmware`. Fixes the CC1101 Fine Offset FSK receive path so 
 single RX config receives **all** Fine Offset frame lengths: WH51 (14 B), WS69
 (~25 B), WS85 (~28 B).
 
-## Root cause (ours, not the hardware)
+## A packet-framing config bug we found (relationship to the WAVE-A1 field result is unproven)
 
 The `fineoffset-fsk` preset programmed the CC1101 in **fixed** packet-length mode
 (`PKTCTRL0 = 0x00`, `PKTLEN = 0x19 = 25`). In fixed-length mode the radio only
 completes a packet after exactly 25 bytes follow the sync word, so a 14-byte WH51
 frame never completes and is never decoded; a short WS69 could stall too. The prior
 firmware papered over this with a family-0x51-gated "short-frame rescue" hack. One
-fixed length cannot receive three different frame lengths.
+fixed length cannot receive three different frame lengths — this is a genuine
+config bug, independent of signal strength.
 
-The antenna / radio was never at fault.
+**This does not fully explain WAVE-A1-REPORT.md's field result, and is not claimed
+to.** That report also tried `PKTLEN=17` (14-byte WH51 + 3 filler bytes, which
+should complete under fixed-length mode) and still saw `Decoded=0` — a result this
+framing theory alone does not account for. This fix is a real, host-tested
+improvement to the packet-length handling; whether it is *the* explanation (or
+even *an* explanation) for WAVE-A1's field result is **unproven** until it is run
+on the real CC1101 nodes — see the HARDWARE-REVALIDATION checklist below.
 
 ## The fix
 

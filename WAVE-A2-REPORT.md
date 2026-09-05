@@ -111,10 +111,12 @@ path is proven, and WS69 id=174 decoded repeatedly.
 ```
 
 The node's WS69 id=174 (humidity 79) matches the reference frame exactly. The
-reference heard the target WH51 0f5c54 at -82 dBm during the window; the node reads
-its WS69 frames at -89..-93 dBm (weaker antenna/placement), so 0f5c54 fell below
-the node's usable SNR — a per-sensor reception margin, not a decode failure (the
-node decoded the on-air WH51 id 0f5d66 through the same path).
+reference logged the target WH51 0f5c54 at -82 dBm during this window, while the
+node's own WS69 frames over the same window read -89..-93 dBm. That gap is a
+signal-margin observation for this one sensor on this run, not a hardware fault or
+a decode failure: the same decoder path proven correct on 0f5d66 (and on WS69
+id 174) would decode 0f5c54 identically given the frame — it is a per-sensor
+reception margin, not a limitation attributed to the antenna or placement.
 
 ---
 
@@ -133,14 +135,16 @@ node decoded the on-air WH51 id 0f5d66 through the same path).
 
 ## What didn't work / honesty notes (no overclaiming)
 
-1. **Target WH51 id 0f5c54 not caught at the node.** The node decoded WS69 id=174
-   and a WH51 (id 0f5d66), i.e. both required families, but not the *specific*
-   0f5c54 unit in this window. The reference heard 0f5c54 at only -82 dBm and the
-   node's WS69 frames read -89..-93 dBm, so 0f5c54 was below the node's SNR at its
-   antenna. This is a reception-margin issue for one distant sensor, not a firmware
-   fault — the WH51 family path itself decodes correctly (0f5d66, `mic:CRC` valid).
-   No firmware change was made to "chase" it; doing so would risk wedging the node
-   (the task's explicit constraint) for no config reason.
+1. **Target WH51 id 0f5c54 not caught at the node in this window.** The node
+   decoded WS69 id=174 and a different WH51 (id 0f5d66) — i.e. both required
+   families decode correctly — but not the *specific* 0f5c54 unit in this run. The
+   reference logged 0f5c54 at only -82 dBm in this window, while the node's own
+   WS69 frames over the same run read -89..-93 dBm: a signal-margin observation for
+   this one sensor on this run, not a firmware fault. The WH51 family path itself is
+   proven correct (0f5d66 decoded, `mic:CRC` valid), so the same decoder would
+   decode 0f5c54 identically given the frame. No firmware change was made to
+   "chase" it; doing so would risk wedging the node (the task's explicit
+   constraint) for no config reason.
 
 2. **Float fields render as `*float*` on-target** (`"temperature_C":*float*`, wind,
    rain, `battery_ok`). Cause: the shared decoder's `rf_json_append()` uses `%f` via

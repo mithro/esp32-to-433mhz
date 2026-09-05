@@ -13,11 +13,14 @@ Branch `add-tasmota-firmware` (pushed). Date 2026-09-05, Welland.
 - **Honest hardware result: WH51 did NOT decode live on the nodes, and no WS69 was
   observed decoding.** The nodes demonstrably receive real 433.92 MHz FSK traffic
   (strong packets down to RSSI -26 dBm, `Rx` counter climbing) but never a WH51 or
-  WS69 frame. Root cause is that the WH51 sensors are not received at these USB
-  nodes' antennas at a detectable SNR — the firmware, decoder and radio config are
-  verified correct (node registers read back **identical** to the proven reference
-  `cc1101_watch.py`; the decoder passes host tests on the exact bytes rtl_433 and
-  the reference logger decode). See "What did not work" for the full debug trail.
+  WS69 frame. Node registers directly comparable to the proven reference
+  `cc1101_watch.py` read back **identical**, and the decoder passes host tests on
+  the exact bytes rtl_433 and the reference logger decode. This report could not
+  isolate *why* the frame never reached the decoder on this hardware — see
+  "What did not work" for the full debug trail, and **WAVE-A1FIX-REPORT.md** for a
+  packet-framing config difference found afterward whose relationship to this
+  specific result is unproven (that report's fix has not been run on this
+  hardware).
 
 ## What was added (commits)
 
@@ -110,8 +113,10 @@ rtl_433 (pluto, earlier today) for WS69: `model Fineoffset-WS69 id 174 temp 16.1
 humidity 71 wind ... rain_mm 517.144 rssi -20` — WS69 was strong at that receiver.
 
 The node's decoder, given those exact bytes, produces the matching JSON (proven by
-`test_wh51.py`). The gap is purely reception: the node's antenna did not deliver
-those frames at a demodulable SNR.
+`test_wh51.py`), so the decoder itself is not in question. This report could not
+determine why the frame never reached the decoder on this hardware in this window;
+see "What did not work" below and WAVE-A1FIX-REPORT.md for a config difference
+found afterward (unproven against this specific result).
 
 ## What did NOT work, and everything I tried (no overclaiming)
 
@@ -132,15 +137,24 @@ every firmware lever was exhausted):
    and WH51 is caught when received.
 3. **Sync sensitivity.** Relaxed MDMCFG2 16/16 -> 15/16 live: `Rx` exploded to 376
    packets in 90 s (false-sync storm) with 2 FIFO overflows, but **still
-   `Decoded=0`** — flooding the receiver surfaced no WH51, confirming the WH51 RF is
-   simply not present at the node, not merely under a sync threshold.
+   `Decoded=0`** — flooding the receiver with false syncs still surfaced no WH51,
+   which argues against a simple sync-threshold explanation (this observation does
+   not, by itself, identify the actual cause).
 4. **The node's RX/demod/decode path works** — it captured strong non-Fine-Offset
-   433.92 FSK devices at -26..-60 dBm. It just never received the WH51 sensors
-   (which the reference receivers heard at -74..-82 dBm on their own antennas).
+   433.92 FSK devices at -26..-60 dBm. It never produced a WH51 or WS69 decode in
+   this window. The reference receivers logged the same WH51 sensors over the same
+   period, at -74..-82 dBm on their own receive chains — a data point, not a
+   conclusion: item 3's sync-relaxation test (flooding the receiver with false
+   syncs still produced zero decodes) argues against a simple threshold
+   explanation, without this report identifying a definitive root cause.
 
-**Conclusion:** firmware, decoder and radio config are correct and verified; the
-blocker is RF reception of the specific WH51 sensors at the two USB nodes'
-antennas. This is the one thing I could not change from software.
+**Conclusion:** the registers directly comparable to the reference, and the
+decoder, are verified correct. This report could not isolate why the frame was
+never decoded on this hardware — it is left open here rather than attributed to
+the antenna or to any other single cause without further testing. (Tried
+PKTLEN=17 above, which did not produce a decode either; see WAVE-A1FIX-REPORT.md
+for a packet-framing bug found afterward, and that report's own honesty section
+for why it does not, by itself, resolve this open question.)
 
 **Nodes wedged off USB.** After the repeated flash/reset/reconnect cycles (each
 USB-CDC reconnect resets the C3), both `radio-cc1101-blue` and `-dsun` dropped off
@@ -151,8 +165,9 @@ flashed to blue before it dropped; it will run on next power-up.
 
 ## Not done / needs a human at the bench
 
-- Confirm WH51 (and WS69) decode on a node once its antenna receives the sensors at
-  a workable SNR (relocate/replace antenna or move the node), and power-cycle the
-  two wedged nodes.
+- Power-cycle the two wedged nodes back onto USB, flash the infinite-length fix
+  from WAVE-A1FIX-REPORT.md, and confirm whether WH51/WS69 now decode — this is
+  still an open question (see that report's honesty section: the fix is unproven
+  on this hardware and does not by itself explain the PKTLEN=17 result above).
 - Re-run the blue + green side-by-side identical-reception cross-check (blocked by
   the above).
