@@ -14,10 +14,12 @@ stations (FSK), the OOK-PWM remotes and the Merlin garage remote, transmits OOK
 to MQTT (and the same over its native-USB console).
 
 > **Scope note.** The consolidated firmware in `firmware/` builds the radio
-> *foundation* (detect / register-I/O / radio selection) plus the existing CC1101
-> OOK + decoder functionality. The SX1278 FSK/OOK/LoRa RX/TX functional features
-> are **not built yet** (later work) — see `firmware/src/cc1101_node/sx1278_radio.cpp`
-> for the staged roadmap.
+> *foundation* (detect / register-I/O / radio selection), the CC1101 OOK + FSK
+> weather + decoder functionality, and the **SX1278 (RA-02) Fine Offset FSK
+> receive path** (weather parity with the CC1101 — see the section below). The
+> SX1278 FSK/OOK **transmit** and OOK/LoRa RX are still future work (OOK-continuous
+> RX also needs a DIO2 wire this adapter does not route) — see the staged roadmap
+> in `firmware/src/cc1101_node/sx1278_radio.cpp`.
 
 The board carrier/adapter (KiCad) and the full design spec live elsewhere: the
 KiCad adapter is this repo's top-level [`README.md`](../../README.md) and
@@ -136,6 +138,57 @@ not by a live capture. Raising `CC_FSK_PKTLEN` to fit WS85 would stop the CC1101
 completing the shorter WS69 frame, so it is left at 25.
 
 
+## SX1278 (RA-02) Fine Offset FSK RX configuration
+
+The SX1278 receives the same Fine Offset families as the CC1101 weather path
+(`../src/cc1101_node/sx1278_radio.cpp`, `configure_fineoffset_fsk()`). Every value
+is computed from the SX1276/78 datasheet formulas and matched to the bench-proven
+SX1276 receiver at the same Welland site (rpi5 `~/wh51-watch`, RadioLib
+`beginFSK`: 433.92 MHz, 17.241 kbps, ~50 kHz fdev, sync `0x2DD4`, 2-FSK with
+`ModulationShaping = NONE`):
+
+| Purpose | Register(s) | Value |
+|---|---|---|
+| FSK mode (LongRangeMode=0), low-freq band, RX | RegOpMode (0x01) | `0D` |
+| Carrier 433.92 MHz (`Frf = Fstep·RegFrf`, Fstep = 32 MHz/2¹⁹) | RegFrf (0x06/07/08) | `6C 7A E1` |
+| Bit rate 17.241 kbps (`FXOSC / RegBitrate`) | RegBitrate (0x02/03) | `07 40` |
+| Deviation ~50 kHz (`Fstep · RegFdev`) | RegFdev (0x04/05) | `03 33` |
+| RX bandwidth 125 kHz (mant=16, exp=2) | RegRxBw (0x12) | `02` |
+| AGC auto + RX trigger on preamble detect | RegRxConfig (0x0D) | `0E` |
+| Preamble detector on, 2 bytes, tol 10 | RegPreambleDetect (0x1F) | `AA` |
+| AutoRestartRx + SyncOn + 2 sync bytes (0xAA preamble polarity) | RegSyncConfig (0x27) | `91` |
+| Sync word 0x2DD4 | RegSyncValue1/2 (0x28/29) | `2D D4` |
+| Fixed length, no DC-free, no CRC, no addr filter | RegPacketConfig1 (0x30) | `00` |
+| Packet (not continuous) data mode | RegPacketConfig2 (0x31) | `40` |
+| Fixed payload length = `SX_FSK_RX_LEN` (30) | RegPayloadLength (0x32) | `1E` |
+| DIO0 = PayloadReady (also polled via RegIrqFlags2) | RegDioMapping1 (0x40) | `00` |
+
+**Packet length — one config for every family.** Unlike the CC1101's 25-byte
+fixed packet + short-frame rescue, the SX1278 runs **fixed-length packet mode with
+`RegPayloadLength = SX_FSK_RX_LEN = 30`** — chosen `>=` the longest WS85 frame
+(28 B) yet `<=` the 64-byte FIFO. After the demodulator matches `0x2DD4`, the radio
+latches 30 bytes into the FIFO and raises **PayloadReady**; `sx_weather_drain()`
+(`../src/cc1101_node/sx1278_weather.cpp`) reads all 30 out of `RegFifo` and
+`fineoffset_decode()` dispatches by family byte (`0x24` WS69/WH65B, `0x51` WH51,
+`0x85` WS85), ignoring the trailing demodulator noise that follows a short frame.
+So **one** setting receives WH51 (14 B), WS69 (25 B) and WS85 (28 B) — the SX1278
+does not need the CC1101's split full-packet/short-frame logic because 30 bytes
+always fits every family and the decoder self-selects by length. Because 30 <= 64
+the frame never straddles a FIFO refill. After each drain the driver does a
+`standby -> RX` (`restart_rx()`) — belt-and-suspenders alongside AutoRestartRx —
+to flush the FIFO and re-arm sync detection.
+
+`SX_FSK_MIN_FRAME` is 14 (WH51); anything the decoder rejects is optionally
+published as raw hex over `tele/…/CCRAW` when `CcRaw 1` is set. The SX1278 does
+**weather RX only**: OOK-continuous "remotes" RX needs the SX127x DIO2 data line,
+which this RA-02 adapter does not route, so `CcMode remotes` leaves the SX1278 in
+standby.
+
+Host-tested end to end by `../tests/test_sx1278_weather_rx.py`, which drives the
+identical `sx_weather_drain()` through a scripted FIFO for WH51/WS69/WS85 and
+asserts the config registers above against the datasheet math.
+
+
 ## Why these choices (so they aren't relitigated)
 - **Why RMT:** the C3's RMT peripheral timestamps edges in hardware (1 us) and
   buffers them; WiFi/MQTT cannot jitter pulse measurement; the same peripheral
@@ -155,6 +208,7 @@ completing the shorter WS69 frame, so it is left at 25.
 | 2026-09-05 | Tasmota firmware on real CC1101 (blue E07 + green D-SUN), native-USB console: PARTNUM 0x00 / VERSION 0x14, register I/O, radio selection, OOK edge-capture live; SX1278 RA-02 RegVersion 0x12 detect + register-I/O + selection | See [`HWTEST-RESULTS-cc1101.md`](HWTEST-RESULTS-cc1101.md) |
 | 2026-09-05 | WH51 decoder: real frame `51 0F 5C 54 10 7F 28 F8 D0 FF FF FF 4B D7` (id 0f5c54) captured by the rpi5 reference logger; host test asserts moisture 40, battery 1600 mV, ad_raw 208, battery_ok 1.0 vs rtl_433 -> **108 host tests pass** | `pytest firmware/tests` |
 | 2026-09-05 | WH51 live on a node CC1101: **NOT decoded.** blue (E07) + green (D-SUN) in `weather` mode received strong 433.92 FSK traffic (RSSI down to -26 dBm) and completed packets (`Rx` climbing), but never a WH51 frame (`Decoded=0`); registers read back identical to the proven reference, PKTLEN 25->17 tried, sync relaxed 16/16->15/16 (`Rx` 376 in 90 s, still `Decoded=0`). The reference CC1101/LilyGo on rpi5 heard the same WH51 sensors at -74..-82 dBm throughout. Root cause: the WH51 sensors are not received at these USB nodes' antennas at a detectable SNR; firmware/decoder/config verified correct. | reference `cc1101.hits.jsonl` vs node console |
+| 2026-09-05 | **SX1278 (RA-02) FSK weather RX — LIVE, decoded.** Node MAC 44:1B:F6:2E:B3:80 (`/dev/radio-sx1278-ra02`) flashed with this build, `Radio sx1278` + `CcMode weather`: `SxStatus` -> `Present 1, VERSION 0x12, WeatherRx 1`; console `RSL: events` lines decoded **WS69 id=174** (humidity 79, `mic:CRC`) repeatedly at RSSI -89..-93 dBm and **WH51 id=0f5d66** (moisture 38, `mic:CRC`), i.e. both families through the single fixed-length FSK config. Cross-checked against the rpi5 reference (`~/wh51-watch`) for the same window: reference heard WS69 family 0x24 id 0xAE(174) humidity 0x4F(79) and WH51 id 0f5c54 valid at -82 dBm. Float fields render as `*float*` on-target (shared-decoder `%f` under newlib-nano, affects the CC1101 path identically — not radio-specific; integer fields + CRC MIC correct). | node console vs `cc1101.hits.jsonl`/`lilygo.jsonl` |
 | 2026-08-22 | Merlin remote: rtl_433 -R 164 / 178 / -A | **PENDING — needs a human to press the remote**; procedure in the project repo's `protocols/secplus-v2.md` |
 
 ## See also
