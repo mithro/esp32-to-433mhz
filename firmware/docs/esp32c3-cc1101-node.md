@@ -87,10 +87,54 @@ the `Cc*` / `Sx*` / `Secplus*` commands, the `/cc1101.cfg` persisted config, and
 the exact MQTT message shapes as currently implemented.
 
 ## Decoders and fixtures (host-tested)
-`../decoders/` — Fineoffset WS69/WH65B/WS85 and OOK-PWM in pure C, tested with
+`../decoders/` — Fineoffset WS69/WH65B/WS85/**WH51** (soil moisture, family 0x51) and OOK-PWM in pure C, tested with
 `uv run --with pytest pytest firmware/tests` against real captures in
 `../fixtures/`. rtl_433 field names throughout. The bit-sense convention of the
 OOK-PWM codes is documented in the project repo's `protocols/ook-pwm-remotes.md`.
+
+## Fine Offset FSK RX configuration and packet-length handling
+
+The `fineoffset-fsk` preset (`../src/cc1101_node/cc1101_presets.c`) programs the
+CC1101 exactly like the bench-proven reference `cc1101_watch.py`
+(`configure_fineoffset_fsk_rx`), computed from the datasheet formulas — every
+register was read back from a live node (`CcReg`) and matches the reference:
+
+| Purpose | Register(s) | Value |
+|---|---|---|
+| Carrier 433.92 MHz | FREQ2/1/0 (0x0D/0E/0F) | `10 B0 71` |
+| Bit rate 17.24 kbps | MDMCFG4/3 (0x10/0x11) | `C9 5C` |
+| 2-FSK, 16/16 sync, no Manchester | MDMCFG2 (0x12) | `02` |
+| 24-byte preamble | MDMCFG1 (0x13) | `72` |
+| Deviation 50 kHz | DEVIATN (0x15) | `50` |
+| Sync word 0x2DD4 | SYNC1/0 (0x04/0x05) | `2D D4` |
+| Fixed length, APPEND_STATUS, no CRC autoflush | PKTCTRL0/1 (0x08/0x07) | `00` / `04` |
+| Channel BW 101 kHz | (in MDMCFG4) | — |
+
+**Packet length — receiving both WS69 (25 B) and WH51 (14 B).** The CC1101 runs a
+fixed-length packet (`CC_FSK_PKTLEN = 25`, sized to the WS69/WH65B frame, whose
+tail CRC needs all 25 bytes). `CcWeatherPoll()` accepts a *range* of Fine Offset
+frame lengths so the shorter WH51 is also captured and dispatched:
+
+- **Full-packet path** (`RXBYTES >= PKTLEN + 2`): reads the completed 25-byte
+  packet plus its 2 appended status bytes and calls `fineoffset_decode()`, which
+  dispatches by the family byte — `0x24` -> WS69/WH65B, `0x51` -> WH51,
+  `0x85` -> WS85. A 14-byte WH51 arrives in the first 14 bytes with the rest of
+  the packet filled by demodulated bytes; the decoder ignores everything past the
+  14-byte frame (validated by CRC-8 poly 0x31 + additive checksum), so it decodes
+  correctly inside the longer read.
+- **Short-frame rescue** (`RXBYTES >= 14` and the FIFO has stopped growing):
+  drains a WH51 whose packet stalled before completing 25 bytes, and decodes it
+  **only when it starts with the WH51 family byte 0x51** — so a partially-filled
+  WS69/WS85 (both arrive in one <=12 ms burst, faster than the 50 ms poll) can
+  never be truncated into a false decode.
+
+**WS85 is not audible at Welland.** A WS85 frame is >=28 bytes — longer than the
+fixed 25-byte packet — so its decode branch is unreachable on this RX path and no
+WS85 was heard on air during the 2026-09-05 survey. WS85 (family 0x85) is
+therefore validated by the decoder host test (real rtl_433 doc vector) and Renode,
+not by a live capture. Raising `CC_FSK_PKTLEN` to fit WS85 would stop the CC1101
+completing the shorter WS69 frame, so it is left at 25.
+
 
 ## Why these choices (so they aren't relitigated)
 - **Why RMT:** the C3's RMT peripheral timestamps edges in hardware (1 us) and
@@ -109,6 +153,8 @@ OOK-PWM codes is documented in the project repo's `protocols/ook-pwm-remotes.md`
 | 2026-08-20 | WS69 id 174 25-byte frames on Pi CC1101 (`cc1101_ws69_rx.py --packet-len 25`) | `24 AE 5D 82 13 52 05 01 07 24 00 00 00 00 00 5A A1 01 FF FF FF 01 6B 87 33` twice at 16 s, RSSI -85.5/-87.0 dBm; both CRCs valid; decodes 13.1 C 82 % 349 deg 464.3 mm |
 | 2026-08-22 | async-OOK capture path: GDO2->GPIO24 (measured with `cc1101_find_gdo_pins.py`); no-remote baseline — `MARCSTATE=0x0D`, `edges=48 trains(>=16 pulses)=0` over 10 s — path live end-to-end. Remote captures vs the codes doc, and rtl_433 cross-check: **PENDING — needs a human at the Welland bench** |
 | 2026-09-05 | Tasmota firmware on real CC1101 (blue E07 + green D-SUN), native-USB console: PARTNUM 0x00 / VERSION 0x14, register I/O, radio selection, OOK edge-capture live; SX1278 RA-02 RegVersion 0x12 detect + register-I/O + selection | See [`HWTEST-RESULTS-cc1101.md`](HWTEST-RESULTS-cc1101.md) |
+| 2026-09-05 | WH51 decoder: real frame `51 0F 5C 54 10 7F 28 F8 D0 FF FF FF 4B D7` (id 0f5c54) captured by the rpi5 reference logger; host test asserts moisture 40, battery 1600 mV, ad_raw 208, battery_ok 1.0 vs rtl_433 -> **108 host tests pass** | `pytest firmware/tests` |
+| 2026-09-05 | WH51 live on a node CC1101: **NOT decoded.** blue (E07) + green (D-SUN) in `weather` mode received strong 433.92 FSK traffic (RSSI down to -26 dBm) and completed packets (`Rx` climbing), but never a WH51 frame (`Decoded=0`); registers read back identical to the proven reference, PKTLEN 25->17 tried, sync relaxed 16/16->15/16 (`Rx` 376 in 90 s, still `Decoded=0`). The reference CC1101/LilyGo on rpi5 heard the same WH51 sensors at -74..-82 dBm throughout. Root cause: the WH51 sensors are not received at these USB nodes' antennas at a detectable SNR; firmware/decoder/config verified correct. | reference `cc1101.hits.jsonl` vs node console |
 | 2026-08-22 | Merlin remote: rtl_433 -R 164 / 178 / -A | **PENDING — needs a human to press the remote**; procedure in the project repo's `protocols/secplus-v2.md` |
 
 ## See also
