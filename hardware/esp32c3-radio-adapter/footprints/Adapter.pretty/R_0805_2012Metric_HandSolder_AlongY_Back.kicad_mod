@@ -1,14 +1,14 @@
-(footprint "R_0805_2012Metric_HandSolder_AlongY"
+(footprint "R_0805_2012Metric_HandSolder_AlongY_Back"
 	(version 20241229)
 	(generator "kicadgen.py")
 	(generator_version "9.0")
 	(layer "F.Cu")
-	(descr "0805 chip resistor, 1.4 x 1.2 mm pads 2.0 mm apart, pins along +y")
+	(descr "0805 chip resistor, 1.4 x 1.2 mm pads 2.0 mm apart, pins along +y, on the back copper")
 	(tags "resistor 0805 hand solder")
 	(property "Reference" "REF**"
 		(at 0 -2.4 0)
 		(layer "F.SilkS")
-		(uuid "aa39d824-e005-5f49-bc86-f8c348265d5a")
+		(uuid "d82b4290-8bbc-5cb9-b732-20895c79a0ff")
 		(effects
 			(font
 				(size 0.8 0.8)
@@ -16,10 +16,10 @@
 			)
 		)
 	)
-	(property "Value" "R_0805_2012Metric_HandSolder_AlongY"
+	(property "Value" "R_0805_2012Metric_HandSolder_AlongY_Back"
 		(at 0 2.4 0)
 		(layer "F.Fab")
-		(uuid "c03c210d-060c-5bea-88d7-a9f15a1dd056")
+		(uuid "185cf4e1-0f8b-5ea6-88e7-bc835af8044b")
 		(effects
 			(font
 				(size 0.8 0.8)
@@ -31,7 +31,7 @@
 		(at 0 0 0)
 		(layer "F.Fab")
 		(hide yes)
-		(uuid "a2cba71f-da58-5115-ac0a-77631159818c")
+		(uuid "59a26cf6-ee1c-54db-8b47-12b4fe6c8c70")
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -43,7 +43,7 @@
 		(at 0 0 0)
 		(layer "F.Fab")
 		(hide yes)
-		(uuid "7e7bc43c-e12b-5c7e-8d66-c1a3534be90c")
+		(uuid "59fca5f1-7a58-5a6c-81b9-5ec44d42687d")
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -61,12 +61,12 @@
 		)
 		(fill no)
 		(layer "F.CrtYd")
-		(uuid "b1075ff0-00f1-59f2-b6b1-00f546d89f4e")
+		(uuid "a3edc1dc-ce32-5e6d-9ad3-3bc78fe49668")
 	)
 	(fp_text user "${REFERENCE}"
 		(at 0 -2.4 0)
 		(layer "F.Fab")
-		(uuid "a98c0a64-1db0-52f9-a24e-13eddcb29871")
+		(uuid "78540714-b9af-5109-8d7d-565b8220e37e")
 		(effects
 			(font
 				(size 0.6 0.6)
@@ -82,20 +82,20 @@
 			(type solid)
 		)
 		(fill no)
-		(layer "F.Fab")
+		(layer "B.Fab")
 		(uuid "5964af00-a308-5a85-9976-c81569e23d54")
 	)
 	(pad "1" smd rect
 		(at 0 -1)
 		(size 1.4 1.2)
-		(layers "F.Cu" "F.Mask" "F.Paste")
-		(uuid "9798bbcb-a75f-5969-ae22-59a55728ece1")
+		(layers "B.Cu" "B.Mask" "B.Paste")
+		(uuid "33835552-937e-583c-91fe-8bbd49df9a43")
 	)
 	(pad "2" smd rect
 		(at 0 1)
 		(size 1.4 1.2)
-		(layers "F.Cu" "F.Mask" "F.Paste")
-		(uuid "18c0e1b3-3785-5d7b-8bff-dfcda68cfa25")
+		(layers "B.Cu" "B.Mask" "B.Paste")
+		(uuid "71ad13f5-f128-52f7-95e1-b205b2dc7a17")
 	)
 	(embedded_fonts no)
 )

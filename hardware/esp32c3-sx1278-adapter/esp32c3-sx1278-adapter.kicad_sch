@@ -1246,7 +1246,7 @@
 			)
 		)
 	)
-	(global_label "MOSI"
+	(global_label "+3V3"
 		(shape bidirectional)
 		(at 71.12 93.98 180)
 		(fields_autoplaced yes)
@@ -1268,7 +1268,7 @@
 			)
 		)
 	)
-	(global_label "SCK"
+	(global_label "DIO1"
 		(shape bidirectional)
 		(at 71.12 96.52 180)
 		(fields_autoplaced yes)
@@ -1290,7 +1290,7 @@
 			)
 		)
 	)
-	(global_label "NSS"
+	(global_label "MISO"
 		(shape bidirectional)
 		(at 71.12 99.06 180)
 		(fields_autoplaced yes)
@@ -1312,7 +1312,7 @@
 			)
 		)
 	)
-	(global_label "RESET"
+	(global_label "MOSI"
 		(shape bidirectional)
 		(at 71.12 101.6 180)
 		(fields_autoplaced yes)
@@ -1334,7 +1334,7 @@
 			)
 		)
 	)
-	(global_label "GPIO9"
+	(global_label "SCK"
 		(shape bidirectional)
 		(at 71.12 104.14 180)
 		(fields_autoplaced yes)
@@ -1576,7 +1576,7 @@
 			)
 		)
 	)
-	(global_label "MISO"
+	(global_label "RESET"
 		(shape bidirectional)
 		(at 96.52 101.6 180)
 		(fields_autoplaced yes)
@@ -1598,7 +1598,7 @@
 			)
 		)
 	)
-	(global_label "DIO1"
+	(global_label "GPIO3"
 		(shape bidirectional)
 		(at 96.52 104.14 180)
 		(fields_autoplaced yes)
@@ -1642,7 +1642,7 @@
 			)
 		)
 	)
-	(global_label "+3V3"
+	(global_label "GPIO1"
 		(shape bidirectional)
 		(at 96.52 109.22 180)
 		(fields_autoplaced yes)
@@ -1664,7 +1664,7 @@
 			)
 		)
 	)
-	(global_label "GPIO0"
+	(global_label "NSS"
 		(shape bidirectional)
 		(at 96.52 111.76 180)
 		(fields_autoplaced yes)
@@ -2353,7 +2353,7 @@
 			)
 		)
 	)
-	(text "ESP32-C3 SuperMini (J1 left row, J2 right row) driving an SX1278 LoRa module (U2).\nSPI: MOSI=GPIO5 SCK=GPIO6 NSS=GPIO7 MISO=GPIO4; RESET=GPIO8 DIO0=GPIO10 DIO1=GPIO3.\nGPIO1 is tied to 3V3: the radio-type strap reads high on this adapter.\nJ3 is the spring antenna wire hole; J4 an optional edge-mount SMA jack (fit one or the other)."
+	(text "ESP32-C3 SuperMini (J1 left row, J2 right row) driving an SX1278 LoRa module (U2).\nSPI: MOSI=GPIO8 SCK=GPIO9 NSS=GPIO0 MISO=GPIO7; RESET=GPIO4 DIO0=GPIO10 DIO1=GPIO6.\nGPIO5 is tied to 3V3: the radio-type strap reads high on this adapter.\nJ3 is the spring antenna wire hole; J4 an optional edge-mount SMA jack (fit one or the other)."
 		(exclude_from_sim no)
 		(at 60 90 0)
 		(effects

@@ -7,7 +7,7 @@
 	(title_block
 		(title "ESP32-C3 SuperMini to CC1101 (E07-M1101D) or SX1278 Ra-02 breakout adapter")
 		(rev "${GIT_DESCRIBE}")
-		(comment 1 "Carrier joining an ESP32-C3 SuperMini to an Ebyte E07-M1101D-SMA CC1101 board or an SX1278 Ra-02 breakout via one 2x4 socket; radio tracks on the back, GND pour plus the expansion header and strap on the front")
+		(comment 1 "Carrier joining an ESP32-C3 SuperMini to an Ebyte E07-M1101D-SMA CC1101 board or an SX1278 Ra-02 breakout via one 2x4 socket; all tracks on the back, GND pour on the front")
 	)
 	(lib_symbols
 	(symbol "Connector_Generic:Conn_01x08"
@@ -1367,7 +1367,7 @@
 			)
 		)
 	)
-	(global_label "MOSI"
+	(global_label "RADIO_ID"
 		(shape bidirectional)
 		(at 71.12 93.98 180)
 		(fields_autoplaced yes)
@@ -1389,7 +1389,7 @@
 			)
 		)
 	)
-	(global_label "SCK"
+	(global_label "GDO2_DIO0"
 		(shape bidirectional)
 		(at 71.12 96.52 180)
 		(fields_autoplaced yes)
@@ -1411,7 +1411,7 @@
 			)
 		)
 	)
-	(global_label "CSN_NSS"
+	(global_label "MISO"
 		(shape bidirectional)
 		(at 71.12 99.06 180)
 		(fields_autoplaced yes)
@@ -1433,7 +1433,7 @@
 			)
 		)
 	)
-	(global_label "GPIO8"
+	(global_label "MOSI"
 		(shape bidirectional)
 		(at 71.12 101.6 180)
 		(fields_autoplaced yes)
@@ -1455,7 +1455,7 @@
 			)
 		)
 	)
-	(global_label "GPIO9"
+	(global_label "SCK"
 		(shape bidirectional)
 		(at 71.12 104.14 180)
 		(fields_autoplaced yes)
@@ -1697,7 +1697,7 @@
 			)
 		)
 	)
-	(global_label "MISO"
+	(global_label "GPIO4"
 		(shape bidirectional)
 		(at 96.52 101.6 180)
 		(fields_autoplaced yes)
@@ -1719,7 +1719,7 @@
 			)
 		)
 	)
-	(global_label "GDO2_DIO0"
+	(global_label "GPIO3"
 		(shape bidirectional)
 		(at 96.52 104.14 180)
 		(fields_autoplaced yes)
@@ -1763,7 +1763,7 @@
 			)
 		)
 	)
-	(global_label "RADIO_ID"
+	(global_label "GPIO1"
 		(shape bidirectional)
 		(at 96.52 109.22 180)
 		(fields_autoplaced yes)
@@ -1785,7 +1785,7 @@
 			)
 		)
 	)
-	(global_label "GPIO0"
+	(global_label "CSN_NSS"
 		(shape bidirectional)
 		(at 96.52 111.76 180)
 		(fields_autoplaced yes)
@@ -2156,7 +2156,7 @@
 			)
 		)
 	)
-	(global_label "+5V"
+	(global_label "+3V3"
 		(shape bidirectional)
 		(at 147.32 119.38 180)
 		(fields_autoplaced yes)
@@ -2178,7 +2178,7 @@
 			)
 		)
 	)
-	(global_label "GPIO8"
+	(global_label "GPIO4"
 		(shape bidirectional)
 		(at 147.32 121.92 180)
 		(fields_autoplaced yes)
@@ -2200,7 +2200,7 @@
 			)
 		)
 	)
-	(global_label "GPIO9"
+	(global_label "GPIO3"
 		(shape bidirectional)
 		(at 147.32 124.46 180)
 		(fields_autoplaced yes)
@@ -2244,7 +2244,7 @@
 			)
 		)
 	)
-	(global_label "GPIO20"
+	(global_label "GPIO1"
 		(shape bidirectional)
 		(at 147.32 129.54 180)
 		(fields_autoplaced yes)
@@ -2266,7 +2266,7 @@
 			)
 		)
 	)
-	(global_label "GPIO0"
+	(global_label "GPIO21"
 		(shape bidirectional)
 		(at 147.32 132.08 180)
 		(fields_autoplaced yes)
@@ -2288,7 +2288,7 @@
 			)
 		)
 	)
-	(global_label "GPIO21"
+	(global_label "GPIO20"
 		(shape bidirectional)
 		(at 147.32 134.62 180)
 		(fields_autoplaced yes)
@@ -2452,7 +2452,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "Adapter:R_0805_2012Metric_HandSolder_AlongY"
+		(property "Footprint" "Adapter:R_0805_2012Metric_HandSolder_AlongY_Back"
 			(at 203.2 127 0)
 			(effects
 				(font
@@ -2798,7 +2798,7 @@
 			)
 		)
 	)
-	(text "ESP32-C3 SuperMini (J1 = GPIO row, J2 = power row; through-hole or castellated) driving a CC1101 E07-M1101D board or an SX1278 Ra-02 breakout in socket J3.\nSPI: MOSI=GPIO5 SCK=GPIO6 CSN/NSS=GPIO7 MISO=GPIO4; GDO0 (Ra-02: RST)=GPIO10, GDO2 (Ra-02: DIO0)=GPIO3.\nJ4: the unused SuperMini pins.  JP1 (jumper) or R1 (0R): radio-type strap on GPIO1 (RADIO_ID) to GND, open = CC1101, fitted = Ra-02.\nH1-H4: M2 mounting holes.  Radio tracks on B.Cu; F.Cu carries the GND pour, J4's tracks and the strap."
+	(text "ESP32-C3 SuperMini (J1 = GPIO row, J2 = power row; through-hole or castellated) driving a CC1101 E07-M1101D board or an SX1278 Ra-02 breakout in socket J3.\nSPI: MOSI=GPIO8 SCK=GPIO9 CSN/NSS=GPIO0 MISO=GPIO7; GDO0 (Ra-02: RST)=GPIO10, GDO2 (Ra-02: DIO0)=GPIO6.\nJ4: 3V3 and the unused GPIOs.  JP1 (jumper) or R1 (0R): radio-type strap on GPIO5 (RADIO_ID) to GND, open = CC1101, fitted = Ra-02.\nH1-H4: M2 mounting holes.  All tracks on B.Cu; F.Cu carries only a GND pour."
 		(exclude_from_sim no)
 		(at 60 90 0)
 		(effects
