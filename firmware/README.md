@@ -94,11 +94,14 @@ Verified per-board pin maps (ESP32-C3 GPIO numbers):
 > is also probed first when that template is commissioned, so previously-templated CC1101 nodes
 > keep working.
 
-**Foundation scope (this increment):** SX1278 support is currently **reset / identify /
-register-I/O + selection only** — no FSK/OOK/LoRa RX/TX yet. The staged roadmap
-(FSK-RX -> FSK-TX -> OOK-RX -> OOK-TX -> LoRa) is documented in
-`src/cc1101_node/sx1278_radio.cpp`; note OOK-continuous RX will additionally need a **DIO2** wire
-the current RA-02 adapter does not route.
+**Capability parity (not identical, by hardware constraint):** both radios do
+Fine Offset FSK RX (WS69/WH65B/WS85/WH51) through the same decoder. The SX1278
+does **not** do OOK-PWM remote RX, Security+ 2.0, or TX — OOK-continuous RX needs
+the SX127x **DIO2/DATA** pin, which this RA-02 adapter does not route, and TX is
+not yet implemented for this radio. See `docs/esp32c3-cc1101-node.md` -> *Radio
+capability matrix* for the full table (including live-hardware status per radio)
+and `src/cc1101_node/sx1278_radio.cpp` for the SX1278's staged roadmap
+(FSK-RX -> FSK-TX -> OOK-RX -> OOK-TX -> LoRa).
 
 SX1278 / selection commands (over MQTT and the USB/web console, like the `Cc*` commands):
 
