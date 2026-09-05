@@ -1,0 +1,124 @@
+name: Firmware
+
+# Builds the ESP32-C3 + CC1101/SX1278 Tasmota firmware, runs the host decoder
+# test-suite, and runs the Renode emulation suites from mithro/renode-espemu.
+# The board/manufacturing job lives in ci.yml and is left untouched.
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  build:
+    name: Build ESP32-C3 CC1101 Tasmota firmware
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        run: curl -LsSf https://astral.sh/uv/install.sh | sh
+
+      - name: Build firmware (fetches PlatformIO, clones pinned Tasmota v15.5.0)
+        run: |
+          export PATH="$HOME/.local/bin:$PATH"
+          python3 firmware/build.py
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: cc1101-node-firmware
+          path: |
+            firmware/dist/*.bin
+            firmware/dist/*.elf
+            firmware/dist/*.map
+            firmware/dist/build-info.json
+          retention-days: 14
+
+  host-tests:
+    name: Host decoder and firmware tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        run: curl -LsSf https://astral.sh/uv/install.sh | sh
+
+      - name: Run host tests (native decoder + firmware .so, no hardware)
+        run: |
+          export PATH="$HOME/.local/bin:$PATH"
+          uv run --with pytest pytest firmware/tests -v
+
+  renode:
+    name: Renode emulation tests
+    runs-on: ubuntu-latest
+    # ESP-IDF install + six idf.py firmware builds + Renode is heavy; give it room.
+    timeout-minutes: 120
+    steps:
+      - name: Check out renode-espemu (emulation models and Robot suites)
+        uses: actions/checkout@v4
+        with:
+          repository: mithro/renode-espemu
+          ref: feature/renode-433-air
+          path: renode-espemu
+
+      - name: Install Renode (portable, provides renode-test)
+        run: |
+          wget -qO- https://builds.renode.io/renode-latest.linux-portable.tar.gz | tar xz
+          RENODE_DIR=$(ls -d renode_* | head -1)
+          echo "$PWD/$RENODE_DIR" >> "$GITHUB_PATH"
+
+      - name: Install robotframework (renode-test uses the system python)
+        run: pip install robotframework==6.1 psutil pyyaml netifaces
+
+      - name: Download ESP32-C3 ROM ELF
+        run: |
+          ROM_DIR="$HOME/esp/esp-rom-elfs"
+          mkdir -p "$ROM_DIR"
+          RELEASE_TAG=20240305
+          wget -q -O /tmp/esp-rom-elfs.tar.gz \
+            "https://github.com/espressif/esp-rom-elfs/releases/download/${RELEASE_TAG}/esp-rom-elfs-${RELEASE_TAG}.tar.gz"
+          tar xzf /tmp/esp-rom-elfs.tar.gz -C "$ROM_DIR"
+          ls -la "$ROM_DIR/esp32c3_rev3_rom.elf"
+          echo "ROM_ELF=$ROM_DIR/esp32c3_rev3_rom.elf" >> "$GITHUB_ENV"
+
+      - name: Install ESP-IDF v5.4.1
+        run: |
+          git clone -b v5.4.1 --depth 1 --recursive \
+            https://github.com/espressif/esp-idf.git "$HOME/esp/esp-idf"
+          "$HOME/esp/esp-idf/install.sh" esp32c3
+
+      - name: Build Renode test firmwares (hello_world ships prebuilt binaries)
+        working-directory: renode-espemu
+        run: |
+          . "$HOME/esp/esp-idf/export.sh"
+          for p in spi2 gpio cc1101 sx1278 cc1101_rx sx1278_rx; do
+            idf.py -C peripherals/$p/firmware set-target esp32c3
+            idf.py -C peripherals/$p/firmware build
+          done
+
+      - name: Run Renode emulation suites
+        working-directory: renode-espemu
+        run: |
+          renode-test \
+            --variable "BASE:$PWD" \
+            --variable "ROM_ELF:$ROM_ELF" \
+            peripherals/spi2/test.robot \
+            peripherals/gpio/test.robot \
+            hello_world/test.robot \
+            peripherals/cc1101/test.robot \
+            peripherals/sx1278/test.robot \
+            peripherals/cc1101_rx/test.robot \
+            peripherals/sx1278_rx/test.robot
+
+      - name: Upload Renode test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: renode-test-results
+          path: |
+            renode-espemu/robot_output.xml
+            renode-espemu/log.html
+            renode-espemu/report.html
+            renode-espemu/logs/
+          retention-days: 14
