@@ -140,6 +140,19 @@ SX1278 module adapter), then enable the pull-up and sample again (low means
 the Ra-02; high means the pin is floating, i.e. the CC1101). GPIO5 is not an
 ESP32-C3 boot strapping pin, so tying it either way is harmless.
 
+### Jumper-wire version
+
+The same hook-up with Dupont jumper wires instead of the adapter, so the
+firmware setup is identical. Colours follow the rainbow-ribbon order, GND
+brown, 3V3 red, then orange to grey for GPIO5 to GPIO10, with the chip
+select on GPIO0 taking the next colour, white. The orange wire is the
+radio-type strap: to GND for the Ra-02 breakout, left open for the CC1101.
+Drawn by `scripts/draw_wiring.py`.
+
+![Jumper wires from the SuperMini to the CC1101 E07-M1101D board](docs/images/wiring-cc1101.svg)
+
+![Jumper wires from the SuperMini to the Ra-02 breakout](docs/images/wiring-ra02.svg)
+
 ### Why one socket fits both boards
 
 Seen from the carrier (radio board plugged in component side up, its header
@@ -359,6 +372,7 @@ project settings, DRC rules). Verification and rendering with KiCad 9.0
 uv run scripts/verify_boards.py      # ERC + DRC with schematic parity, all boards
 uv run scripts/render_boards.py      # docs/images/*.png (bare boards)
 uv run scripts/draw_pinouts.py       # docs/images/pinout-radio-boards.svg
+uv run scripts/draw_wiring.py        # docs/images/wiring-*.svg
 uv run scripts/build_3d.py           # hardware/3d/*.step (CadQuery; fetched by uv)
 uv run scripts/render_assemblies.py  # docs/images/*-assembly-*.png, *-model-iso.png
 ```
