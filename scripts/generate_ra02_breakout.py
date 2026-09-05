@@ -39,7 +39,7 @@ import pathlib
 import sys
 
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
-from kicadgen import Design, Footprint, Pad, Part, SymbolRef, Track, Via, Zone, fp_circle, fp_rect, fp_text, gr_rect, gr_text  # noqa: E402
+from kicadgen import Design, Footprint, Model, Pad, Part, SymbolRef, Track, Via, Zone, fp_circle, fp_rect, fp_text, gr_rect, gr_text  # noqa: E402
 
 PROJECT = "sx1278-ra02-breakout"
 BOARD_W, BOARD_H = 17.5, 22.5
@@ -125,6 +125,7 @@ def ra02_fp() -> Footprint:
 
 def build() -> Design:
     d = Design(
+        model_root="${KIPRJMOD}/../../3d",
         project=PROJECT,
         title="SX1278 LoRa 433MHz v4.0 breakout (Ai-Thinker Ra-02)",
         comment="Outline, 2x4 back-side header and Ra-02 land pattern of the blue SX1278 LoRa 433MHz v4.0 breakout",
@@ -139,7 +140,7 @@ def build() -> Design:
     Y = lambda v: by + v  # noqa: E731
     mx = lambda pin: MOD_X + mod_pad(pin)[0]  # noqa: E731  board coordinates of a module land
     my = lambda pin: MOD_Y + mod_pad(pin)[1]  # noqa: E731
-    d.parts.append(Part("J1", header_fp(), (X(hdr_x(1)), Y(hdr_y(1))), CONN2X4, "SX1278_Ra-02_breakout", HDR_NETS, (76.2, 101.6), "2x4 header (on the back)"))
+    d.parts.append(Part("J1", header_fp(), (X(hdr_x(1)), Y(hdr_y(1))), CONN2X4, "SX1278_Ra-02_breakout", HDR_NETS, (76.2, 101.6), "2x4 header (on the back)", models=[Model("sx1278-ra02-breakout-components.step")]))
     d.parts.append(Part("U1", ra02_fp(), (X(MOD_X), Y(MOD_Y)), CONN16, "Ra-02", MOD_NETS, (114.3, 101.6), "Ai-Thinker Ra-02 LoRa module"))
 
     T, V, F, B = d.tracks, d.vias, "F.Cu", "B.Cu"

@@ -161,8 +161,9 @@ class Footprint:
 		)
 	)"""
 
-    def body(self, ref: str, value: str, nets: dict[str, tuple[int, str]] | None, on_board: bool) -> str:
-        """Everything after the header line; shared by library and board forms."""
+    def body(self, ref: str, value: str, nets: dict[str, tuple[int, str]] | None, on_board: bool, models: str = "") -> str:
+        """Everything after the header line; shared by library and board forms.
+        models: pre-rendered (model ...) blocks appended on the board form."""
         parts = [
             self.property_block("Reference", ref, self.ref_pos, "F.SilkS", on_board, 0.8),
             self.property_block("Value", value, (*self.value_pos, 0), "F.Fab", on_board, 0.8),
@@ -180,6 +181,8 @@ class Footprint:
             net = nets.get(pad.number) if nets else None
             parts.append(pad.sexpr(self.name, net, f"Pin_{pad.number}" if net else None))
         parts.append("\t(embedded_fonts no)")
+        if models:
+            parts.append(models)
         return "\n".join(parts)
 
     def library_text(self) -> str:
@@ -233,6 +236,32 @@ def load_symbol(sym: SymbolRef, share: pathlib.Path = KICAD_SHARE) -> tuple[str,
 # Design
 # --------------------------------------------------------------------------
 @dataclass
+class Model:
+    """A 3D model on a footprint: file name under the design's model_root,
+    offset in mm and rotation in degrees in KiCad's model frame (X right, Y
+    up, Z out of the board).  Note KiCad rotates by the NEGATIVE of the angles
+    stored in the file (the footprint editor shows them negated)."""
+
+    file: str
+    offset: tuple[float, float, float] = (0.0, 0.0, 0.0)
+    rotate: tuple[float, float, float] = (0.0, 0.0, 0.0)
+
+    def sexpr(self, root: str) -> str:
+        return f"""\
+	(model "{root}/{self.file}"
+		(offset
+			(xyz {fmt(self.offset[0])} {fmt(self.offset[1])} {fmt(self.offset[2])})
+		)
+		(scale
+			(xyz 1 1 1)
+		)
+		(rotate
+			(xyz {fmt(self.rotate[0])} {fmt(self.rotate[1])} {fmt(self.rotate[2])})
+		)
+	)"""
+
+
+@dataclass
 class Part:
     ref: str
     fp: Footprint
@@ -242,6 +271,7 @@ class Part:
     nets: dict[str, str]  # pad number -> net name
     sch_at: tuple[float, float]
     description: str = ""
+    models: list[Model] = field(default_factory=list)
 
 
 def gr_text(key: str, text: str, x: float, y: float, layer: str, size: float, justify: str | None = None, angle: float = 0) -> str:
@@ -435,6 +465,7 @@ class Design:
     zones: list[Zone] = field(default_factory=list)
     castellated_refs: list[str] = field(default_factory=list)
     sch_note: str = ""
+    model_root: str = "${KIPRJMOD}/../3d"  # where Part.models files live, as written into the board
 
     # -- helpers ----------------------------------------------------------
     @property
@@ -466,7 +497,8 @@ class Design:
 	(sheetname "/")
 	(sheetfile "{self.project}.kicad_sch")
 """
-        return textwrap.indent(head + part.fp.body(part.ref, part.value, pad_nets, on_board=True) + "\n)\n", "\t")
+        models = "\n".join(m.sexpr(self.model_root) for m in part.models)
+        return textwrap.indent(head + part.fp.body(part.ref, part.value, pad_nets, on_board=True, models=models) + "\n)\n", "\t")
 
     def board_text(self) -> str:
         sheet_uuid = uid("sch:root")

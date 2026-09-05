@@ -42,6 +42,8 @@ jobs:
           echo "tag=$(git describe --tags --abbrev=0 --match 'v[0-9]*')" >> "$GITHUB_OUTPUT"
 
       - name: Regenerate the boards and check they match the commit
+        # The STEP models under hardware/3d/ are committed as built by
+        # scripts/build_3d.py (CadQuery) and are not rebuilt here.
         run: |
           for g in supermini sx1278 cc1101 ra02_breakout adapters; do python3 scripts/generate_$g.py > /dev/null; done
           python3 scripts/fill_zones.py
@@ -53,6 +55,9 @@ jobs:
 
       - name: Build manufacturing packages
         run: python3 scripts/export_manufacturing.py --out dist
+
+      - name: Export the 3D assemblies (STEP and GLB)
+        run: python3 scripts/render_assemblies.py --no-render --export dist
 
       - uses: actions/upload-artifact@v4
         with:
@@ -86,7 +91,7 @@ jobs:
             gh release view "$TAG" --repo "$GITHUB_REPOSITORY" --json assets --jq '.assets[].name' \
               | xargs -r -n1 gh release delete-asset "$TAG" --repo "$GITHUB_REPOSITORY" --yes
             gh release edit "$TAG" --repo "$GITHUB_REPOSITORY" --title "$DESCRIBE" --notes-file dist/RELEASE_NOTES.md --latest
-            gh release upload "$TAG" --repo "$GITHUB_REPOSITORY" dist/*.zip dist/SHA256SUMS
+            gh release upload "$TAG" --repo "$GITHUB_REPOSITORY" dist/*.zip dist/*.step dist/*.glb dist/SHA256SUMS
           else
-            gh release create "$TAG" --repo "$GITHUB_REPOSITORY" --title "$DESCRIBE" --notes-file dist/RELEASE_NOTES.md --latest dist/*.zip dist/SHA256SUMS
+            gh release create "$TAG" --repo "$GITHUB_REPOSITORY" --title "$DESCRIBE" --notes-file dist/RELEASE_NOTES.md --latest dist/*.zip dist/*.step dist/*.glb dist/SHA256SUMS
           fi

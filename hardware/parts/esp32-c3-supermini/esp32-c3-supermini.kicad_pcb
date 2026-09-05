@@ -410,6 +410,17 @@
 			(uuid "c0a2bbc2-f600-5451-8f8a-37ac0d290260")
 		)
 		(embedded_fonts no)
+		(model "${KIPRJMOD}/../../3d/esp32-c3-supermini-components.step"
+			(offset
+				(xyz 0 0 0)
+			)
+			(scale
+				(xyz 1 1 1)
+			)
+			(rotate
+				(xyz 0 0 0)
+			)
+		)
 	)
 	(footprint "SuperMini:SuperMini_Header_1x08_P2.54mm_Castellated_Right"
 		(layer "F.Cu")

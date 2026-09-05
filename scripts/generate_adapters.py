@@ -36,7 +36,7 @@ import sys
 
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
 from generate_cc1101 import SMA_GND_OFFSET, SMA_PAD_L, sma_fp  # noqa: E402
-from kicadgen import Design, Footprint, Pad, Part, SymbolRef, Track, Via, Zone, fp_circle, fp_rect, fp_text, gr_line, gr_rect, gr_text  # noqa: E402
+from kicadgen import Design, Footprint, Model, Pad, Part, SymbolRef, Track, Via, Zone, fp_circle, fp_rect, fp_text, gr_line, gr_rect, gr_text  # noqa: E402
 
 # ---------------------------------------------------------------------------
 # Shared: GPIO assignment and SuperMini geometry
@@ -67,6 +67,8 @@ SM_LEFT_SILK = ["5", "6", "7", "8", "9", "10", "20", "21"]  # as printed on the 
 SM_RIGHT_SILK = ["5V", "G", "3V3", "4", "3", "2", "1", "0"]
 SM_PAD = 1.6
 SM_DRILL = 1.0
+HEADER_BODY = 2.5  # plastic body of a 2.54 mm pin header: the gap between two boards it joins
+SUPERMINI_MODEL = "esp32-c3-supermini.step"  # see scripts/build_3d.py for the models and their origins
 TRACK = 0.25
 BOARD_W = 24.0
 
@@ -119,7 +121,8 @@ def supermini_parts(d: Design, left_nets: dict[str, str], right_nets: dict[str, 
     labels = labels or {}
     bx, by = d.bx, d.by
     fp = supermini_header_fp()
-    d.parts.append(Part("J1", fp, (bx + SM_LEFT_X, by + SM_PIN1_Y), CONN8, "Conn_01x08", left_nets, (76.2, 101.6), "ESP32-C3 SuperMini left row"))
+    d.parts.append(Part("J1", fp, (bx + SM_LEFT_X, by + SM_PIN1_Y), CONN8, "Conn_01x08", left_nets, (76.2, 101.6), "ESP32-C3 SuperMini left row",
+                        models=[Model(SUPERMINI_MODEL, (0, 0, HEADER_BODY))]))
     d.parts.append(Part("J2", fp, (bx + SM_RIGHT_X, by + SM_PIN1_Y), CONN8, "Conn_01x08", right_nets, (101.6, 101.6), "ESP32-C3 SuperMini right row"))
     x0, y0, x1, y1 = SM_BODY
     # Outline on F.Fab (the pin-name silk sits between the pads and the outline).
@@ -227,9 +230,12 @@ def build_sx1278() -> Design:
     bx, by = d.bx, d.by
     left, right = supermini_nets(PINMAP)
     supermini_parts(d, left, right, labels={RADIO_ID_GPIO: "ID=3V3"})
-    d.parts.append(Part("U2", sx1278_land_fp(), (bx + MOD_L, by + MOD_T), CONN16, "SX1278_module", {str(i + 1): n for i, n in enumerate(SX_PINS)}, (127.0, 101.6), "SX1278 LoRa module"))
+    # The module model is drawn with its 12-pad edge on the left (as the reference board
+    # under hardware/parts/); here it is turned 90 degrees clockwise so that edge is on top.
+    d.parts.append(Part("U2", sx1278_land_fp(), (bx + MOD_L, by + MOD_T), CONN16, "SX1278_module", {str(i + 1): n for i, n in enumerate(SX_PINS)}, (127.0, 101.6), "SX1278 LoRa module",
+                        models=[Model("sx1278-lora-module.step", (MOD_W, 0, 0), (0, 0, 90))]))  # KiCad applies the negated angle
     d.parts.append(Part("J3", antenna_hole_fp(), (bx + MOD_R - 1.4, by + ANT_HOLE_Y), CONN1, "Antenna", {"1": "ANT"}, (152.4, 101.6), "Spring antenna"))
-    d.parts.append(Part("J4", sma_fp(), (bx + SMA_X, by + SX_H), COAX, "SMA", {"1": "ANT", "2": "GND"}, (165.1, 101.6), "Optional edge-mount SMA jack"))
+    d.parts.append(Part("J4", sma_fp(), (bx + SMA_X, by + SX_H), COAX, "SMA", {"1": "ANT", "2": "GND"}, (165.1, 101.6), "Optional edge-mount SMA jack", models=[Model("sma-edge-jack.step")]))
 
     T = d.tracks
     V = d.vias
@@ -408,7 +414,11 @@ class Carrier:
         self.sm_right = self.px(1) - 1.74 + 22.52  # SuperMini body right edge (22.02)
         d = self.d
         d.parts.append(Part("J1", supermini_castellated_row_fp(+1), (self.X(self.px(1)), self.Y(CC_BOT_Y)), CONN8, "Conn_01x08", self.left, (76.2, 101.6), "ESP32-C3 SuperMini GPIO row (left column)"))
-        d.parts.append(Part("J2", supermini_castellated_row_fp(-1), (self.X(self.px(1)), self.Y(CC_TOP_Y)), CONN8, "Conn_01x08", self.right, (101.6, 101.6), "ESP32-C3 SuperMini power row (right column)"))
+        # The SuperMini model (origin at its left-column pin 1, USB-C up) rides on
+        # J2: turned 90 degrees so its right column lies along the power row, on
+        # top of the 2.5 mm header bodies.
+        d.parts.append(Part("J2", supermini_castellated_row_fp(-1), (self.X(self.px(1)), self.Y(CC_TOP_Y)), CONN8, "Conn_01x08", self.right, (101.6, 101.6), "ESP32-C3 SuperMini power row (right column)",
+                            models=[Model(SUPERMINI_MODEL, (0, -15.24, HEADER_BODY), (0, 0, -90))]))  # KiCad applies the negated angle
 
     # -- coordinates ----------------------------------------------------------
     def X(self, v: float) -> float:
@@ -427,8 +437,8 @@ class Carrier:
         return (a + b) / 2
 
     # -- parts ------------------------------------------------------------------
-    def add(self, ref: str, fp: Footprint, at: tuple[float, float], sym: SymbolRef, value: str, nets: dict[str, str], sch_at: tuple[float, float], descr: str) -> None:
-        self.d.parts.append(Part(ref, fp, (self.X(at[0]), self.Y(at[1])), sym, value, nets, sch_at, descr))
+    def add(self, ref: str, fp: Footprint, at: tuple[float, float], sym: SymbolRef, value: str, nets: dict[str, str], sch_at: tuple[float, float], descr: str, models: list[Model] | None = None) -> None:
+        self.d.parts.append(Part(ref, fp, (self.X(at[0]), self.Y(at[1])), sym, value, nets, sch_at, descr, models or []))
 
     def holes(self) -> None:
         fp = mounting_hole_fp()
@@ -540,7 +550,7 @@ RA02_W, RA02_H, RA02_ROW_IN = 17.5, 22.5, 1.3  # Ra-02 breakout outline for the 
 E07_W, E07_H, E07_ROW_IN = 15.0, 30.0, 1.6
 
 
-def build_radio() -> Design:
+def build_radio(radio: str = "e07") -> Design:
     """SuperMini + one 2x4 socket that takes either the E07-M1101D (CC1101)
     board or the SX1278 Ra-02 breakout.  The SuperMini's right column becomes
     the top row (5V at the left) and its left column the bottom row (GPIO5 at
@@ -570,10 +580,19 @@ def build_radio() -> Design:
     sx = lambda pin: S1[0] - ((pin - 1) // 2) * SM_PITCH  # noqa: E731
     sy = lambda pin: S1[1] + ((pin - 1) % 2) * SM_PITCH  # noqa: E731
     SY0, SY1 = sy(1), sy(2)
-    c.add("J3", e07_socket_fp(), S1, CONN2X4, "E07-M1101D_or_Ra-02", RADIO_PINS, (127.0, 101.6), "Radio board socket (CC1101 E07-M1101D or SX1278 Ra-02 breakout)")
-    c.add("J4", pin_header_fp(len(EXP_PINS)), (ex(1), EXP_Y), CONN7, "Expansion", {str(i + 1): n for i, n in enumerate(EXP_PINS)}, (152.4, 127.0), "Unused SuperMini pins")
-    c.add("JP1", pin_header_fp(2, "y"), (JP1_X, JP1_Y), CONN2, "RA-02", {"1": "RADIO_ID", "2": "GND"}, (177.8, 127.0), "Radio-type strap: fit a jumper for the Ra-02 breakout, leave open for the CC1101")
-    c.add("R1", resistor_0805_fp(back=True), (R1_X, R1_Y), RES, "0R", {"1": "RADIO_ID", "2": "GND"}, (203.2, 127.0), "Radio-type strap, alternative to JP1: fit 0R for the Ra-02 breakout")
+    # 3D: the plugged-in radio board rides on J3 (origin = socket pin 1), on
+    # top of its own header's body; the E07's model origin is its pin 1, the
+    # Ra-02 breakout's is its pin 1 which sits three columns to the left.
+    radio_models = {
+        "e07": [Model("cc1101-e07-m1101d.step", (0, 0, HEADER_BODY))],
+        "ra02": [Model("sx1278-ra02-breakout.step", (-3 * SM_PITCH, 0, HEADER_BODY)), Model("sx1278-ra02-pigtail.step", (-3 * SM_PITCH, 0, HEADER_BODY))],
+        "none": [],
+    }[radio]
+    c.add("J3", e07_socket_fp(), S1, CONN2X4, "E07-M1101D_or_Ra-02", RADIO_PINS, (127.0, 101.6), "Radio board socket (CC1101 E07-M1101D or SX1278 Ra-02 breakout)", models=radio_models)
+    c.add("J4", pin_header_fp(len(EXP_PINS)), (ex(1), EXP_Y), CONN7, "Expansion", {str(i + 1): n for i, n in enumerate(EXP_PINS)}, (152.4, 127.0), "3V3 and the unused GPIOs", models=[Model("pin-header-1x07.step")])
+    jp1_models = [Model("pin-header-1x02.step")] + ([Model("jumper-cap.step")] if radio == "ra02" else [])
+    c.add("JP1", pin_header_fp(2, "y"), (JP1_X, JP1_Y), CONN2, "RA-02", {"1": "RADIO_ID", "2": "GND"}, (177.8, 127.0), "Radio-type strap: fit a jumper for the Ra-02 breakout, leave open for the CC1101", models=jp1_models)
+    c.add("R1", resistor_0805_fp(back=True), (R1_X, R1_Y), RES, "0R", {"1": "RADIO_ID", "2": "GND"}, (203.2, 127.0), "Radio-type strap, alternative to JP1: fit 0R for the Ra-02 breakout", models=[Model("r0805.step", (0, 0, -1.6), (180, 0, 0))])
     c.holes()
 
     g = lambda a, b: gap(px(a), px(b))  # noqa: E731  gap between two SuperMini pins

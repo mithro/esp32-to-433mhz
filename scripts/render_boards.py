@@ -14,6 +14,10 @@ For each project <name> this writes, in docs/images/:
 All three images of a board have the same pixel size and the same scale:
 the frame is the board outline plus MARGIN_MM on every side at SCALE px/mm,
 so the 3D renders and the layout plot line up side by side.
+
+The 3D renders are of the bare board: the footprints' 3D models (the
+plugged-in modules, headers and so on) are stripped from a temporary copy
+first.  scripts/render_assemblies.py renders the boards with their models.
 """
 
 from __future__ import annotations
@@ -82,6 +86,14 @@ def fit_canvas(img: Image.Image, size: tuple[int, int]) -> Image.Image:
     return canvas
 
 
+MODEL_BLOCK = re.compile(r'\n\t\t\(model "[^"]*"\n.*?\n\t\t\)', re.S)
+
+
+def strip_models(text: str) -> str:
+    """Board file text without the footprints' (model ...) blocks."""
+    return MODEL_BLOCK.sub("", text)
+
+
 def render(kicad: str, inkscape: str, pcb: pathlib.Path) -> None:
     name = pcb.stem
     x0, y0, x1, y1 = board_rect(pcb)
@@ -94,11 +106,13 @@ def render(kicad: str, inkscape: str, pcb: pathlib.Path) -> None:
     # puts the board at exactly SCALE px/mm (the same scale as the layout plot).
     with tempfile.TemporaryDirectory(prefix="render-", dir=OUT) as tmp:
         tmpdir = pathlib.Path(tmp)
+        bare = tmpdir / pcb.name
+        bare.write_text(strip_models(pcb.read_text()))
 
         def render3d(side: str, zoom: float, out: pathlib.Path) -> None:
             run([kicad, "pcb", "render", "--output", str(out), "--side", side,
                  "--width", str(size[0]), "--height", str(size[1]),
-                 "--zoom", f"{zoom:.4f}", "--quality", "high", "--background", "opaque", str(pcb)])
+                 "--zoom", f"{zoom:.4f}", "--quality", "high", "--background", "opaque", str(bare)])
 
         probe = tmpdir / "probe.png"
         render3d("top", 1.0, probe)

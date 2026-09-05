@@ -162,7 +162,8 @@ def main() -> None:
     notes = "\n".join([
         f"Manufacturing packages for `{rev}` (Gerber + Excellon drill), one zip per board and fab, generated",
         "by CI from the committed KiCad files after ERC/DRC passed. Each zip contains a README.txt with the",
-        "board size, stack-up and ordering notes.",
+        "board size, stack-up and ordering notes. The `.step` / `.glb` files are the assembled adapters (SuperMini,",
+        "radio board, headers, antenna connector) for designing a case; see the README's 3D models section.",
         "",
         "| Board | Size (mm) | Rev | JLCPCB | NextPCB |",
         "| --- | --- | --- | --- | --- |",

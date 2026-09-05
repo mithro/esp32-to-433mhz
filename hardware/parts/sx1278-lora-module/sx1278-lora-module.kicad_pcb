@@ -578,6 +578,17 @@
 			(uuid "e2f06942-a308-5320-929e-9c2b8abe16b2")
 		)
 		(embedded_fonts no)
+		(model "${KIPRJMOD}/../../3d/sx1278-lora-module-components.step"
+			(offset
+				(xyz 0 0 0)
+			)
+			(scale
+				(xyz 1 1 1)
+			)
+			(rotate
+				(xyz 0 0 0)
+			)
+		)
 	)
 	(gr_rect
 		(start 100 100)

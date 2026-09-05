@@ -299,6 +299,17 @@
 			(uuid "704c5eba-0471-5cd4-aac6-0c0b276b764a")
 		)
 		(embedded_fonts no)
+		(model "${KIPRJMOD}/../../3d/cc1101-e07-m1101d-components.step"
+			(offset
+				(xyz 0 0 0)
+			)
+			(scale
+				(xyz 1 1 1)
+			)
+			(rotate
+				(xyz 0 0 0)
+			)
+		)
 	)
 	(footprint "E07:MountingHole_3.0mm_Pad_4.2mm"
 		(layer "F.Cu")

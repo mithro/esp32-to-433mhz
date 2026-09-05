@@ -29,7 +29,7 @@ import pathlib
 import sys
 
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
-from kicadgen import Design, Footprint, Pad, Part, SymbolRef, gr_circle, gr_rect, gr_text  # noqa: E402
+from kicadgen import Design, Footprint, Model, Pad, Part, SymbolRef, gr_circle, gr_rect, gr_text  # noqa: E402
 
 BOARD_W = 18.00
 BOARD_H = 22.52
@@ -75,6 +75,7 @@ def header(side: str) -> Footprint:
 
 def build() -> Design:
     d = Design(
+        model_root="${KIPRJMOD}/../../3d",
         project=PROJECT,
         title="ESP32-C3 SuperMini form-factor board",
         comment="Outline and castellated 2x8 header layout identical to the ESP32-C3 SuperMini",
@@ -87,7 +88,7 @@ def build() -> Design:
     )
     bx, by = d.bx, d.by
     conn = SymbolRef("Connector_Generic.kicad_sym", "Connector_Generic", "Conn_01x08")
-    d.parts.append(Part("J1", header("left"), (bx + PIN_EDGE_X, by + PIN_TOP_Y), conn, "Conn_01x08", {str(i + 1): n for i, n in enumerate(LEFT_PINS)}, (76.2, 101.6), "Left header"))
+    d.parts.append(Part("J1", header("left"), (bx + PIN_EDGE_X, by + PIN_TOP_Y), conn, "Conn_01x08", {str(i + 1): n for i, n in enumerate(LEFT_PINS)}, (76.2, 101.6), "Left header", models=[Model("esp32-c3-supermini-components.step")]))
     d.parts.append(Part("J2", header("right"), (bx + BOARD_W - PIN_EDGE_X, by + PIN_TOP_Y), conn, "Conn_01x08", {str(i + 1): n for i, n in enumerate(RIGHT_PINS)}, (127.0, 101.6), "Right header"))
 
     g = d.graphics

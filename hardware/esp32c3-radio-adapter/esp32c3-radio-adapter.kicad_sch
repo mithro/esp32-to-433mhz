@@ -2117,7 +2117,7 @@
 				(hide yes)
 			)
 		)
-		(property "Description" "Unused SuperMini pins"
+		(property "Description" "3V3 and the unused GPIOs"
 			(at 152.4 127 0)
 			(effects
 				(font

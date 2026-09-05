@@ -356,9 +356,11 @@ project settings, DRC rules). Verification and rendering with KiCad 9.0
 (`kicad-cli`) and inkscape:
 
 ```sh
-uv run scripts/verify_boards.py   # ERC + DRC with schematic parity, all boards
-uv run scripts/render_boards.py   # docs/images/*.png
-uv run scripts/draw_pinouts.py    # docs/images/pinout-radio-boards.svg
+uv run scripts/verify_boards.py      # ERC + DRC with schematic parity, all boards
+uv run scripts/render_boards.py      # docs/images/*.png (bare boards)
+uv run scripts/draw_pinouts.py       # docs/images/pinout-radio-boards.svg
+uv run scripts/build_3d.py           # hardware/3d/*.step (CadQuery; fetched by uv)
+uv run scripts/render_assemblies.py  # docs/images/*-assembly-*.png, *-model-iso.png
 ```
 
 ERC reports only "global label not connected anywhere else" warnings (each
@@ -387,8 +389,81 @@ the same `git describe` string through the `GIT_DESCRIBE` text variable, which
 the export defines at plot time.
 
 ```sh
-uv run scripts/export_manufacturing.py --out dist   # same packages locally
+uv run scripts/export_manufacturing.py --out dist            # same packages locally
+uv run scripts/render_assemblies.py --no-render --export dist  # the STEP / GLB assemblies
 ```
+
+The release also carries the assembled adapters as STEP and GLB files (see
+[3D models and case design](#3d-models-and-case-design)).
+
+## 3D models and case design
+
+`hardware/3d/` holds STEP models, built by `scripts/build_3d.py` with
+[CadQuery](https://cadquery.readthedocs.io/), of every board in the repo
+and of the parts that go with them. The KiCad boards reference them, so
+KiCad's 3D viewer and `kicad-cli pcb export step` show the adapters
+populated, and the CI release includes the resulting assemblies
+(`<adapter>-assembly-<variant>.step` / `.glb`) ready to import into a CAD
+tool for a case. The geometry that matters for a case (outlines, hole
+positions, connector positions, stack heights) follows the footprints and
+datasheets; chips, crystals and shield cans are boxes of the right size.
+
+| Model | Origin | Contents |
+| --- | --- | --- |
+| `esp32-c3-supermini.step` | left column pin 1 (GPIO5) | PCB with castellations, USB-C (1.5 mm past the edge), buttons, chip, antenna, two 1x8 headers underneath |
+| `cc1101-e07-m1101d.step` | header pin 1 (GND) | PCB with its two 3 mm holes, CC1101 and passives, edge-mount SMA jack, 2x4 header underneath |
+| `sx1278-ra02-breakout.step` | header pin 1 (MISO) | PCB, Ra-02 module with shield can and IPEX socket, 2x4 header underneath |
+| `sx1278-ra02-pigtail.step` | as the breakout | U.FL plug, cable and SMA bulkhead jack with nut, on the same axis as the E07's SMA jack |
+| `sx1278-lora-module.step` | module top-left corner | castellated module PCB and shield can |
+| `*-components.step` | as above | the same without the PCB, for the reference boards under `hardware/parts/` |
+| `pin-header-1x07/1x02.step`, `jumper-cap.step`, `r0805.step`, `sma-edge-jack.step` | footprint origin | the adapters' own parts |
+
+Every module is joined to its adapter by a 2.54 mm male pin header soldered
+at both ends: the header's 2.5 mm body sits between the boards (against the
+module's back, on the adapter's front) and its long pins point down through
+the adapter, so 4.4 mm of pin stands out under the 1.6 mm adapter. The
+adapter's own headers face up, with 6 mm pins.
+
+| Socket adapter with E07-M1101D | Socket adapter with Ra-02 breakout and pigtail |
+| --- | --- |
+| ![Socket adapter with the E07-M1101D plugged in](docs/images/esp32c3-radio-adapter-assembly-e07-iso.png) | ![Socket adapter with the Ra-02 breakout and its U.FL-to-SMA pigtail](docs/images/esp32c3-radio-adapter-assembly-ra02-iso.png) |
+| ![Side view with the E07-M1101D](docs/images/esp32c3-radio-adapter-assembly-e07-side.png) | ![Side view with the Ra-02 breakout](docs/images/esp32c3-radio-adapter-assembly-ra02-side.png) |
+
+Key dimensions of the socket adapter assembly, in mm from the adapter's
+top-left corner (x right, y down) and its top surface (z up); the STEP files
+carry the rest:
+
+| Item | x | y | z |
+| --- | --- | --- | --- |
+| Adapter board | 0 to 29 | 0 to 36.5 | -1.6 to 0 |
+| M2 holes (2.2 mm) | 2.4 and 26.6 | 2.4 and 34.1 | |
+| Pin tips under the board | | | -6.0 (module headers), -3.0 (J4, JP1) |
+| SuperMini PCB (1.0 thick) | -0.5 to 22.0 | 5.6 to 23.6 | 2.5 to 3.5 |
+| USB-C receptacle | -2.0 to 5.4 | 10.1 to 19.1 | 3.5 to 6.7 |
+| Highest point (J4 pins, jumper on JP1) | | | 8.5 |
+| E07-M1101D PCB (1.6 thick) | 5.2 to 20.2 | 27.4 to 57.4 | 2.5 to 4.1 |
+| E07 SMA jack: body, then barrel (6.35 dia) | axis 12.7 | 57.4 to 60.4, then to 66.9 | axis 3.3 |
+| Ra-02 breakout PCB (1.6 thick) | 3.9 to 21.4 | 27.7 to 50.2 | 2.5 to 4.1 |
+| Ra-02 shield can top / U.FL plug top | | | 7.3 / 7.9 |
+| Pigtail SMA bulkhead: crimp, hex flange (8 AF), barrel, nut | axis 12.7 | 53.5 to 57.5, to 60.0, to 69.5; nut 62.5 to 64.9 | axis 3.3 |
+
+The bulkhead jack is placed so that its barrel sits where the E07's does
+(same axis, starting 2.6 mm further out), so one antenna hole in a wall at
+y = 60 to 62.5 suits both radios: the E07's jack passes through it, the
+bulkhead is clamped in it by its nut. A real pigtail's cable is longer than
+the drawn one, so leave room to stow the excess beside the breakout.
+
+The SX1278 module adapter assembly (`esp32c3-sx1278-adapter-assembly-module`)
+is 24 x 58 mm with the SuperMini at the top, the module soldered flat
+(3.2 mm tall) and the optional SMA jack on the bottom edge at x = 17:
+
+![SX1278 module adapter with the SuperMini, module and SMA jack](docs/images/esp32c3-sx1278-adapter-assembly-module-iso.png)
+
+The reference boards render with the products' parts on them:
+
+| ESP32-C3 SuperMini | CC1101 E07-M1101D-SMA | SX1278 Ra-02 breakout | SX1278 module |
+| --- | --- | --- | --- |
+| ![SuperMini model](docs/images/esp32-c3-supermini-model-iso.png) | ![E07-M1101D model](docs/images/cc1101-e07-m1101d-model-iso.png) | ![Ra-02 breakout model](docs/images/sx1278-ra02-breakout-model-iso.png) | ![SX1278 module model](docs/images/sx1278-lora-module-model-iso.png) |
 
 ## SX1278 castellated module and its adapter
 

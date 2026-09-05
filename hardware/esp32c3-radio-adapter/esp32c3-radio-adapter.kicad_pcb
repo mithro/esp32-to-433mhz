@@ -508,6 +508,17 @@
 			(uuid "fc5f64e1-6944-559c-a271-05c51de1f480")
 		)
 		(embedded_fonts no)
+		(model "${KIPRJMOD}/../3d/esp32-c3-supermini.step"
+			(offset
+				(xyz 0 -15.24 2.5)
+			)
+			(scale
+				(xyz 1 1 1)
+			)
+			(rotate
+				(xyz 0 0 -90)
+			)
+		)
 	)
 	(footprint "Adapter:PinSocket_2x04_P2.54mm_E07"
 		(layer "F.Cu")
@@ -678,6 +689,17 @@
 			(uuid "2689305a-4b4a-50b7-8cde-27ea0ae48b5f")
 		)
 		(embedded_fonts no)
+		(model "${KIPRJMOD}/../3d/cc1101-e07-m1101d.step"
+			(offset
+				(xyz 0 0 2.5)
+			)
+			(scale
+				(xyz 1 1 1)
+			)
+			(rotate
+				(xyz 0 0 0)
+			)
+		)
 	)
 	(footprint "Adapter:PinHeader_1x07_P2.54mm_Vertical"
 		(layer "F.Cu")
@@ -837,6 +859,17 @@
 			(uuid "801cfe51-32a8-536a-8bfb-150fea16a44c")
 		)
 		(embedded_fonts no)
+		(model "${KIPRJMOD}/../3d/pin-header-1x07.step"
+			(offset
+				(xyz 0 0 0)
+			)
+			(scale
+				(xyz 1 1 1)
+			)
+			(rotate
+				(xyz 0 0 0)
+			)
+		)
 	)
 	(footprint "Adapter:PinHeader_1x02_P2.54mm_Vertical_AlongY"
 		(layer "F.Cu")
@@ -941,6 +974,17 @@
 			(uuid "9a5a5ab4-b3ea-52cd-9dc3-03272b739129")
 		)
 		(embedded_fonts no)
+		(model "${KIPRJMOD}/../3d/pin-header-1x02.step"
+			(offset
+				(xyz 0 0 0)
+			)
+			(scale
+				(xyz 1 1 1)
+			)
+			(rotate
+				(xyz 0 0 0)
+			)
+		)
 	)
 	(footprint "Adapter:R_0805_2012Metric_HandSolder_AlongY_Back"
 		(layer "F.Cu")
@@ -1052,6 +1096,17 @@
 			(uuid "71ad13f5-f128-52f7-95e1-b205b2dc7a17")
 		)
 		(embedded_fonts no)
+		(model "${KIPRJMOD}/../3d/r0805.step"
+			(offset
+				(xyz 0 0 -1.6)
+			)
+			(scale
+				(xyz 1 1 1)
+			)
+			(rotate
+				(xyz 180 0 0)
+			)
+		)
 	)
 	(footprint "Adapter:MountingHole_2.2mm_M2"
 		(layer "F.Cu")

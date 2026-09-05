@@ -303,6 +303,17 @@
 			(uuid "a70f0ca9-f53d-54e1-a346-834709c8ccf1")
 		)
 		(embedded_fonts no)
+		(model "${KIPRJMOD}/../../3d/sx1278-ra02-breakout-components.step"
+			(offset
+				(xyz 0 0 0)
+			)
+			(scale
+				(xyz 1 1 1)
+			)
+			(rotate
+				(xyz 0 0 0)
+			)
+		)
 	)
 	(footprint "Ra02Breakout:Ra-02_LoRa_Module_Land"
 		(layer "F.Cu")

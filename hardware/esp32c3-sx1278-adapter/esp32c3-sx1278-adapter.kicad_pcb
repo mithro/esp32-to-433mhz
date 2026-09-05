@@ -310,6 +310,17 @@
 			(uuid "6d6da4bc-bda7-50c6-acdd-49b7a6d58b5a")
 		)
 		(embedded_fonts no)
+		(model "${KIPRJMOD}/../3d/esp32-c3-supermini.step"
+			(offset
+				(xyz 0 0 2.5)
+			)
+			(scale
+				(xyz 1 1 1)
+			)
+			(rotate
+				(xyz 0 0 0)
+			)
+		)
 	)
 	(footprint "Adapter:SuperMini_Header_1x08_P2.54mm_THT"
 		(layer "F.Cu")
@@ -750,6 +761,17 @@
 			(uuid "c6b9ad2a-625d-5fda-a785-77c11a03726d")
 		)
 		(embedded_fonts no)
+		(model "${KIPRJMOD}/../3d/sx1278-lora-module.step"
+			(offset
+				(xyz 16.5 0 0)
+			)
+			(scale
+				(xyz 1 1 1)
+			)
+			(rotate
+				(xyz 0 0 90)
+			)
+		)
 	)
 	(footprint "Adapter:Antenna_Wire_Hole_1.0mm"
 		(layer "F.Cu")
@@ -992,6 +1014,17 @@
 			(uuid "c593bc72-179a-5d63-81a9-04ba5f7f0eaa")
 		)
 		(embedded_fonts no)
+		(model "${KIPRJMOD}/../3d/sma-edge-jack.step"
+			(offset
+				(xyz 0 0 0)
+			)
+			(scale
+				(xyz 1 1 1)
+			)
+			(rotate
+				(xyz 0 0 0)
+			)
+		)
 	)
 	(gr_rect
 		(start 100 100)

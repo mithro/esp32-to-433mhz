@@ -40,7 +40,7 @@ import pathlib
 import sys
 
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
-from kicadgen import Design, Footprint, Pad, Part, SymbolRef, Track, gr_rect, gr_text  # noqa: E402
+from kicadgen import Design, Footprint, Model, Pad, Part, SymbolRef, Track, gr_rect, gr_text  # noqa: E402
 
 BOARD_W = 17.0  # top/bottom edges
 BOARD_H = 16.5  # left/right edges (the 12-pad edge)
@@ -103,6 +103,7 @@ def module_fp() -> Footprint:
 
 def build() -> Design:
     d = Design(
+        model_root="${KIPRJMOD}/../../3d",
         project=PROJECT,
         title="SX1278 LoRa module form-factor board",
         comment="Outline and 16-pin castellated edge layout of the PXL1276-D01 style SX1278 433MHz LoRa module",
@@ -115,7 +116,7 @@ def build() -> Design:
     )
     bx, by = d.bx, d.by
     nets = {str(i + 1): n for i, n in enumerate(PIN_NAMES)}
-    d.parts.append(Part("J1", module_fp(), (bx, by), SymbolRef("Connector_Generic.kicad_sym", "Connector_Generic", "Conn_01x16"), "Conn_01x16", nets, (76.2, 101.6), "Module edge pads"))
+    d.parts.append(Part("J1", module_fp(), (bx, by), SymbolRef("Connector_Generic.kicad_sym", "Connector_Generic", "Conn_01x16"), "Conn_01x16", nets, (76.2, 101.6), "Module edge pads", models=[Model("sx1278-lora-module-components.step")]))
 
     # GND appears on pins 1, 12 and 15; join them with tracks (the original
     # uses a ground plane).  The vertical run sits just clear of the row copper

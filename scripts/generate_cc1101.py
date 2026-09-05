@@ -33,7 +33,7 @@ import pathlib
 import sys
 
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
-from kicadgen import Design, Footprint, Pad, Part, SymbolRef, Track, fp_rect, fp_text, gr_rect, gr_text  # noqa: E402
+from kicadgen import Design, Footprint, Model, Pad, Part, SymbolRef, Track, fp_rect, fp_text, gr_rect, gr_text  # noqa: E402
 
 BOARD_W = 15.0
 BOARD_H = 30.0
@@ -106,6 +106,7 @@ def sma_fp() -> Footprint:
 
 def build() -> Design:
     d = Design(
+        model_root="${KIPRJMOD}/../../3d",
         project=PROJECT,
         title="CC1101 E07-M1101D-SMA form-factor board",
         comment="Outline, 2x4 header, mounting holes and SMA position identical to the Ebyte E07-M1101D-SMA (TENSTAR CC1101 433MHz module)",
@@ -118,7 +119,7 @@ def build() -> Design:
     )
     bx, by = d.bx, d.by
     pin1_x = bx + BOARD_W - HDR_COL_X  # 11.30 from the left edge
-    d.parts.append(Part("J1", header_fp(), (pin1_x, by + HDR_ROW_Y), SymbolRef("Connector_Generic.kicad_sym", "Connector_Generic", "Conn_02x04_Odd_Even"), "Conn_02x04_Odd_Even", PIN_NAMES, (76.2, 101.6), "2x4 header"))
+    d.parts.append(Part("J1", header_fp(), (pin1_x, by + HDR_ROW_Y), SymbolRef("Connector_Generic.kicad_sym", "Connector_Generic", "Conn_02x04_Odd_Even"), "Conn_02x04_Odd_Even", PIN_NAMES, (76.2, 101.6), "2x4 header", models=[Model("cc1101-e07-m1101d-components.step")]))
     hole_sym = SymbolRef("Mechanical.kicad_sym", "Mechanical", "MountingHole_Pad")
     hole_y = by + BOARD_H - HOLE_FROM_ANT_EDGE
     d.parts.append(Part("H1", hole_fp(), (bx + HOLE_X, hole_y), hole_sym, "MountingHole_Pad", {"1": "GND"}, (114.3, 101.6), "Mounting hole"))
