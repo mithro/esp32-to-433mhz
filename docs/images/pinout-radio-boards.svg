@@ -100,6 +100,14 @@
 <circle cx="135.3" cy="220.0" r="16.5" fill="#ffffff" stroke="#1a1a2e" stroke-width="0.88"/>
 <circle cx="29.7" cy="220.0" r="23.1" fill="#f2c94c" stroke="#1a1a2e" stroke-width="1.10"/>
 <circle cx="29.7" cy="220.0" r="16.5" fill="#ffffff" stroke="#1a1a2e" stroke-width="0.88"/>
+<text x="47.3" y="96.8" font-size="8.8" font-family="Helvetica, Arial, sans-serif" font-weight="normal" fill="#ffffff" text-anchor="start" dy="0.36em">1 GND</text>
+<text x="47.3" y="111.1" font-size="8.8" font-family="Helvetica, Arial, sans-serif" font-weight="normal" fill="#ffffff" text-anchor="start" dy="0.36em">2 VCC</text>
+<text x="47.3" y="125.4" font-size="8.8" font-family="Helvetica, Arial, sans-serif" font-weight="normal" fill="#ffffff" text-anchor="start" dy="0.36em">3 GDO0</text>
+<text x="47.3" y="139.7" font-size="8.8" font-family="Helvetica, Arial, sans-serif" font-weight="normal" fill="#ffffff" text-anchor="start" dy="0.36em">4 CSN</text>
+<text x="47.3" y="154.0" font-size="8.8" font-family="Helvetica, Arial, sans-serif" font-weight="normal" fill="#ffffff" text-anchor="start" dy="0.36em">5 SCK</text>
+<text x="47.3" y="168.3" font-size="8.8" font-family="Helvetica, Arial, sans-serif" font-weight="normal" fill="#ffffff" text-anchor="start" dy="0.36em">6 MOSI</text>
+<text x="47.3" y="182.6" font-size="8.8" font-family="Helvetica, Arial, sans-serif" font-weight="normal" fill="#ffffff" text-anchor="start" dy="0.36em">7 MISO</text>
+<text x="47.3" y="196.9" font-size="8.8" font-family="Helvetica, Arial, sans-serif" font-weight="normal" fill="#ffffff" text-anchor="start" dy="0.36em">8 GDO2</text>
 <rect x="121.0" y="280.5" width="16.5" height="49.5" rx="0.0" fill="#c9c9c9" stroke="#1a1a2e" stroke-width="1.10"/>
 <rect x="27.5" y="280.5" width="16.5" height="49.5" rx="0.0" fill="#c9c9c9" stroke="#1a1a2e" stroke-width="1.10"/>
 <rect x="47.3" y="325.6" width="70.4" height="33.0" rx="2.2" fill="#b8b8b8" stroke="#1a1a2e" stroke-width="1.32"/>

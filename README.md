@@ -143,11 +143,14 @@ ESP32-C3 boot strapping pin, so tying it either way is harmless.
 ### Jumper-wire version
 
 The same hook-up with Dupont jumper wires instead of the adapter, so the
-firmware setup is identical. Colours follow the rainbow-ribbon order, GND
-brown, 3V3 red, then orange to grey for GPIO5 to GPIO10, with the chip
-select on GPIO0 taking the next colour, white. The orange wire is the
-radio-type strap: to GND for the Ra-02 breakout, left open for the CC1101.
-Drawn by `scripts/draw_wiring.py`.
+firmware setup is identical. Both boards are shown from the back, deadbug
+style, the way they lie with their header pins pointing at you (the
+E07-M1101D's back silk lists its pins). Colours follow the rainbow-ribbon
+order, GND brown, 3V3 red, then orange to grey for GPIO5 to GPIO10, with
+the chip select on GPIO0 taking the next colour, white. The orange wire is
+the radio-type strap: for the Ra-02 breakout it goes from GPIO5 to GND
+(drawn to the SuperMini's own G pin, which the brown wire shares); for the
+CC1101 it is left open. Drawn by `scripts/draw_wiring.py`.
 
 ![Jumper wires from the SuperMini to the CC1101 E07-M1101D board](docs/images/wiring-cc1101.svg)
 

@@ -122,6 +122,9 @@ def e07_views() -> tuple[View, View]:
         if not mirror:
             v.rect(3.0, 9.5, 12.0, 15.5, fill=GHOST, stroke=INK, width=0.1, dash="1 1")
             v.text(7.5, 12.5, "CC1101", size=1.3, weight="bold")
+        else:  # the back silk lists the pins
+            for n in range(1, 9):
+                v.text(W / 2 + 3.2, 8.8 + (n - 1) * 1.3, f"{n} {labels[str(n)]}", size=0.8, anchor="start", fill="#ffffff")  # mirrored view: starts left of centre
         sma_plan(v, W / 2, H, centre_pin=not mirror)
         v.text(W / 2, H + 11.3, "SMA jack", size=1.1)
         v.text(W / 2, H - cc.SMA_PAD_L - 1.4, "433M" if not mirror else "E07-M1101D V2.0", size=1.1, fill="#ffffff")
