@@ -14,7 +14,7 @@ attached to the
 [latest release](https://github.com/mithro/esp32-to-433mhz/releases/latest);
 see [CI and manufacturing packages](#ci-and-manufacturing-packages).
 
-To design the adapter, the three commercial boards involved were first
+To design the adapter, the commercial boards involved were first
 reproduced as KiCad projects (outline, pin headers, castellations, mounting
 holes, connector positions), so their footprints and pinouts could be checked
 against photos and datasheets. They are kept under `hardware/parts/` as
@@ -23,7 +23,8 @@ against photos and datasheets. They are kept under `hardware/parts/` as
 | Component board | Original | Size (mm) |
 | --- | --- | --- |
 | [`hardware/parts/esp32-c3-supermini`](#esp32-c3-supermini) | ESP32-C3 SuperMini | 18.00 x 22.52 |
-| [`hardware/parts/cc1101-e07-m1101d`](#cc1101-e07-m1101d-sma) | Ebyte E07-M1101D-SMA (TENSTAR CC1101 433 MHz module) | 15.0 x 30.0 |
+| [`hardware/parts/cc1101-e07-m1101d`](#cc1101-e07-m1101d-sma) | Ebyte E07-M1101D-SMA (TENSTAR CC1101 433 MHz module, blue) | 15.0 x 30.0 |
+| [`hardware/parts/cc1101-dsun`](#cc1101-d-sun-green-board) | D-Sun CC1101 433 MHz board (green); same signals, different header order | 14.4 x 30.0 |
 | [`hardware/parts/sx1278-ra02-breakout`](#sx1278-ra-02-breakout) | SX1278 LoRa 433MHz v4.0 breakout (Ai-Thinker Ra-02 + 2x4 header) | 17.5 x 22.5 |
 
 A second adapter for a castellated 16-pin SX1278 module, and that module's
@@ -44,7 +45,7 @@ edit the generator rather than the KiCad files.
 | Second IRQ | GPIO6 | 8 GDO2 | DIO0 (the Ra-02's packet IRQ) |
 | 3.3 V | 3V3 | 2 VCC | 3V3 |
 | GND | GND | 1 GND | GND |
-| Radio-type strap | GPIO5 | JP1 open, R1 not fitted | jumper on JP1 or 0R in R1 (to GND) |
+| Radio-type strap | GPIO5 | JP1 open, R1 not fitted | jumper on JP1 or 0R in R1 (to GND); with jumper wires, to GPIO4 |
 
 The assignment is chosen so that the whole board routes on one copper
 layer (see below): the radio signals sit on the SuperMini's GPIO column in
@@ -131,14 +132,19 @@ giving three distinct states:
 
 | GPIO5 reads | Board |
 | --- | --- |
-| floating | this adapter with the E07-M1101D (CC1101): no jumper, R1 empty |
+| floating | this adapter with a CC1101 board: no jumper, R1 empty |
 | low | this adapter with the Ra-02 breakout: jumper on JP1 or 0R in R1 |
 | high | the SX1278 module adapter (GPIO5 hard-wired to 3V3) |
 
-To read it, enable GPIO5's internal pull-down and sample (high means the
-SX1278 module adapter), then enable the pull-up and sample again (low means
-the Ra-02; high means the pin is floating, i.e. the CC1101). GPIO5 is not an
-ESP32-C3 boot strapping pin, so tying it either way is harmless.
+To read it, first drive GPIO4 low as an output (see below), then enable
+GPIO5's internal pull-down and sample (high means the SX1278 module
+adapter), then enable the pull-up and sample again (low means the Ra-02;
+high means the pin is floating, i.e. a CC1101). GPIO5 is not an ESP32-C3
+boot strapping pin, so tying it either way is harmless. Driving GPIO4 low
+covers the [jumper-wire build](#jumper-wire-version), where the SuperMini's
+only GND pin is taken and the strap wire goes from GPIO5 to GPIO4 instead;
+on the adapters GPIO4 is a spare pin on the header, so it makes no
+difference there.
 
 ### Jumper-wire version
 
@@ -148,11 +154,18 @@ style, the way they lie with their header pins pointing at you (the
 E07-M1101D's back silk lists its pins). Colours follow the rainbow-ribbon
 order, GND brown, 3V3 red, then orange to grey for GPIO5 to GPIO10, with
 the chip select on GPIO0 taking the next colour, white. The orange wire is
-the radio-type strap: for the Ra-02 breakout it goes from GPIO5 to GND
-(drawn to the SuperMini's own G pin, which the brown wire shares); for the
-CC1101 it is left open. Drawn by `scripts/draw_wiring.py`.
+the radio-type strap: for the Ra-02 breakout it goes from GPIO5 to GPIO4,
+which the firmware drives low while reading the strap (the SuperMini's
+only GND pin is taken by the brown wire); for a CC1101 board it is left
+open. Drawn by `scripts/draw_wiring.py`.
 
-![Jumper wires from the SuperMini to the CC1101 E07-M1101D board](docs/images/wiring-cc1101.svg)
+![Jumper wires from the SuperMini to the blue CC1101 E07-M1101D board](docs/images/wiring-cc1101.svg)
+
+The green D-Sun CC1101 board carries the same signals but in a different
+header order (see [below](#the-green-d-sun-board)), so its wires cannot all
+nest; the same colours go to the pins its back-side legend names:
+
+![Jumper wires from the SuperMini to the green D-Sun CC1101 board](docs/images/wiring-cc1101-dsun.svg)
 
 ![Jumper wires from the SuperMini to the Ra-02 breakout](docs/images/wiring-ra02.svg)
 
@@ -181,7 +194,30 @@ wired to plain GPIOs (neither is a strapping pin), so firmware treats GPIO10
 as an interrupt input for the CC1101 and as the reset output for the Ra-02,
 and reads the Ra-02's DIO0 on GPIO6.
 
-![Header pinouts of both radio boards, front and back](docs/images/pinout-radio-boards.svg)
+![Header pinouts of the radio boards, front and back](docs/images/pinout-radio-boards.svg)
+
+#### The green D-Sun board
+
+The green "433MHz D-Sun CC1101" board has the same eight signals on the
+same 2x4 header, with its GND/VCC column in the same place, but its three
+signal columns are shuffled (component side up, header edge at the top,
+columns left to right, outer / inner row):
+
+| Column | Blue E07-M1101D V2.0 | Green D-Sun |
+| --- | --- | --- |
+| 1 (left) | MISO / GDO2 | GDO0 / CSN |
+| 2 | SCK / MOSI | MISO / GDO2 |
+| 3 | GDO0 / CSN | MOSI / SCK |
+| 4 (right) | GND / VCC | GND / VCC |
+
+Plugged into the socket it would be powered correctly but with its signals
+scrambled: GDO0 on GPIO7, CSN on GPIO6, MISO on GPIO9, GDO2 on GPIO8, MOSI
+on GPIO10 and SCK on GPIO0. Remapping that in firmware is not a good fix,
+because it puts two radio outputs (MISO, GDO2) on the boot strapping pins
+GPIO9 and GPIO8, which the assignment deliberately reserves for ESP32
+outputs. So the green board is supported with [jumper wires](#jumper-wire-version)
+rather than the socket; its reference board is
+[below](#cc1101-d-sun-green-board).
 
 (Diagram drawn by `scripts/draw_pinouts.py` from the generators' geometry.)
 
@@ -273,7 +309,7 @@ the top and the SMA jack at the bottom.
 | Header position | outer row 1.60 from the header edge, columns 3.70 from the long edges |
 | Header numbering | outer row 7 5 3 1 left to right, inner row 8 6 4 2 |
 | Mounting holes | 3.00 plated, 4.20 pad, 2.70 from each long edge, 10.0 from the SMA edge |
-| SMA jack | edge mount, centred on the bottom edge; 1.5 mm pads, ground legs 4.25 either side |
+| SMA jack | edge mount, centred on the bottom edge; ground legs 2.75 either side (5.5 apart, measured from photos) |
 | Board thickness | 1.6 (edge-mount SMA) |
 
 Pin names (J1):
@@ -299,8 +335,47 @@ Sources:
   4.20 ring / 3.00 hole).
 * Seller listing (15 x 28 mm, pin table). The 28 mm figure is Ebyte's value
   for the spring-antenna variant; the SMA variant and the drawing say 30 mm.
-* The SMA pad geometry follows the common 1.6 mm PCB edge-mount SMA jack
-  (KiCad `SMA_Amphenol_132289_EdgeMount`), not an Ebyte drawing.
+* The SMA jack's leg spacing (5.5 mm) was measured from the user's photos;
+  the pad lengths are approximate.
+
+### CC1101 D-Sun (green board)
+
+| 3D render, top | 3D render, bottom | Layout (copper, silk, fab, outline) |
+| --- | --- | --- |
+| ![3D render of the top side](docs/images/cc1101-dsun-3d-top.png) | ![3D render of the bottom side](docs/images/cc1101-dsun-3d-bottom.png) | ![2D layout plot](docs/images/cc1101-dsun-layout.png) |
+
+`hardware/parts/cc1101-dsun`: the green CC1101 board marked "433MHz D-Sun
+CC1101" (EasyEDA lists the same board as "RF1101SE V3.1"): a 2x4 header at
+one end, an edge-mount SMA jack at the other and two small holes beside the
+jack. Its back-side silk is a 4 x 2 legend of the pin names next to the
+header, which is what you wire from.
+
+All values in millimetres, viewed from the component side with the header at
+the top and the SMA jack at the bottom. They were measured from photos of
+the board beside the E07-M1101D (whose 15 x 30 gives the scale), so allow
+about +/- 0.3 mm; the thickness is assumed.
+
+| Feature | Value |
+| --- | --- |
+| Board outline | 14.4 x 30.0 |
+| Header | 2 x 4, 2.54 pitch, 1.50 pads (pin 1 square), 0.90 holes |
+| Header position | outer row 2.1 from the header edge; columns 2.9 to 10.5 from the left long edge (0.5 left of centre) |
+| Header numbering | as the E07: outer row 7 5 3 1 left to right, inner row 8 6 4 2 |
+| Mounting holes | 1.8, not plated, 1.7 from each long edge, 2.5 from the SMA edge |
+| SMA jack | edge mount, centred on the bottom edge; ground legs 2.75 either side |
+| Board thickness | 1.6 (assumed) |
+
+Pin names (J1, numbered like the E07's header so the GND/VCC column matches):
+
+| Pin | Name | Pin | Name |
+| --- | --- | --- | --- |
+| 1 | GND | 5 | MISO |
+| 2 | VCC | 6 | GDO2 |
+| 3 | MOSI | 7 | GDO0 |
+| 4 | SCK | 8 | CSN |
+
+The pin names are printed beside each header column on both sides, and the
+back carries the original's legend grid.
 
 ### SX1278 Ra-02 breakout
 
@@ -357,6 +432,7 @@ connector symbols embedded in the schematics):
 uv run scripts/generate_supermini.py
 uv run scripts/generate_sx1278.py
 uv run scripts/generate_cc1101.py
+uv run scripts/generate_dsun.py
 uv run scripts/generate_ra02_breakout.py
 uv run scripts/generate_adapters.py
 uv run scripts/fill_zones.py         # fills copper zones with KiCad's own filler
@@ -429,6 +505,7 @@ datasheets; chips, crystals and shield cans are boxes of the right size.
 | --- | --- | --- |
 | `esp32-c3-supermini.step` | left column pin 1 (GPIO5) | PCB with castellations, USB-C (1.5 mm past the edge), buttons, chip, antenna, two 1x8 headers underneath |
 | `cc1101-e07-m1101d.step` | header pin 1 (GND) | PCB with its two 3 mm holes, CC1101 and passives, edge-mount SMA jack, 2x4 header underneath |
+| `cc1101-dsun.step` | header pin 1 (GND) | the green D-Sun board: PCB with its two 1.8 mm holes, CC1101, crystal and passives, SMA jack, 2x4 header underneath |
 | `sx1278-ra02-breakout.step` | header pin 1 (MISO) | PCB, Ra-02 module with shield can and IPEX socket, 2x4 header underneath |
 | `sx1278-ra02-pigtail.step` | as the breakout | U.FL plug, cable and SMA bulkhead jack with nut, on the same axis as the E07's SMA jack |
 | `sx1278-lora-module.step` | module top-left corner | castellated module PCB and shield can |
@@ -478,9 +555,9 @@ is 24 x 58 mm with the SuperMini at the top, the module soldered flat
 
 The reference boards render with the products' parts on them:
 
-| ESP32-C3 SuperMini | CC1101 E07-M1101D-SMA | SX1278 Ra-02 breakout | SX1278 module |
-| --- | --- | --- | --- |
-| ![SuperMini model](docs/images/esp32-c3-supermini-model-iso.png) | ![E07-M1101D model](docs/images/cc1101-e07-m1101d-model-iso.png) | ![Ra-02 breakout model](docs/images/sx1278-ra02-breakout-model-iso.png) | ![SX1278 module model](docs/images/sx1278-lora-module-model-iso.png) |
+| ESP32-C3 SuperMini | CC1101 E07-M1101D-SMA | CC1101 D-Sun | SX1278 Ra-02 breakout | SX1278 module |
+| --- | --- | --- | --- | --- |
+| ![SuperMini model](docs/images/esp32-c3-supermini-model-iso.png) | ![E07-M1101D model](docs/images/cc1101-e07-m1101d-model-iso.png) | ![D-Sun model](docs/images/cc1101-dsun-model-iso.png) | ![Ra-02 breakout model](docs/images/sx1278-ra02-breakout-model-iso.png) | ![SX1278 module model](docs/images/sx1278-lora-module-model-iso.png) |
 
 ## SX1278 castellated module and its adapter
 

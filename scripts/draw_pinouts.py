@@ -18,6 +18,7 @@ import sys
 
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
 import generate_cc1101 as cc  # noqa: E402
+import generate_dsun as ds  # noqa: E402
 import generate_ra02_breakout as rb  # noqa: E402
 
 OUT = pathlib.Path(__file__).resolve().parent.parent / "docs" / "images"
@@ -25,6 +26,7 @@ S = 11.0  # px per mm
 PAD = 14.0  # mm of margin around each board view (room for labels)
 INK = "#1a1a2e"
 BOARD = "#1c6b9c"
+GREEN_BOARD = "#1f7a4d"
 BOARD_EDGE = "#0d3f5e"
 PIN = "#f2c94c"
 GHOST = "#7fb3d5"
@@ -79,14 +81,14 @@ class View:
         return f'<g transform="translate({ox:.1f} {oy:.1f})">{cap}\n' + "\n".join(self.items) + "\n</g>"
 
 
-def board_base(v: View, w: float, h: float) -> None:
-    v.rect(0, 0, w, h, fill=BOARD, stroke=BOARD_EDGE, width=0.25, rx=0.6)
-    v.text(w / 2, h + 3.0, f"{w:g} x {h:g} mm", size=1.2, fill=INK)
+def board_base(v: View, w: float, h: float, fill: str = BOARD, caption_y: float = 3.0) -> None:
+    v.rect(0, 0, w, h, fill=fill, stroke=BOARD_EDGE, width=0.25, rx=0.6)
+    v.text(w / 2, h + caption_y, f"{w:g} x {h:g} mm", size=1.2, fill=INK)
 
 
 def sma_plan(v: View, x: float, edge_y: float, centre_pin: bool) -> None:
     """Edge-mount SMA jack seen from above: legs soldered on the board's pads
-    (ground legs 4.25 mm either side on both faces; the centre pin only on the
+    (ground legs 2.75 mm either side on both faces; the centre pin only on the
     component side), a square body straddling the edge and the threaded barrel
     pointing away from the board."""
     legs = (-cc.SMA_GND_OFFSET, cc.SMA_GND_OFFSET) + ((0.0,) if centre_pin else ())
@@ -107,7 +109,7 @@ def e07_views() -> tuple[View, View]:
     views = []
     for mirror in (False, True):
         v = View(W, H, mirror)
-        board_base(v, W, H)
+        board_base(v, W, H, caption_y=13.2)  # below the SMA jack
         # header: pin 1 at (11.30, 1.60), columns to -x, even pins 2.54 below
         for n in range(1, 9):
             col, row = (n - 1) // 2, (n - 1) % 2
@@ -128,6 +130,46 @@ def e07_views() -> tuple[View, View]:
         sma_plan(v, W / 2, H, centre_pin=not mirror)
         v.text(W / 2, H + 11.3, "SMA jack", size=1.1)
         v.text(W / 2, H - cc.SMA_PAD_L - 1.4, "433M" if not mirror else "E07-M1101D V2.0", size=1.1, fill="#ffffff")
+        views.append(v)
+    return views[0], views[1]
+
+
+def dsun_views() -> tuple[View, View]:
+    """The green D-Sun CC1101 board: same header numbering scheme as the E07
+    (pin 1 square, right of the outer row), header 0.5 mm left of centre,
+    two small holes beside the SMA, pin legend on the back."""
+    W, H = ds.BOARD_W, ds.BOARD_H
+    labels = ds.PIN_NAMES
+    views = []
+    for mirror in (False, True):
+        v = View(W, H, mirror)
+        board_base(v, W, H, fill=GREEN_BOARD, caption_y=13.2)
+        for n in range(1, 9):
+            col, row = (n - 1) // 2, (n - 1) % 2
+            x = W - ds.HDR_COL_X - col * ds.PITCH
+            y = ds.HDR_ROW_Y + row * ds.PITCH
+            v.pin(x, y, str(n), labels[str(n)], square=(n == 1), label_dir=-1 if row == 0 else +1)
+        for hx in (ds.HOLE_X, W - ds.HOLE_X):
+            v.circle(hx, H - ds.HOLE_FROM_ANT_EDGE, ds.HOLE_D / 2, fill="#ffffff", stroke=INK, width=0.08)
+        if not mirror:
+            v.rect(3.5, 13.8, 7.5, 17.8, fill=GHOST, stroke=INK, width=0.1, dash="1 1")
+            v.text(5.5, 15.8, "CC1101", size=1.0, weight="bold")
+            v.text(W / 2, 9.5, "D-SUN", size=1.0, fill="#ffffff")
+            v.text(W / 2, 21.0, "433MHz", size=1.0, fill="#ffffff")
+        else:  # the back's 4 x 2 legend grid beside the header
+            pin1 = W - ds.HDR_COL_X
+            y0, y1, y2 = ds.HDR_ROW_Y + ds.PITCH + 4.0, ds.HDR_ROW_Y + ds.PITCH + 7.0, ds.HDR_ROW_Y + ds.PITCH + 10.0
+            x0, x1 = pin1 - 3 * ds.PITCH - ds.PITCH / 2, pin1 + ds.PITCH / 2
+            v.rect(x0, y0, x1, y2, stroke="#ffffff", width=0.1)
+            v.line(x0, y1, x1, y1, stroke="#ffffff", width=0.1)
+            for col in range(1, 4):
+                v.line(pin1 - col * ds.PITCH + ds.PITCH / 2, y0, pin1 - col * ds.PITCH + ds.PITCH / 2, y2, stroke="#ffffff", width=0.1)
+            for col in range(4):
+                x = pin1 - col * ds.PITCH
+                v.text(x, (y0 + y1) / 2, labels[str(2 * col + 1)], size=0.8, fill="#ffffff", angle=-90)
+                v.text(x, (y1 + y2) / 2, labels[str(2 * col + 2)], size=0.8, fill="#ffffff", angle=-90)
+        sma_plan(v, W / 2, H, centre_pin=not mirror)
+        v.text(W / 2, H + 11.3, "SMA jack", size=1.1)
         views.append(v)
     return views[0], views[1]
 
@@ -207,9 +249,10 @@ def write_svg(path: pathlib.Path, title: str, boards: list[tuple[list[str], View
 
 def main() -> None:
     OUT.mkdir(parents=True, exist_ok=True)
-    e07 = (["Ebyte E07-M1101D-SMA", "(CC1101)"], *e07_views(), 12.5)
+    e07 = (["Ebyte E07-M1101D-SMA", "(CC1101, blue board)"], *e07_views(), 14.5)
+    dsn = (["D-Sun CC1101 433MHz", "(green board)"], *dsun_views(), 14.5)
     ra02 = (["SX1278 LoRa 433MHz v4.0 breakout", "(Ai-Thinker Ra-02)"], *ra02_views(), 4.0)
-    write_svg(OUT / "pinout-radio-boards.svg", "Radio board header pinouts (header edge at the top)", [e07, ra02])
+    write_svg(OUT / "pinout-radio-boards.svg", "Radio board header pinouts (header edge at the top)", [e07, dsn, ra02])
 
 
 if __name__ == "__main__":

@@ -1,0 +1,4 @@
+(fp_lib_table
+  (version 7)
+  (lib (name "DSun")(type "KiCad")(uri "${KIPRJMOD}/footprints/DSun.pretty")(options "")(descr "CC1101 D-Sun form-factor board"))
+)

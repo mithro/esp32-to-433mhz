@@ -1,0 +1,14 @@
+(version 1)
+
+# Pads of these footprints are castellated / reach the board edge.  KiCad's
+# default DRC treats copper and holes touching the outline as errors, so
+# relax those checks for them only.  Everything else keeps the normal rules.
+(rule "edge_pads_edge_clearance"
+	(severity ignore)
+	(condition "A.Type == 'Pad' && (A.memberOfFootprint('J2'))")
+	(constraint edge_clearance)
+)
+(rule "edge_pads_hole_to_hole"
+	(condition "A.Type == 'Pad' && B.Type == 'Pad' && A.Net == B.Net && (A.memberOfFootprint('J2'))")
+	(constraint hole_to_hole (min 0mm))
+)

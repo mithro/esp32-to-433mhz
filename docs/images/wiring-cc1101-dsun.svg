@@ -1,69 +1,71 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1122" height="1308" viewBox="0 0 1122 1308">
 <rect width="100%" height="100%" fill="#ffffff"/>
-<text x="561.0" y="33.0" font-size="22.0" font-family="Helvetica, Arial, sans-serif" font-weight="bold" fill="#1a1a2e" text-anchor="middle" dy="0.36em">ESP32-C3 SuperMini to the blue CC1101 E07-M1101D-SMA with jumper wires</text>
+<text x="561.0" y="33.0" font-size="22.0" font-family="Helvetica, Arial, sans-serif" font-weight="bold" fill="#1a1a2e" text-anchor="middle" dy="0.36em">ESP32-C3 SuperMini to the green D-Sun CC1101 with jumper wires</text>
 <text x="561.0" y="61.6" font-size="13.2" font-family="Helvetica, Arial, sans-serif" fill="#1a1a2e" text-anchor="middle" dy="0.36em">Same pins as the socket adapter. Both boards seen from the back, header pins towards you.</text>
-<g transform="translate(546.7 532.6)"><text x="82.5" y="0.0" font-size="0.0" font-family="Helvetica, Arial, sans-serif" font-weight="bold" fill="#1a1a2e" text-anchor="middle"></text>
-<rect x="0.0" y="0.0" width="165.0" height="330.0" rx="6.6" fill="#1c6b9c" stroke="#0d3f5e" stroke-width="2.75"/>
-<text x="82.5" y="475.2" font-size="13.2" font-family="Helvetica, Arial, sans-serif" font-weight="normal" fill="#1a1a2e" text-anchor="middle" dy="0.36em">15 x 30 mm</text>
-<rect x="31.9" y="8.8" width="17.6" height="17.6" rx="0.0" fill="#f2c94c" stroke="#1a1a2e" stroke-width="1.32"/>
-<circle cx="40.7" cy="17.6" r="5.0" fill="#ffffff" stroke="#1a1a2e" stroke-width="0.88"/>
-<text x="40.7" y="17.6" font-size="8.2" font-family="Helvetica, Arial, sans-serif" font-weight="bold" fill="#1a1a2e" text-anchor="middle" dy="0.36em">1</text>
-<text x="40.7" y="1.1" font-size="11.6" font-family="Helvetica, Arial, sans-serif" font-weight="bold" fill="#1a1a2e" text-anchor="start" dy="0.36em" transform="rotate(-90 40.7 1.1)" stroke="#ffffff" stroke-width="3.8" paint-order="stroke" stroke-linejoin="round">GND</text>
-<circle cx="40.7" cy="45.5" r="8.8" fill="#f2c94c" stroke="#1a1a2e" stroke-width="1.32"/>
-<circle cx="40.7" cy="45.5" r="5.0" fill="#ffffff" stroke="#1a1a2e" stroke-width="0.88"/>
-<text x="40.7" y="45.5" font-size="8.2" font-family="Helvetica, Arial, sans-serif" font-weight="bold" fill="#1a1a2e" text-anchor="middle" dy="0.36em">2</text>
-<text x="40.7" y="62.0" font-size="11.6" font-family="Helvetica, Arial, sans-serif" font-weight="bold" fill="#1a1a2e" text-anchor="end" dy="0.36em" transform="rotate(-90 40.7 62.0)" stroke="#ffffff" stroke-width="3.8" paint-order="stroke" stroke-linejoin="round">VCC</text>
-<circle cx="68.6" cy="17.6" r="8.8" fill="#f2c94c" stroke="#1a1a2e" stroke-width="1.32"/>
-<circle cx="68.6" cy="17.6" r="5.0" fill="#ffffff" stroke="#1a1a2e" stroke-width="0.88"/>
-<text x="68.6" y="17.6" font-size="8.2" font-family="Helvetica, Arial, sans-serif" font-weight="bold" fill="#1a1a2e" text-anchor="middle" dy="0.36em">3</text>
-<text x="68.6" y="1.1" font-size="11.6" font-family="Helvetica, Arial, sans-serif" font-weight="bold" fill="#1a1a2e" text-anchor="start" dy="0.36em" transform="rotate(-90 68.6 1.1)" stroke="#ffffff" stroke-width="3.8" paint-order="stroke" stroke-linejoin="round">GDO0</text>
-<circle cx="68.6" cy="45.5" r="8.8" fill="#f2c94c" stroke="#1a1a2e" stroke-width="1.32"/>
-<circle cx="68.6" cy="45.5" r="5.0" fill="#ffffff" stroke="#1a1a2e" stroke-width="0.88"/>
-<text x="68.6" y="45.5" font-size="8.2" font-family="Helvetica, Arial, sans-serif" font-weight="bold" fill="#1a1a2e" text-anchor="middle" dy="0.36em">4</text>
-<text x="68.6" y="62.0" font-size="11.6" font-family="Helvetica, Arial, sans-serif" font-weight="bold" fill="#1a1a2e" text-anchor="end" dy="0.36em" transform="rotate(-90 68.6 62.0)" stroke="#ffffff" stroke-width="3.8" paint-order="stroke" stroke-linejoin="round">CSN</text>
-<circle cx="96.6" cy="17.6" r="8.8" fill="#f2c94c" stroke="#1a1a2e" stroke-width="1.32"/>
-<circle cx="96.6" cy="17.6" r="5.0" fill="#ffffff" stroke="#1a1a2e" stroke-width="0.88"/>
-<text x="96.6" y="17.6" font-size="8.2" font-family="Helvetica, Arial, sans-serif" font-weight="bold" fill="#1a1a2e" text-anchor="middle" dy="0.36em">5</text>
-<text x="96.6" y="1.1" font-size="11.6" font-family="Helvetica, Arial, sans-serif" font-weight="bold" fill="#1a1a2e" text-anchor="start" dy="0.36em" transform="rotate(-90 96.6 1.1)" stroke="#ffffff" stroke-width="3.8" paint-order="stroke" stroke-linejoin="round">SCK</text>
-<circle cx="96.6" cy="45.5" r="8.8" fill="#f2c94c" stroke="#1a1a2e" stroke-width="1.32"/>
-<circle cx="96.6" cy="45.5" r="5.0" fill="#ffffff" stroke="#1a1a2e" stroke-width="0.88"/>
-<text x="96.6" y="45.5" font-size="8.2" font-family="Helvetica, Arial, sans-serif" font-weight="bold" fill="#1a1a2e" text-anchor="middle" dy="0.36em">6</text>
-<text x="96.6" y="62.0" font-size="11.6" font-family="Helvetica, Arial, sans-serif" font-weight="bold" fill="#1a1a2e" text-anchor="end" dy="0.36em" transform="rotate(-90 96.6 62.0)" stroke="#ffffff" stroke-width="3.8" paint-order="stroke" stroke-linejoin="round">MOSI</text>
-<circle cx="124.5" cy="17.6" r="8.8" fill="#f2c94c" stroke="#1a1a2e" stroke-width="1.32"/>
-<circle cx="124.5" cy="17.6" r="5.0" fill="#ffffff" stroke="#1a1a2e" stroke-width="0.88"/>
-<text x="124.5" y="17.6" font-size="8.2" font-family="Helvetica, Arial, sans-serif" font-weight="bold" fill="#1a1a2e" text-anchor="middle" dy="0.36em">7</text>
-<text x="124.5" y="1.1" font-size="11.6" font-family="Helvetica, Arial, sans-serif" font-weight="bold" fill="#1a1a2e" text-anchor="start" dy="0.36em" transform="rotate(-90 124.5 1.1)" stroke="#ffffff" stroke-width="3.8" paint-order="stroke" stroke-linejoin="round">MISO</text>
-<circle cx="124.5" cy="45.5" r="8.8" fill="#f2c94c" stroke="#1a1a2e" stroke-width="1.32"/>
-<circle cx="124.5" cy="45.5" r="5.0" fill="#ffffff" stroke="#1a1a2e" stroke-width="0.88"/>
-<text x="124.5" y="45.5" font-size="8.2" font-family="Helvetica, Arial, sans-serif" font-weight="bold" fill="#1a1a2e" text-anchor="middle" dy="0.36em">8</text>
-<text x="124.5" y="62.0" font-size="11.6" font-family="Helvetica, Arial, sans-serif" font-weight="bold" fill="#1a1a2e" text-anchor="end" dy="0.36em" transform="rotate(-90 124.5 62.0)" stroke="#ffffff" stroke-width="3.8" paint-order="stroke" stroke-linejoin="round">GDO2</text>
-<circle cx="135.3" cy="220.0" r="23.1" fill="#f2c94c" stroke="#1a1a2e" stroke-width="1.10"/>
-<circle cx="135.3" cy="220.0" r="16.5" fill="#ffffff" stroke="#1a1a2e" stroke-width="0.88"/>
-<circle cx="29.7" cy="220.0" r="23.1" fill="#f2c94c" stroke="#1a1a2e" stroke-width="1.10"/>
-<circle cx="29.7" cy="220.0" r="16.5" fill="#ffffff" stroke="#1a1a2e" stroke-width="0.88"/>
-<text x="47.3" y="96.8" font-size="8.8" font-family="Helvetica, Arial, sans-serif" font-weight="normal" fill="#ffffff" text-anchor="start" dy="0.36em">1 GND</text>
-<text x="47.3" y="111.1" font-size="8.8" font-family="Helvetica, Arial, sans-serif" font-weight="normal" fill="#ffffff" text-anchor="start" dy="0.36em">2 VCC</text>
-<text x="47.3" y="125.4" font-size="8.8" font-family="Helvetica, Arial, sans-serif" font-weight="normal" fill="#ffffff" text-anchor="start" dy="0.36em">3 GDO0</text>
-<text x="47.3" y="139.7" font-size="8.8" font-family="Helvetica, Arial, sans-serif" font-weight="normal" fill="#ffffff" text-anchor="start" dy="0.36em">4 CSN</text>
-<text x="47.3" y="154.0" font-size="8.8" font-family="Helvetica, Arial, sans-serif" font-weight="normal" fill="#ffffff" text-anchor="start" dy="0.36em">5 SCK</text>
-<text x="47.3" y="168.3" font-size="8.8" font-family="Helvetica, Arial, sans-serif" font-weight="normal" fill="#ffffff" text-anchor="start" dy="0.36em">6 MOSI</text>
-<text x="47.3" y="182.6" font-size="8.8" font-family="Helvetica, Arial, sans-serif" font-weight="normal" fill="#ffffff" text-anchor="start" dy="0.36em">7 MISO</text>
-<text x="47.3" y="196.9" font-size="8.8" font-family="Helvetica, Arial, sans-serif" font-weight="normal" fill="#ffffff" text-anchor="start" dy="0.36em">8 GDO2</text>
-<rect x="102.8" y="291.5" width="19.8" height="38.5" rx="0.0" fill="#c9c9c9" stroke="#1a1a2e" stroke-width="1.10"/>
-<rect x="42.3" y="291.5" width="19.8" height="38.5" rx="0.0" fill="#c9c9c9" stroke="#1a1a2e" stroke-width="1.10"/>
-<rect x="47.3" y="325.6" width="70.4" height="33.0" rx="2.2" fill="#b8b8b8" stroke="#1a1a2e" stroke-width="1.32"/>
-<rect x="50.6" y="358.6" width="63.8" height="75.9" rx="0.0" fill="#dedede" stroke="#1a1a2e" stroke-width="1.32"/>
-<line x1="114.4" y1="366.3" x2="50.6" y2="366.3" stroke="#1a1a2e" stroke-width="0.88"/>
-<line x1="114.4" y1="374.0" x2="50.6" y2="374.0" stroke="#1a1a2e" stroke-width="0.88"/>
-<line x1="114.4" y1="381.7" x2="50.6" y2="381.7" stroke="#1a1a2e" stroke-width="0.88"/>
-<line x1="114.4" y1="389.4" x2="50.6" y2="389.4" stroke="#1a1a2e" stroke-width="0.88"/>
-<line x1="114.4" y1="397.1" x2="50.6" y2="397.1" stroke="#1a1a2e" stroke-width="0.88"/>
-<line x1="114.4" y1="404.8" x2="50.6" y2="404.8" stroke="#1a1a2e" stroke-width="0.88"/>
-<line x1="114.4" y1="412.5" x2="50.6" y2="412.5" stroke="#1a1a2e" stroke-width="0.88"/>
-<line x1="114.4" y1="420.2" x2="50.6" y2="420.2" stroke="#1a1a2e" stroke-width="0.88"/>
-<line x1="114.4" y1="427.9" x2="50.6" y2="427.9" stroke="#1a1a2e" stroke-width="0.88"/>
-<text x="82.5" y="454.3" font-size="12.1" font-family="Helvetica, Arial, sans-serif" font-weight="normal" fill="#1a1a2e" text-anchor="middle" dy="0.36em">SMA jack</text>
-<text x="82.5" y="276.1" font-size="12.1" font-family="Helvetica, Arial, sans-serif" font-weight="normal" fill="#ffffff" text-anchor="middle" dy="0.36em">E07-M1101D V2.0</text>
+<g transform="translate(546.7 532.6)"><text x="79.2" y="0.0" font-size="0.0" font-family="Helvetica, Arial, sans-serif" font-weight="bold" fill="#1a1a2e" text-anchor="middle"></text>
+<rect x="0.0" y="0.0" width="158.4" height="330.0" rx="6.6" fill="#1f7a4d" stroke="#0d3f5e" stroke-width="2.75"/>
+<text x="79.2" y="475.2" font-size="13.2" font-family="Helvetica, Arial, sans-serif" font-weight="normal" fill="#1a1a2e" text-anchor="middle" dy="0.36em">14.4 x 30 mm</text>
+<rect x="33.9" y="14.3" width="17.6" height="17.6" rx="0.0" fill="#f2c94c" stroke="#1a1a2e" stroke-width="1.32"/>
+<circle cx="42.7" cy="23.1" r="5.0" fill="#ffffff" stroke="#1a1a2e" stroke-width="0.88"/>
+<text x="42.7" y="23.1" font-size="8.2" font-family="Helvetica, Arial, sans-serif" font-weight="bold" fill="#1a1a2e" text-anchor="middle" dy="0.36em">1</text>
+<text x="42.7" y="6.6" font-size="11.6" font-family="Helvetica, Arial, sans-serif" font-weight="bold" fill="#1a1a2e" text-anchor="start" dy="0.36em" transform="rotate(-90 42.7 6.6)" stroke="#ffffff" stroke-width="3.8" paint-order="stroke" stroke-linejoin="round">GND</text>
+<circle cx="42.7" cy="51.0" r="8.8" fill="#f2c94c" stroke="#1a1a2e" stroke-width="1.32"/>
+<circle cx="42.7" cy="51.0" r="5.0" fill="#ffffff" stroke="#1a1a2e" stroke-width="0.88"/>
+<text x="42.7" y="51.0" font-size="8.2" font-family="Helvetica, Arial, sans-serif" font-weight="bold" fill="#1a1a2e" text-anchor="middle" dy="0.36em">2</text>
+<text x="42.7" y="67.5" font-size="11.6" font-family="Helvetica, Arial, sans-serif" font-weight="bold" fill="#1a1a2e" text-anchor="end" dy="0.36em" transform="rotate(-90 42.7 67.5)" stroke="#ffffff" stroke-width="3.8" paint-order="stroke" stroke-linejoin="round">VCC</text>
+<circle cx="70.6" cy="23.1" r="8.8" fill="#f2c94c" stroke="#1a1a2e" stroke-width="1.32"/>
+<circle cx="70.6" cy="23.1" r="5.0" fill="#ffffff" stroke="#1a1a2e" stroke-width="0.88"/>
+<text x="70.6" y="23.1" font-size="8.2" font-family="Helvetica, Arial, sans-serif" font-weight="bold" fill="#1a1a2e" text-anchor="middle" dy="0.36em">3</text>
+<text x="70.6" y="6.6" font-size="11.6" font-family="Helvetica, Arial, sans-serif" font-weight="bold" fill="#1a1a2e" text-anchor="start" dy="0.36em" transform="rotate(-90 70.6 6.6)" stroke="#ffffff" stroke-width="3.8" paint-order="stroke" stroke-linejoin="round">MOSI</text>
+<circle cx="70.6" cy="51.0" r="8.8" fill="#f2c94c" stroke="#1a1a2e" stroke-width="1.32"/>
+<circle cx="70.6" cy="51.0" r="5.0" fill="#ffffff" stroke="#1a1a2e" stroke-width="0.88"/>
+<text x="70.6" y="51.0" font-size="8.2" font-family="Helvetica, Arial, sans-serif" font-weight="bold" fill="#1a1a2e" text-anchor="middle" dy="0.36em">4</text>
+<text x="70.6" y="67.5" font-size="11.6" font-family="Helvetica, Arial, sans-serif" font-weight="bold" fill="#1a1a2e" text-anchor="end" dy="0.36em" transform="rotate(-90 70.6 67.5)" stroke="#ffffff" stroke-width="3.8" paint-order="stroke" stroke-linejoin="round">SCK</text>
+<circle cx="98.6" cy="23.1" r="8.8" fill="#f2c94c" stroke="#1a1a2e" stroke-width="1.32"/>
+<circle cx="98.6" cy="23.1" r="5.0" fill="#ffffff" stroke="#1a1a2e" stroke-width="0.88"/>
+<text x="98.6" y="23.1" font-size="8.2" font-family="Helvetica, Arial, sans-serif" font-weight="bold" fill="#1a1a2e" text-anchor="middle" dy="0.36em">5</text>
+<text x="98.6" y="6.6" font-size="11.6" font-family="Helvetica, Arial, sans-serif" font-weight="bold" fill="#1a1a2e" text-anchor="start" dy="0.36em" transform="rotate(-90 98.6 6.6)" stroke="#ffffff" stroke-width="3.8" paint-order="stroke" stroke-linejoin="round">MISO</text>
+<circle cx="98.6" cy="51.0" r="8.8" fill="#f2c94c" stroke="#1a1a2e" stroke-width="1.32"/>
+<circle cx="98.6" cy="51.0" r="5.0" fill="#ffffff" stroke="#1a1a2e" stroke-width="0.88"/>
+<text x="98.6" y="51.0" font-size="8.2" font-family="Helvetica, Arial, sans-serif" font-weight="bold" fill="#1a1a2e" text-anchor="middle" dy="0.36em">6</text>
+<text x="98.6" y="67.5" font-size="11.6" font-family="Helvetica, Arial, sans-serif" font-weight="bold" fill="#1a1a2e" text-anchor="end" dy="0.36em" transform="rotate(-90 98.6 67.5)" stroke="#ffffff" stroke-width="3.8" paint-order="stroke" stroke-linejoin="round">GDO2</text>
+<circle cx="126.5" cy="23.1" r="8.8" fill="#f2c94c" stroke="#1a1a2e" stroke-width="1.32"/>
+<circle cx="126.5" cy="23.1" r="5.0" fill="#ffffff" stroke="#1a1a2e" stroke-width="0.88"/>
+<text x="126.5" y="23.1" font-size="8.2" font-family="Helvetica, Arial, sans-serif" font-weight="bold" fill="#1a1a2e" text-anchor="middle" dy="0.36em">7</text>
+<text x="126.5" y="6.6" font-size="11.6" font-family="Helvetica, Arial, sans-serif" font-weight="bold" fill="#1a1a2e" text-anchor="start" dy="0.36em" transform="rotate(-90 126.5 6.6)" stroke="#ffffff" stroke-width="3.8" paint-order="stroke" stroke-linejoin="round">GDO0</text>
+<circle cx="126.5" cy="51.0" r="8.8" fill="#f2c94c" stroke="#1a1a2e" stroke-width="1.32"/>
+<circle cx="126.5" cy="51.0" r="5.0" fill="#ffffff" stroke="#1a1a2e" stroke-width="0.88"/>
+<text x="126.5" y="51.0" font-size="8.2" font-family="Helvetica, Arial, sans-serif" font-weight="bold" fill="#1a1a2e" text-anchor="middle" dy="0.36em">8</text>
+<text x="126.5" y="67.5" font-size="11.6" font-family="Helvetica, Arial, sans-serif" font-weight="bold" fill="#1a1a2e" text-anchor="end" dy="0.36em" transform="rotate(-90 126.5 67.5)" stroke="#ffffff" stroke-width="3.8" paint-order="stroke" stroke-linejoin="round">CSN</text>
+<circle cx="139.7" cy="302.5" r="9.9" fill="#ffffff" stroke="#1a1a2e" stroke-width="0.88"/>
+<circle cx="18.7" cy="302.5" r="9.9" fill="#ffffff" stroke="#1a1a2e" stroke-width="0.88"/>
+<rect x="28.7" y="95.0" width="111.8" height="66.0" rx="0.0" fill="none" stroke="#ffffff" stroke-width="1.10"/>
+<line x1="140.5" y1="128.0" x2="28.7" y2="128.0" stroke="#ffffff" stroke-width="1.10"/>
+<line x1="56.7" y1="95.0" x2="56.7" y2="161.0" stroke="#ffffff" stroke-width="1.10"/>
+<line x1="84.6" y1="95.0" x2="84.6" y2="161.0" stroke="#ffffff" stroke-width="1.10"/>
+<line x1="112.5" y1="95.0" x2="112.5" y2="161.0" stroke="#ffffff" stroke-width="1.10"/>
+<text x="42.7" y="111.5" font-size="8.8" font-family="Helvetica, Arial, sans-serif" font-weight="normal" fill="#ffffff" text-anchor="middle" dy="0.36em" transform="rotate(-90 42.7 111.5)">GND</text>
+<text x="42.7" y="144.5" font-size="8.8" font-family="Helvetica, Arial, sans-serif" font-weight="normal" fill="#ffffff" text-anchor="middle" dy="0.36em" transform="rotate(-90 42.7 144.5)">VCC</text>
+<text x="70.6" y="111.5" font-size="8.8" font-family="Helvetica, Arial, sans-serif" font-weight="normal" fill="#ffffff" text-anchor="middle" dy="0.36em" transform="rotate(-90 70.6 111.5)">MOSI</text>
+<text x="70.6" y="144.5" font-size="8.8" font-family="Helvetica, Arial, sans-serif" font-weight="normal" fill="#ffffff" text-anchor="middle" dy="0.36em" transform="rotate(-90 70.6 144.5)">SCK</text>
+<text x="98.6" y="111.5" font-size="8.8" font-family="Helvetica, Arial, sans-serif" font-weight="normal" fill="#ffffff" text-anchor="middle" dy="0.36em" transform="rotate(-90 98.6 111.5)">MISO</text>
+<text x="98.6" y="144.5" font-size="8.8" font-family="Helvetica, Arial, sans-serif" font-weight="normal" fill="#ffffff" text-anchor="middle" dy="0.36em" transform="rotate(-90 98.6 144.5)">GDO2</text>
+<text x="126.5" y="111.5" font-size="8.8" font-family="Helvetica, Arial, sans-serif" font-weight="normal" fill="#ffffff" text-anchor="middle" dy="0.36em" transform="rotate(-90 126.5 111.5)">GDO0</text>
+<text x="126.5" y="144.5" font-size="8.8" font-family="Helvetica, Arial, sans-serif" font-weight="normal" fill="#ffffff" text-anchor="middle" dy="0.36em" transform="rotate(-90 126.5 144.5)">CSN</text>
+<rect x="99.6" y="291.5" width="19.8" height="38.5" rx="0.0" fill="#c9c9c9" stroke="#1a1a2e" stroke-width="1.10"/>
+<rect x="39.1" y="291.5" width="19.8" height="38.5" rx="0.0" fill="#c9c9c9" stroke="#1a1a2e" stroke-width="1.10"/>
+<rect x="44.0" y="325.6" width="70.4" height="33.0" rx="2.2" fill="#b8b8b8" stroke="#1a1a2e" stroke-width="1.32"/>
+<rect x="47.3" y="358.6" width="63.8" height="75.9" rx="0.0" fill="#dedede" stroke="#1a1a2e" stroke-width="1.32"/>
+<line x1="111.1" y1="366.3" x2="47.3" y2="366.3" stroke="#1a1a2e" stroke-width="0.88"/>
+<line x1="111.1" y1="374.0" x2="47.3" y2="374.0" stroke="#1a1a2e" stroke-width="0.88"/>
+<line x1="111.1" y1="381.7" x2="47.3" y2="381.7" stroke="#1a1a2e" stroke-width="0.88"/>
+<line x1="111.1" y1="389.4" x2="47.3" y2="389.4" stroke="#1a1a2e" stroke-width="0.88"/>
+<line x1="111.1" y1="397.1" x2="47.3" y2="397.1" stroke="#1a1a2e" stroke-width="0.88"/>
+<line x1="111.1" y1="404.8" x2="47.3" y2="404.8" stroke="#1a1a2e" stroke-width="0.88"/>
+<line x1="111.1" y1="412.5" x2="47.3" y2="412.5" stroke="#1a1a2e" stroke-width="0.88"/>
+<line x1="111.1" y1="420.2" x2="47.3" y2="420.2" stroke="#1a1a2e" stroke-width="0.88"/>
+<line x1="111.1" y1="427.9" x2="47.3" y2="427.9" stroke="#1a1a2e" stroke-width="0.88"/>
+<text x="79.2" y="454.3" font-size="12.1" font-family="Helvetica, Arial, sans-serif" font-weight="normal" fill="#1a1a2e" text-anchor="middle" dy="0.36em">SMA jack</text>
 </g>
 <g transform="translate(176.0 154.0)"><text x="99.0" y="0.0" font-size="0.0" font-family="Helvetica, Arial, sans-serif" font-weight="bold" fill="#1a1a2e" text-anchor="middle"></text>
 <rect x="0.0" y="0.0" width="198.0" height="247.7" rx="6.6" fill="#1f2430" stroke="#0b0d12" stroke-width="2.75"/>
@@ -121,52 +123,52 @@
 <circle cx="15.2" cy="214.7" r="5.0" fill="#ffffff" stroke="#1a1a2e" stroke-width="0.88"/>
 <text x="28.6" y="214.7" font-size="10.4" font-family="Helvetica, Arial, sans-serif" font-weight="bold" fill="#ffffff" text-anchor="start" dy="0.36em">0</text>
 </g>
-<path d="M 358.8 201.1 L 474.1 201.1 Q 491.7 201.1 491.7 218.7 L 491.7 406.1 Q 491.7 423.7 509.3 423.7 L 667.6 423.7 Q 685.2 423.7 685.2 441.3 L 685.2 571.2 Q 685.2 578.2 678.2 578.2 L 671.2 578.2" fill="none" stroke="#1a1a2e" stroke-width="14.3" stroke-linecap="round"/>
-<path d="M 358.8 201.1 L 474.1 201.1 Q 491.7 201.1 491.7 218.7 L 491.7 406.1 Q 491.7 423.7 509.3 423.7 L 667.6 423.7 Q 685.2 423.7 685.2 441.3 L 685.2 571.2 Q 685.2 578.2 678.2 578.2 L 671.2 578.2" fill="none" stroke="#f2d21e" stroke-width="9.3" stroke-linecap="round"/>
+<path d="M 358.8 201.1 L 474.1 201.1 Q 491.7 201.1 491.7 218.7 L 491.7 406.1 Q 491.7 423.7 509.3 423.7 L 641.6 423.7 Q 659.2 423.7 659.2 441.3 L 659.2 576.7 Q 659.2 583.7 652.2 583.7 L 645.3 583.7" fill="none" stroke="#1a1a2e" stroke-width="14.3" stroke-linecap="round"/>
+<path d="M 358.8 201.1 L 474.1 201.1 Q 491.7 201.1 491.7 218.7 L 491.7 406.1 Q 491.7 423.7 509.3 423.7 L 641.6 423.7 Q 659.2 423.7 659.2 441.3 L 659.2 576.7 Q 659.2 583.7 652.2 583.7 L 645.3 583.7" fill="none" stroke="#f2d21e" stroke-width="9.3" stroke-linecap="round"/>
 <circle cx="358.8" cy="201.1" r="8.8" fill="#f2d21e" stroke="#1a1a2e" stroke-width="1.6"/>
-<circle cx="671.2" cy="578.2" r="8.8" fill="#f2d21e" stroke="#1a1a2e" stroke-width="1.6"/>
-<path d="M 358.8 229.0 L 454.3 229.0 Q 471.9 229.0 471.9 246.6 L 471.9 425.9 Q 471.9 443.5 489.5 443.5 L 653.6 443.5 Q 671.2 443.5 671.2 461.1 L 671.2 550.2" fill="none" stroke="#1a1a2e" stroke-width="14.3" stroke-linecap="round"/>
-<path d="M 358.8 229.0 L 454.3 229.0 Q 471.9 229.0 471.9 246.6 L 471.9 425.9 Q 471.9 443.5 489.5 443.5 L 653.6 443.5 Q 671.2 443.5 671.2 461.1 L 671.2 550.2" fill="none" stroke="#2e9e4f" stroke-width="9.3" stroke-linecap="round"/>
+<circle cx="645.3" cy="583.7" r="8.8" fill="#f2d21e" stroke="#1a1a2e" stroke-width="1.6"/>
+<path d="M 358.8 229.0 L 454.3 229.0 Q 471.9 229.0 471.9 246.6 L 471.9 425.9 Q 471.9 443.5 489.5 443.5 L 627.7 443.5 Q 645.3 443.5 645.3 461.1 L 645.3 555.7" fill="none" stroke="#1a1a2e" stroke-width="14.3" stroke-linecap="round"/>
+<path d="M 358.8 229.0 L 454.3 229.0 Q 471.9 229.0 471.9 246.6 L 471.9 425.9 Q 471.9 443.5 489.5 443.5 L 627.7 443.5 Q 645.3 443.5 645.3 461.1 L 645.3 555.7" fill="none" stroke="#2e9e4f" stroke-width="9.3" stroke-linecap="round"/>
 <circle cx="358.8" cy="229.0" r="8.8" fill="#2e9e4f" stroke="#1a1a2e" stroke-width="1.6"/>
-<circle cx="671.2" cy="550.2" r="8.8" fill="#2e9e4f" stroke="#1a1a2e" stroke-width="1.6"/>
-<path d="M 358.8 257.0 L 434.5 257.0 Q 452.1 257.0 452.1 274.6 L 452.1 445.7 Q 452.1 463.3 469.7 463.3 L 639.7 463.3 Q 657.3 463.3 657.3 480.9 L 657.3 571.2 Q 657.3 578.2 650.3 578.2 L 643.3 578.2" fill="none" stroke="#1a1a2e" stroke-width="14.3" stroke-linecap="round"/>
-<path d="M 358.8 257.0 L 434.5 257.0 Q 452.1 257.0 452.1 274.6 L 452.1 445.7 Q 452.1 463.3 469.7 463.3 L 639.7 463.3 Q 657.3 463.3 657.3 480.9 L 657.3 571.2 Q 657.3 578.2 650.3 578.2 L 643.3 578.2" fill="none" stroke="#2464c8" stroke-width="9.3" stroke-linecap="round"/>
+<circle cx="645.3" cy="555.7" r="8.8" fill="#2e9e4f" stroke="#1a1a2e" stroke-width="1.6"/>
+<path d="M 358.8 257.0 L 434.5 257.0 Q 452.1 257.0 452.1 274.6 L 452.1 445.7 Q 452.1 463.3 469.7 463.3 L 599.7 463.3 Q 617.3 463.3 617.3 480.9 L 617.3 555.7" fill="none" stroke="#1a1a2e" stroke-width="14.3" stroke-linecap="round"/>
+<path d="M 358.8 257.0 L 434.5 257.0 Q 452.1 257.0 452.1 274.6 L 452.1 445.7 Q 452.1 463.3 469.7 463.3 L 599.7 463.3 Q 617.3 463.3 617.3 480.9 L 617.3 555.7" fill="none" stroke="#2464c8" stroke-width="9.3" stroke-linecap="round"/>
 <circle cx="358.8" cy="257.0" r="8.8" fill="#2464c8" stroke="#1a1a2e" stroke-width="1.6"/>
-<circle cx="643.3" cy="578.2" r="8.8" fill="#2464c8" stroke="#1a1a2e" stroke-width="1.6"/>
-<path d="M 358.8 284.9 L 414.7 284.9 Q 432.3 284.9 432.3 302.5 L 432.3 465.5 Q 432.3 483.1 449.9 483.1 L 625.7 483.1 Q 643.3 483.1 643.3 500.7 L 643.3 550.2" fill="none" stroke="#1a1a2e" stroke-width="14.3" stroke-linecap="round"/>
-<path d="M 358.8 284.9 L 414.7 284.9 Q 432.3 284.9 432.3 302.5 L 432.3 465.5 Q 432.3 483.1 449.9 483.1 L 625.7 483.1 Q 643.3 483.1 643.3 500.7 L 643.3 550.2" fill="none" stroke="#7d3fa8" stroke-width="9.3" stroke-linecap="round"/>
+<circle cx="617.3" cy="555.7" r="8.8" fill="#2464c8" stroke="#1a1a2e" stroke-width="1.6"/>
+<path d="M 358.8 284.9 L 414.7 284.9 Q 432.3 284.9 432.3 302.5 L 432.3 465.5 Q 432.3 483.1 449.9 483.1 L 585.8 483.1 Q 603.4 483.1 603.4 500.7 L 603.4 576.7 Q 603.4 583.7 610.3 583.7 L 617.3 583.7" fill="none" stroke="#1a1a2e" stroke-width="14.3" stroke-linecap="round"/>
+<path d="M 358.8 284.9 L 414.7 284.9 Q 432.3 284.9 432.3 302.5 L 432.3 465.5 Q 432.3 483.1 449.9 483.1 L 585.8 483.1 Q 603.4 483.1 603.4 500.7 L 603.4 576.7 Q 603.4 583.7 610.3 583.7 L 617.3 583.7" fill="none" stroke="#7d3fa8" stroke-width="9.3" stroke-linecap="round"/>
 <circle cx="358.8" cy="284.9" r="8.8" fill="#7d3fa8" stroke="#1a1a2e" stroke-width="1.6"/>
-<circle cx="643.3" cy="550.2" r="8.8" fill="#7d3fa8" stroke="#1a1a2e" stroke-width="1.6"/>
-<path d="M 358.8 312.8 L 394.9 312.8 Q 412.5 312.8 412.5 330.4 L 412.5 485.3 Q 412.5 502.9 430.1 502.9 L 597.7 502.9 Q 615.3 502.9 615.3 520.5 L 615.3 550.2" fill="none" stroke="#1a1a2e" stroke-width="14.3" stroke-linecap="round"/>
-<path d="M 358.8 312.8 L 394.9 312.8 Q 412.5 312.8 412.5 330.4 L 412.5 485.3 Q 412.5 502.9 430.1 502.9 L 597.7 502.9 Q 615.3 502.9 615.3 520.5 L 615.3 550.2" fill="none" stroke="#8c8c8c" stroke-width="9.3" stroke-linecap="round"/>
+<circle cx="617.3" cy="583.7" r="8.8" fill="#7d3fa8" stroke="#1a1a2e" stroke-width="1.6"/>
+<path d="M 358.8 312.8 L 394.9 312.8 Q 412.5 312.8 412.5 330.4 L 412.5 485.3 Q 412.5 502.9 430.1 502.9 L 655.6 502.9 Q 673.2 502.9 673.2 520.5 L 673.2 555.7" fill="none" stroke="#1a1a2e" stroke-width="14.3" stroke-linecap="round"/>
+<path d="M 358.8 312.8 L 394.9 312.8 Q 412.5 312.8 412.5 330.4 L 412.5 485.3 Q 412.5 502.9 430.1 502.9 L 655.6 502.9 Q 673.2 502.9 673.2 520.5 L 673.2 555.7" fill="none" stroke="#8c8c8c" stroke-width="9.3" stroke-linecap="round"/>
 <circle cx="358.8" cy="312.8" r="8.8" fill="#8c8c8c" stroke="#1a1a2e" stroke-width="1.6"/>
-<circle cx="615.3" cy="550.2" r="8.8" fill="#8c8c8c" stroke="#1a1a2e" stroke-width="1.6"/>
-<path d="M 191.2 201.1 L 126.5 201.1 Q 108.9 201.1 108.9 218.7 L 108.9 532.6 Q 108.9 550.2 126.5 550.2 L 587.4 550.2" fill="none" stroke="#1a1a2e" stroke-width="14.3" stroke-linecap="round"/>
-<path d="M 191.2 201.1 L 126.5 201.1 Q 108.9 201.1 108.9 218.7 L 108.9 532.6 Q 108.9 550.2 126.5 550.2 L 587.4 550.2" fill="none" stroke="#7b4a1e" stroke-width="9.3" stroke-linecap="round"/>
+<circle cx="673.2" cy="555.7" r="8.8" fill="#8c8c8c" stroke="#1a1a2e" stroke-width="1.6"/>
+<path d="M 191.2 201.1 L 126.5 201.1 Q 108.9 201.1 108.9 218.7 L 108.9 538.1 Q 108.9 555.7 126.5 555.7 L 589.4 555.7" fill="none" stroke="#1a1a2e" stroke-width="14.3" stroke-linecap="round"/>
+<path d="M 191.2 201.1 L 126.5 201.1 Q 108.9 201.1 108.9 218.7 L 108.9 538.1 Q 108.9 555.7 126.5 555.7 L 589.4 555.7" fill="none" stroke="#7b4a1e" stroke-width="9.3" stroke-linecap="round"/>
 <circle cx="191.2" cy="201.1" r="8.8" fill="#7b4a1e" stroke="#1a1a2e" stroke-width="1.6"/>
-<circle cx="587.4" cy="550.2" r="8.8" fill="#7b4a1e" stroke="#1a1a2e" stroke-width="1.6"/>
-<path d="M 191.2 229.0 L 146.3 229.0 Q 128.7 229.0 128.7 246.6 L 128.7 560.6 Q 128.7 578.2 146.3 578.2 L 587.4 578.2" fill="none" stroke="#1a1a2e" stroke-width="14.3" stroke-linecap="round"/>
-<path d="M 191.2 229.0 L 146.3 229.0 Q 128.7 229.0 128.7 246.6 L 128.7 560.6 Q 128.7 578.2 146.3 578.2 L 587.4 578.2" fill="none" stroke="#d81e1e" stroke-width="9.3" stroke-linecap="round"/>
+<circle cx="589.4" cy="555.7" r="8.8" fill="#7b4a1e" stroke="#1a1a2e" stroke-width="1.6"/>
+<path d="M 191.2 229.0 L 146.3 229.0 Q 128.7 229.0 128.7 246.6 L 128.7 566.1 Q 128.7 583.7 146.3 583.7 L 589.4 583.7" fill="none" stroke="#1a1a2e" stroke-width="14.3" stroke-linecap="round"/>
+<path d="M 191.2 229.0 L 146.3 229.0 Q 128.7 229.0 128.7 246.6 L 128.7 566.1 Q 128.7 583.7 146.3 583.7 L 589.4 583.7" fill="none" stroke="#d81e1e" stroke-width="9.3" stroke-linecap="round"/>
 <circle cx="191.2" cy="229.0" r="8.8" fill="#d81e1e" stroke="#1a1a2e" stroke-width="1.6"/>
-<circle cx="587.4" cy="578.2" r="8.8" fill="#d81e1e" stroke="#1a1a2e" stroke-width="1.6"/>
-<path d="M 191.2 368.7 L 166.1 368.7 Q 148.5 368.7 148.5 386.3 L 148.5 505.1 Q 148.5 522.7 166.1 522.7 L 583.8 522.7 Q 601.4 522.7 601.4 540.3 L 601.4 571.2 Q 601.4 578.2 608.4 578.2 L 615.3 578.2" fill="none" stroke="#1a1a2e" stroke-width="14.3" stroke-linecap="round"/>
-<path d="M 191.2 368.7 L 166.1 368.7 Q 148.5 368.7 148.5 386.3 L 148.5 505.1 Q 148.5 522.7 166.1 522.7 L 583.8 522.7 Q 601.4 522.7 601.4 540.3 L 601.4 571.2 Q 601.4 578.2 608.4 578.2 L 615.3 578.2" fill="none" stroke="#f4f4f4" stroke-width="9.3" stroke-linecap="round"/>
+<circle cx="589.4" cy="583.7" r="8.8" fill="#d81e1e" stroke="#1a1a2e" stroke-width="1.6"/>
+<path d="M 191.2 368.7 L 166.1 368.7 Q 148.5 368.7 148.5 386.3 L 148.5 599.1 Q 148.5 616.7 166.1 616.7 L 656.7 616.7 Q 673.2 616.7 673.2 600.2 L 673.2 583.7" fill="none" stroke="#1a1a2e" stroke-width="14.3" stroke-linecap="round"/>
+<path d="M 191.2 368.7 L 166.1 368.7 Q 148.5 368.7 148.5 386.3 L 148.5 599.1 Q 148.5 616.7 166.1 616.7 L 656.7 616.7 Q 673.2 616.7 673.2 600.2 L 673.2 583.7" fill="none" stroke="#f4f4f4" stroke-width="9.3" stroke-linecap="round"/>
 <circle cx="191.2" cy="368.7" r="8.8" fill="#f4f4f4" stroke="#1a1a2e" stroke-width="1.6"/>
-<circle cx="615.3" cy="578.2" r="8.8" fill="#f4f4f4" stroke="#1a1a2e" stroke-width="1.6"/>
+<circle cx="673.2" cy="583.7" r="8.8" fill="#f4f4f4" stroke="#1a1a2e" stroke-width="1.6"/>
 <path d="M 358.8 173.1 L 394.9 173.1 Q 412.5 173.1 412.5 155.5 L 412.5 134.6" fill="none" stroke="#1a1a2e" stroke-width="14.3" stroke-linecap="round"/>
 <path d="M 358.8 173.1 L 394.9 173.1 Q 412.5 173.1 412.5 155.5 L 412.5 134.6" fill="none" stroke="#f28c1e" stroke-width="9.3" stroke-linecap="round"/>
 <circle cx="358.8" cy="173.1" r="8.8" fill="#f28c1e" stroke="#1a1a2e" stroke-width="1.6"/>
 <circle cx="412.5" cy="134.6" r="8.8" fill="#f28c1e" stroke="#1a1a2e" stroke-width="1.6"/>
 <text x="425.7" y="118.1" font-size="10.4" font-family="Helvetica, Arial, sans-serif" fill="#1a1a2e" text-anchor="middle" dy="0.36em">GPIO5: leave open</text>
-<g transform="translate(546.7 532.6)"><text x="82.5" y="0.0" font-size="0.0" font-family="Helvetica, Arial, sans-serif" font-weight="bold" fill="#1a1a2e" text-anchor="middle"></text>
-<text x="40.7" y="1.1" font-size="11.6" font-family="Helvetica, Arial, sans-serif" font-weight="bold" fill="#1a1a2e" text-anchor="start" dy="0.36em" transform="rotate(-90 40.7 1.1)" stroke="#ffffff" stroke-width="3.8" paint-order="stroke" stroke-linejoin="round">GND</text>
-<text x="40.7" y="62.0" font-size="11.6" font-family="Helvetica, Arial, sans-serif" font-weight="bold" fill="#1a1a2e" text-anchor="end" dy="0.36em" transform="rotate(-90 40.7 62.0)" stroke="#ffffff" stroke-width="3.8" paint-order="stroke" stroke-linejoin="round">VCC</text>
-<text x="68.6" y="1.1" font-size="11.6" font-family="Helvetica, Arial, sans-serif" font-weight="bold" fill="#1a1a2e" text-anchor="start" dy="0.36em" transform="rotate(-90 68.6 1.1)" stroke="#ffffff" stroke-width="3.8" paint-order="stroke" stroke-linejoin="round">GDO0</text>
-<text x="68.6" y="62.0" font-size="11.6" font-family="Helvetica, Arial, sans-serif" font-weight="bold" fill="#1a1a2e" text-anchor="end" dy="0.36em" transform="rotate(-90 68.6 62.0)" stroke="#ffffff" stroke-width="3.8" paint-order="stroke" stroke-linejoin="round">CSN</text>
-<text x="96.6" y="1.1" font-size="11.6" font-family="Helvetica, Arial, sans-serif" font-weight="bold" fill="#1a1a2e" text-anchor="start" dy="0.36em" transform="rotate(-90 96.6 1.1)" stroke="#ffffff" stroke-width="3.8" paint-order="stroke" stroke-linejoin="round">SCK</text>
-<text x="96.6" y="62.0" font-size="11.6" font-family="Helvetica, Arial, sans-serif" font-weight="bold" fill="#1a1a2e" text-anchor="end" dy="0.36em" transform="rotate(-90 96.6 62.0)" stroke="#ffffff" stroke-width="3.8" paint-order="stroke" stroke-linejoin="round">MOSI</text>
-<text x="124.5" y="1.1" font-size="11.6" font-family="Helvetica, Arial, sans-serif" font-weight="bold" fill="#1a1a2e" text-anchor="start" dy="0.36em" transform="rotate(-90 124.5 1.1)" stroke="#ffffff" stroke-width="3.8" paint-order="stroke" stroke-linejoin="round">MISO</text>
-<text x="124.5" y="62.0" font-size="11.6" font-family="Helvetica, Arial, sans-serif" font-weight="bold" fill="#1a1a2e" text-anchor="end" dy="0.36em" transform="rotate(-90 124.5 62.0)" stroke="#ffffff" stroke-width="3.8" paint-order="stroke" stroke-linejoin="round">GDO2</text>
+<g transform="translate(546.7 532.6)"><text x="79.2" y="0.0" font-size="0.0" font-family="Helvetica, Arial, sans-serif" font-weight="bold" fill="#1a1a2e" text-anchor="middle"></text>
+<text x="42.7" y="6.6" font-size="11.6" font-family="Helvetica, Arial, sans-serif" font-weight="bold" fill="#1a1a2e" text-anchor="start" dy="0.36em" transform="rotate(-90 42.7 6.6)" stroke="#ffffff" stroke-width="3.8" paint-order="stroke" stroke-linejoin="round">GND</text>
+<text x="42.7" y="67.5" font-size="11.6" font-family="Helvetica, Arial, sans-serif" font-weight="bold" fill="#1a1a2e" text-anchor="end" dy="0.36em" transform="rotate(-90 42.7 67.5)" stroke="#ffffff" stroke-width="3.8" paint-order="stroke" stroke-linejoin="round">VCC</text>
+<text x="70.6" y="6.6" font-size="11.6" font-family="Helvetica, Arial, sans-serif" font-weight="bold" fill="#1a1a2e" text-anchor="start" dy="0.36em" transform="rotate(-90 70.6 6.6)" stroke="#ffffff" stroke-width="3.8" paint-order="stroke" stroke-linejoin="round">MOSI</text>
+<text x="70.6" y="67.5" font-size="11.6" font-family="Helvetica, Arial, sans-serif" font-weight="bold" fill="#1a1a2e" text-anchor="end" dy="0.36em" transform="rotate(-90 70.6 67.5)" stroke="#ffffff" stroke-width="3.8" paint-order="stroke" stroke-linejoin="round">SCK</text>
+<text x="98.6" y="6.6" font-size="11.6" font-family="Helvetica, Arial, sans-serif" font-weight="bold" fill="#1a1a2e" text-anchor="start" dy="0.36em" transform="rotate(-90 98.6 6.6)" stroke="#ffffff" stroke-width="3.8" paint-order="stroke" stroke-linejoin="round">MISO</text>
+<text x="98.6" y="67.5" font-size="11.6" font-family="Helvetica, Arial, sans-serif" font-weight="bold" fill="#1a1a2e" text-anchor="end" dy="0.36em" transform="rotate(-90 98.6 67.5)" stroke="#ffffff" stroke-width="3.8" paint-order="stroke" stroke-linejoin="round">GDO2</text>
+<text x="126.5" y="6.6" font-size="11.6" font-family="Helvetica, Arial, sans-serif" font-weight="bold" fill="#1a1a2e" text-anchor="start" dy="0.36em" transform="rotate(-90 126.5 6.6)" stroke="#ffffff" stroke-width="3.8" paint-order="stroke" stroke-linejoin="round">GDO0</text>
+<text x="126.5" y="67.5" font-size="11.6" font-family="Helvetica, Arial, sans-serif" font-weight="bold" fill="#1a1a2e" text-anchor="end" dy="0.36em" transform="rotate(-90 126.5 67.5)" stroke="#ffffff" stroke-width="3.8" paint-order="stroke" stroke-linejoin="round">CSN</text>
 </g>
 <g transform="translate(176.0 154.0)"><text x="99.0" y="0.0" font-size="0.0" font-family="Helvetica, Arial, sans-serif" font-weight="bold" fill="#1a1a2e" text-anchor="middle"></text>
 <text x="169.4" y="19.1" font-size="10.4" font-family="Helvetica, Arial, sans-serif" font-weight="bold" fill="#1a1a2e" text-anchor="end" dy="0.36em" stroke="#ffffff" stroke-width="3.8" paint-order="stroke" stroke-linejoin="round">5</text>
@@ -188,7 +190,7 @@
 </g>
 <text x="88.0" y="1066.1" font-size="13.2" font-family="Helvetica, Arial, sans-serif" font-weight="bold" fill="#1a1a2e" dy="0.36em">Wire</text>
 <text x="220.0" y="1066.1" font-size="13.2" font-family="Helvetica, Arial, sans-serif" font-weight="bold" fill="#1a1a2e" dy="0.36em">SuperMini</text>
-<text x="352.0" y="1066.1" font-size="13.2" font-family="Helvetica, Arial, sans-serif" font-weight="bold" fill="#1a1a2e" dy="0.36em">E07-M1101D</text>
+<text x="352.0" y="1066.1" font-size="13.2" font-family="Helvetica, Arial, sans-serif" font-weight="bold" fill="#1a1a2e" dy="0.36em">D-Sun CC1101</text>
 <text x="528.0" y="1066.1" font-size="13.2" font-family="Helvetica, Arial, sans-serif" font-weight="bold" fill="#1a1a2e" dy="0.36em">Signal</text>
 <rect x="88.0" y="1081.5" width="44.0" height="13.2" fill="#7b4a1e" stroke="#1a1a2e" stroke-width="1.1" rx="5.5"/>
 <text x="143.0" y="1088.1" font-size="12.1" font-family="Helvetica, Arial, sans-serif" fill="#1a1a2e" dy="0.36em">brown</text>

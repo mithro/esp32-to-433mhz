@@ -285,7 +285,9 @@ def build_sx1278() -> Design:
     T.append(Track("ANT", F, 0.5, [(bx + MOD_R - 1.4, by + MOD_B + 0.5), (bx + MOD_R - 1.4, by + ANT_HOLE_Y), (bx + SMA_X, by + SX_H - SMA_PAD_L + 0.5), (bx + SMA_X, by + SX_H - SMA_PAD_L / 2)]))
     # SMA ground legs, on B.Cu from the via feeding the module's bottom GND pad.
     leg_y = SX_H - SMA_PAD_L / 2
-    T.append(Track("GND", B, 0.4, [(bx + gnd_bot_x, by + MOD_B - 2.3), (bx + gnd_bot_x, by + MOD_B + 0.8), (bx + SMA_X + SMA_GND_OFFSET, by + MOD_B + 0.8), (bx + SMA_X + SMA_GND_OFFSET, by + leg_y)]))
+    # The right leg's feed skirts the antenna wire hole (at MOD_R - 1.4) on its right.
+    skirt_x = MOD_R + 0.8
+    T.append(Track("GND", B, 0.4, [(bx + gnd_bot_x, by + MOD_B - 2.3), (bx + gnd_bot_x, by + MOD_B + 0.8), (bx + skirt_x, by + MOD_B + 0.8), (bx + skirt_x, by + SX_H - SMA_PAD_L - 1.2), (bx + SMA_X + SMA_GND_OFFSET, by + SX_H - SMA_PAD_L - 1.2), (bx + SMA_X + SMA_GND_OFFSET, by + leg_y)]))
     T.append(Track("GND", B, 0.4, [(bx + gnd_bot_x, by + MOD_B + 0.8), (bx + SMA_X - SMA_GND_OFFSET, by + MOD_B + 0.8), (bx + SMA_X - SMA_GND_OFFSET, by + leg_y)]))
     for leg_x in (SMA_X - SMA_GND_OFFSET, SMA_X + SMA_GND_OFFSET):  # the legs' front pads via up from the B.Cu feed
         V.append(Via("GND", (bx + leg_x, by + SX_H - SMA_PAD_L - 1.2)))

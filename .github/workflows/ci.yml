@@ -45,7 +45,7 @@ jobs:
         # The STEP models under hardware/3d/ are committed as built by
         # scripts/build_3d.py (CadQuery) and are not rebuilt here.
         run: |
-          for g in supermini sx1278 cc1101 ra02_breakout adapters; do python3 scripts/generate_$g.py > /dev/null; done
+          for g in supermini sx1278 cc1101 dsun ra02_breakout adapters; do python3 scripts/generate_$g.py > /dev/null; done
           python3 scripts/fill_zones.py
           git status --short
           git diff --exit-code

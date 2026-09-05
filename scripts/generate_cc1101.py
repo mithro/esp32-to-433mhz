@@ -44,9 +44,9 @@ HOLE_D = 3.0
 HOLE_PAD = 4.2
 HOLE_X = 2.70
 HOLE_FROM_ANT_EDGE = 10.0
-SMA_GND_OFFSET = 4.25
-SMA_PAD_W = 1.5
-SMA_PAD_L = 4.5
+SMA_GND_OFFSET = 2.75  # ground legs either side of the centre pin (5.5 mm apart, measured from photos)
+SMA_PAD_W = 1.8
+SMA_PAD_L = 3.5
 
 PIN_NAMES = {"1": "GND", "2": "VCC", "3": "GDO0", "4": "CSN", "5": "SCK", "6": "MOSI", "7": "MISO", "8": "GDO2"}
 PROJECT = "cc1101-e07-m1101d"

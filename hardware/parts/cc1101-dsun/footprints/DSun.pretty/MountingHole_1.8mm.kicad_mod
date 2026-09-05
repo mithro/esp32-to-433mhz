@@ -1,0 +1,85 @@
+(footprint "MountingHole_1.8mm"
+	(version 20241229)
+	(generator "kicadgen.py")
+	(generator_version "9.0")
+	(layer "F.Cu")
+	(descr "Mounting hole, 1.8 mm, not plated (D-Sun CC1101 board)")
+	(tags "mounting hole")
+	(property "Reference" "REF**"
+		(at 0 -2 0)
+		(layer "F.SilkS")
+		(uuid "e5da4050-bd1b-58ac-8475-3f1e92ead719")
+		(effects
+			(font
+				(size 0.8 0.8)
+				(thickness 0.12)
+			)
+		)
+	)
+	(property "Value" "MountingHole_1.8mm"
+		(at 0 2 0)
+		(layer "F.Fab")
+		(uuid "1d1178de-a3b5-5c1a-9936-4cd55110d617")
+		(effects
+			(font
+				(size 0.8 0.8)
+				(thickness 0.12)
+			)
+		)
+	)
+	(property "Datasheet" ""
+		(at 0 0 0)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "308a1a6d-91c0-5718-af3c-621b93955869")
+		(effects
+			(font
+				(size 1.27 1.27)
+				(thickness 0.1905)
+			)
+		)
+	)
+	(property "Description" ""
+		(at 0 0 0)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "44390305-7378-5983-8b32-73102ca1dc98")
+		(effects
+			(font
+				(size 1.27 1.27)
+				(thickness 0.1905)
+			)
+		)
+	)
+	(attr through_hole)
+	(fp_rect
+		(start -1.15 -1.15)
+		(end 1.15 1.15)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(fill no)
+		(layer "F.CrtYd")
+		(uuid "7d2d7295-1b15-5afe-be4d-6d8068ebc3a6")
+	)
+	(fp_text user "${REFERENCE}"
+		(at 0 -2 0)
+		(layer "F.Fab")
+		(uuid "48495923-5057-5f08-8dc1-da1d75cb8c0a")
+		(effects
+			(font
+				(size 0.6 0.6)
+				(thickness 0.09)
+			)
+		)
+	)
+	(pad "1" np_thru_hole circle
+		(at 0 0)
+		(size 1.8 1.8)
+		(drill 1.8)
+		(layers "*.Cu" "*.Mask")
+		(uuid "a348743b-c9e3-59a5-8ad9-941be41160dc")
+	)
+	(embedded_fonts no)
+)

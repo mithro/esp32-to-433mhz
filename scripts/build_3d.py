@@ -16,6 +16,7 @@ the reference board that reproduces it under hardware/parts/:
 
   esp32-c3-supermini      origin: left column pin 1 (GPIO5)
   cc1101-e07-m1101d       origin: header pin 1 (GND, right of the outer row)
+  cc1101-dsun             origin: header pin 1 (GND, right of the outer row)
   sx1278-ra02-breakout    origin: header pin 1 (MISO, left of the outer row)
   sx1278-lora-module      origin: the module's top-left corner (12-pad edge on the left)
 
@@ -46,6 +47,7 @@ import cadquery as cq
 
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
 import generate_cc1101 as e07  # noqa: E402
+import generate_dsun as dsun  # noqa: E402
 import generate_ra02_breakout as rb  # noqa: E402
 import generate_supermini as sm  # noqa: E402
 import generate_sx1278 as sx  # noqa: E402
@@ -209,6 +211,26 @@ def build_e07() -> None:
     save("cc1101-e07-m1101d", [board] + comps, *origin)
 
 
+def build_dsun() -> None:
+    """The green D-Sun CC1101 board: 14.4 x 30, two 1.8 mm holes beside the
+    SMA jack, crystal against the left edge, CC1101 mid-board."""
+    W, H, t = dsun.BOARD_W, dsun.BOARD_H, 1.6
+    hole_y = H - dsun.HOLE_FROM_ANT_EDGE
+    pins = [(W - dsun.HDR_COL_X - ((n - 1) // 2) * PITCH, dsun.HDR_ROW_Y + ((n - 1) % 2) * PITCH) for n in range(1, 9)]
+    origin = pins[0]
+    comps = [
+        ("cc1101", box(3.5, 13.8, 7.5, 17.8, t, t + 0.9), CHIP),
+        ("crystal", box(0.1, 13.9, 2.6, 17.1, t, t + 0.8), METAL),
+    ]
+    for (x, y) in ((9.5, 9.0), (9.5, 11.0), (11.5, 9.0), (11.5, 11.0), (3.0, 19.5), (4.6, 19.5), (6.2, 19.5), (9.0, 15.5), (10.6, 15.5), (12.2, 15.5), (11.0, 21.0), (5.0, 24.0)):
+        comps.append(("passive", box(x - 0.8, y - 0.5, x + 0.8, y + 0.5, t, t + 0.5), CERAMIC))
+    comps += sma_edge_jack(W / 2, H, t / 2)
+    comps += module_header(pins)
+    save("cc1101-dsun-components", comps, *origin)
+    board = pcb(W, H, t, PCB_GREEN, [(dsun.HOLE_X, hole_y, dsun.HOLE_D), (W - dsun.HOLE_X, hole_y, dsun.HOLE_D)])
+    save("cc1101-dsun", [board] + comps, *origin)
+
+
 def ra02_module(x0: float, y0: float, z0: float) -> list[tuple[str, cq.Workplane, cq.Color]]:
     """Ai-Thinker Ra-02 as mounted on the breakout: 16 x 17 (x by y) with the
     castellated 17 mm edges left and right, 0.8 mm PCB plus a 2.4 mm shield
@@ -300,6 +322,7 @@ def main() -> None:
     args.out.mkdir(parents=True, exist_ok=True)
     build_supermini()
     build_e07()
+    build_dsun()
     build_ra02_breakout()
     build_sx1278_module()
     build_small_parts()

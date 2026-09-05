@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1122" height="1110" viewBox="0 0 1122 1110">
 <rect width="100%" height="100%" fill="#ffffff"/>
-<text x="561.0" y="33.0" font-size="22.0" font-family="Helvetica, Arial, sans-serif" font-weight="bold" fill="#1a1a2e" text-anchor="middle" dy="0.36em">ESP32-C3 SuperMini to SX1278 Ra-02 breakout with jumper wires</text>
+<text x="561.0" y="33.0" font-size="22.0" font-family="Helvetica, Arial, sans-serif" font-weight="bold" fill="#1a1a2e" text-anchor="middle" dy="0.36em">ESP32-C3 SuperMini to the SX1278 Ra-02 breakout with jumper wires</text>
 <text x="561.0" y="61.6" font-size="13.2" font-family="Helvetica, Arial, sans-serif" fill="#1a1a2e" text-anchor="middle" dy="0.36em">Same pins as the socket adapter. Both boards seen from the back, header pins towards you.</text>
 <g transform="translate(546.7 532.6)"><text x="96.2" y="0.0" font-size="0.0" font-family="Helvetica, Arial, sans-serif" font-weight="bold" fill="#1a1a2e" text-anchor="middle"></text>
 <rect x="0.0" y="0.0" width="192.5" height="247.5" rx="6.6" fill="#1c6b9c" stroke="#0d3f5e" stroke-width="2.75"/>
@@ -128,11 +128,11 @@
 <path d="M 191.2 368.7 L 166.1 368.7 Q 148.5 368.7 148.5 386.3 L 148.5 505.1 Q 148.5 522.7 166.1 522.7 L 597.4 522.7 Q 615.0 522.7 615.0 540.3 L 615.0 567.9 Q 615.0 574.9 622.0 574.9 L 629.0 574.9" fill="none" stroke="#f4f4f4" stroke-width="9.3" stroke-linecap="round"/>
 <circle cx="191.2" cy="368.7" r="8.8" fill="#f4f4f4" stroke="#1a1a2e" stroke-width="1.6"/>
 <circle cx="629.0" cy="574.9" r="8.8" fill="#f4f4f4" stroke="#1a1a2e" stroke-width="1.6"/>
-<path d="M 358.8 173.1 L 358.8 138.6 Q 358.8 121.0 341.2 121.0 L 269.3 121.0 Q 251.7 121.0 251.7 138.6 L 251.7 183.5 Q 251.7 201.1 234.1 201.1 L 191.2 201.1" fill="none" stroke="#1a1a2e" stroke-width="14.3" stroke-linecap="round"/>
-<path d="M 358.8 173.1 L 358.8 138.6 Q 358.8 121.0 341.2 121.0 L 269.3 121.0 Q 251.7 121.0 251.7 138.6 L 251.7 183.5 Q 251.7 201.1 234.1 201.1 L 191.2 201.1" fill="none" stroke="#f28c1e" stroke-width="9.3" stroke-linecap="round"/>
+<path d="M 358.8 173.1 L 358.8 138.6 Q 358.8 121.0 341.2 121.0 L 269.3 121.0 Q 251.7 121.0 251.7 138.6 L 251.7 239.4 Q 251.7 257.0 234.1 257.0 L 191.2 257.0" fill="none" stroke="#1a1a2e" stroke-width="14.3" stroke-linecap="round"/>
+<path d="M 358.8 173.1 L 358.8 138.6 Q 358.8 121.0 341.2 121.0 L 269.3 121.0 Q 251.7 121.0 251.7 138.6 L 251.7 239.4 Q 251.7 257.0 234.1 257.0 L 191.2 257.0" fill="none" stroke="#f28c1e" stroke-width="9.3" stroke-linecap="round"/>
 <circle cx="358.8" cy="173.1" r="8.8" fill="#f28c1e" stroke="#1a1a2e" stroke-width="1.6"/>
-<circle cx="191.2" cy="201.1" r="8.8" fill="#f28c1e" stroke="#1a1a2e" stroke-width="1.6"/>
-<text x="275.0" y="103.4" font-size="10.4" font-family="Helvetica, Arial, sans-serif" fill="#1a1a2e" text-anchor="middle" dy="0.36em">GPIO5 strap to GND (shares the G pin)</text>
+<circle cx="191.2" cy="257.0" r="8.8" fill="#f28c1e" stroke="#1a1a2e" stroke-width="1.6"/>
+<text x="275.0" y="103.4" font-size="10.4" font-family="Helvetica, Arial, sans-serif" fill="#1a1a2e" text-anchor="middle" dy="0.36em">GPIO5 strap to GPIO4 (firmware drives GPIO4 low to read it)</text>
 <g transform="translate(546.7 532.6)"><text x="96.2" y="0.0" font-size="0.0" font-family="Helvetica, Arial, sans-serif" font-weight="bold" fill="#1a1a2e" text-anchor="middle"></text>
 <text x="54.3" y="-2.2" font-size="11.6" font-family="Helvetica, Arial, sans-serif" font-weight="bold" fill="#1a1a2e" text-anchor="start" dy="0.36em" transform="rotate(-90 54.3 -2.2)" stroke="#ffffff" stroke-width="3.8" paint-order="stroke" stroke-linejoin="round">GND</text>
 <text x="54.3" y="58.7" font-size="11.6" font-family="Helvetica, Arial, sans-serif" font-weight="bold" fill="#1a1a2e" text-anchor="end" dy="0.36em" transform="rotate(-90 54.3 58.7)" stroke="#ffffff" stroke-width="3.8" paint-order="stroke" stroke-linejoin="round">3V3</text>
@@ -178,8 +178,8 @@
 <rect x="88.0" y="927.5" width="44.0" height="13.2" fill="#f28c1e" stroke="#1a1a2e" stroke-width="1.1" rx="5.5"/>
 <text x="143.0" y="934.1" font-size="12.1" font-family="Helvetica, Arial, sans-serif" fill="#1a1a2e" dy="0.36em">orange</text>
 <text x="220.0" y="934.1" font-size="12.1" font-family="Helvetica, Arial, sans-serif" fill="#1a1a2e" dy="0.36em">5 (GPIO5)</text>
-<text x="352.0" y="934.1" font-size="12.1" font-family="Helvetica, Arial, sans-serif" fill="#1a1a2e" dy="0.36em">(to the SuperMini's G)</text>
-<text x="528.0" y="934.1" font-size="12.1" font-family="Helvetica, Arial, sans-serif" fill="#1a1a2e" dy="0.36em">radio-type strap: to GND for the Ra-02, open for the CC1101</text>
+<text x="352.0" y="934.1" font-size="12.1" font-family="Helvetica, Arial, sans-serif" fill="#1a1a2e" dy="0.36em">(to the SuperMini's GPIO4)</text>
+<text x="528.0" y="934.1" font-size="12.1" font-family="Helvetica, Arial, sans-serif" fill="#1a1a2e" dy="0.36em">radio-type strap: to GPIO4 for the Ra-02, open for a CC1101</text>
 <rect x="88.0" y="949.5" width="44.0" height="13.2" fill="#f2d21e" stroke="#1a1a2e" stroke-width="1.1" rx="5.5"/>
 <text x="143.0" y="956.1" font-size="12.1" font-family="Helvetica, Arial, sans-serif" fill="#1a1a2e" dy="0.36em">yellow</text>
 <text x="220.0" y="956.1" font-size="12.1" font-family="Helvetica, Arial, sans-serif" fill="#1a1a2e" dy="0.36em">6 (GPIO6)</text>

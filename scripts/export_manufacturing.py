@@ -48,6 +48,7 @@ NOTES = {
     "esp32-c3-supermini": "Castellated holes / edge plating REQUIRED (all 16 pins are half-holes on the long edges).",
     "sx1278-lora-module": "Castellated holes / edge plating REQUIRED (keyhole pads on the left and right edges, two castellation-only notches on the bottom edge).",
     "cc1101-e07-m1101d": "SMA jack pads reach the bottom board edge (edge-mount connector); no castellations otherwise.",
+    "cc1101-dsun": "SMA jack pads reach the bottom board edge (edge-mount connector); no castellations otherwise.",
     "esp32c3-sx1278-adapter": "Optional SMA pads reach the bottom board edge (edge-mount connector). No castellations.",
     "esp32c3-radio-adapter": "All tracks are on the bottom copper (R1 is a bottom-side SMD pad pair); the top copper is a GND pour plus pads. No castellations.",
 }
