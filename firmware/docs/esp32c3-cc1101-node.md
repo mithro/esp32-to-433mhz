@@ -86,7 +86,11 @@ and 5 V supply per deployed node.
 ## Modes, commands, MQTT
 See [`../README.md`](../README.md) -> *Command reference* and *MQTT topics* for
 the `Cc*` / `Sx*` / `Secplus*` commands, the `/cc1101.cfg` persisted config, and
-the exact MQTT message shapes as currently implemented.
+the exact MQTT message shapes as currently implemented. For the full per-field
+MQTT message schema, the Home Assistant autodiscovery setup (the
+`rtl433-mqtt-autodiscovery` add-on on `rtl_433/+/events`), the `CcHass`
+events-topic option, node MQTT configuration, and the live-broker validation
+procedure, see [`mqtt-home-assistant.md`](mqtt-home-assistant.md).
 
 ## Decoders and fixtures (host-tested)
 `../decoders/` — Fineoffset WS69/WH65B/WS85/**WH51** (soil moisture, family 0x51) and OOK-PWM in pure C, tested with

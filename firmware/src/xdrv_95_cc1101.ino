@@ -18,6 +18,7 @@
 #include "cc1101_node/sx1278_weather.h"
 #include "cc1101_node/cc1101_pulse.h"
 #include "cc1101_node/secplus2.h"
+#include "cc1101_node/cc1101_mqtt.h"
 #include "cc1101_node/decoders/decode_common.h"
 #include "cc1101_node/decoders/decode_fineoffset.h"
 #include "cc1101_node/decoders/decode_ookpwm.h"
@@ -33,7 +34,10 @@ enum CcRadioSel : uint8_t { RADIO_AUTO = 0, RADIO_CC1101 = 1, RADIO_SX1278 = 2 }
 struct CcConfig {
   uint32_t magic; uint8_t version; uint8_t mode; uint8_t raw; uint8_t radio;
   uint64_t secplus_id; uint32_t rolling; uint32_t tx_count;
-  double secplus_freq[3]; uint8_t secplus_nfreq; uint8_t pad2[7];
+  // hass: HA events-topic layout (CC_HASS_AGG/CC_HASS_DIRECT). Carved out of the trailing
+  // reserved padding so sizeof(CcConfig) is unchanged and existing /cc1101.cfg files
+  // (whose pad was zeroed at save) load unchanged with hass = 0 = CC_HASS_AGG — no version bump.
+  double secplus_freq[3]; uint8_t secplus_nfreq; uint8_t hass; uint8_t pad2[6];
 };
 static CcConfig CcCfg;
 
@@ -130,11 +134,13 @@ static void CcSecplusFrame(const uint32_t* us, size_t n, uint32_t now);  // Task
 void CmndSecplusId(void); void CmndSecplusSend(void); void CmndSecplusCounter(void); void CmndSecplusFreq(void);  // forward: table below is defined before these bodies
 
 /* ---------- helpers ---------- */
+// Topic + event-JSON shaping live in cc1101_node/cc1101_mqtt.c (pure C, host-tested by
+// tests/test_mqtt_shape.py so the exact published bytes are covered off-target).
 static void CcNodeTopic(char* out, size_t len, const char* leaf) {
-  snprintf_P(out, len, PSTR("rtl_433/nodes/%s/%s"), NetworkHostname(), leaf);
+  cc_node_topic(out, len, NetworkHostname(), leaf);
 }
 static void CcPublishEvent(const char* json) {
-  char topic[96]; CcNodeTopic(topic, sizeof topic, "events");
+  char topic[96]; cc_events_topic(topic, sizeof topic, CcCfg.hass, NetworkHostname());
   MqttPublishPayload(topic, json);
 }
 /* identical decodes within 500 ms collapse into one event (spec §7.1) */
@@ -144,8 +150,7 @@ static bool CcRepeatSuppressed(const char* key, uint32_t now) {
 }
 /* prepend time/receiver to a decoder JSON object: {"time":"…","receiver":"…",<decoder fields>} */
 static void CcWrapEvent(const char* decoder_json, int rssi, char* out, size_t len) {
-  const char* body = decoder_json; if (*body == '{') body++;
-  snprintf_P(out, len, PSTR("{\"time\":\"%s\",\"receiver\":\"%s\",\"rssi\":%d,%s"), GetDateAndTime(DT_LOCAL).c_str(), NetworkHostname(), rssi, body);
+  cc_wrap_event(out, len, GetDateAndTime(DT_LOCAL).c_str(), NetworkHostname(), rssi, decoder_json);
 }
 
 /* ---------- OOK edge capture on GDO2 (ISR ring buffer; ruling R1: ISR instead of RMT) ---------- */
@@ -510,8 +515,8 @@ static void CcHealth50ms(void) {
 }
 
 /* ---------- commands ---------- */
-const char kCcCommands[] PROGMEM = "Cc|Mode|Preset|Reg|Status|Raw";
-void (* const CcCommand[])(void) PROGMEM = { &CmndCcMode, &CmndCcPreset, &CmndCcReg, &CmndCcStatus, &CmndCcRaw };
+const char kCcCommands[] PROGMEM = "Cc|Mode|Preset|Reg|Status|Raw|Hass";
+void (* const CcCommand[])(void) PROGMEM = { &CmndCcMode, &CmndCcPreset, &CmndCcReg, &CmndCcStatus, &CmndCcRaw, &CmndCcHass };
 // Un-prefixed command table: named CcRfSend, not RfSend — xdrv_17_rcswitch.ino (USE_RC_SWITCH,
 // which IS compiled into this tasmota32c3 build) already defines CmndRfSend/"RfSend", so the
 // bare Tasmota name collides at link time. Renamed to avoid the redefinition.
@@ -546,15 +551,20 @@ void CmndCcReg(void) {             // CcReg <addr> [value]  (hex or decimal); ad
   Response_P(PSTR("{\"CcReg\":{\"Addr\":\"0x%02X\",\"Value\":\"0x%02X\"}}"), (unsigned)addr, v);
 }
 void CmndCcStatus(void) {
-  Response_P(PSTR("{\"CcStatus\":{\"Present\":%d,\"PARTNUM\":\"0x%02X\",\"VERSION\":\"0x%02X\",\"MARCSTATE\":\"0x%02X\",\"Mode\":\"%s\",\"Preset\":\"%s\",\"RSSI\":%d,\"Rx\":%u,\"Decoded\":%u,\"Tx\":%u,\"Reinit\":%u,\"Overflow\":%u,\"Repeats\":%u,\"Raw\":%d,\"SecplusId\":%llu,\"Rolling\":%u}}"),
+  Response_P(PSTR("{\"CcStatus\":{\"Present\":%d,\"PARTNUM\":\"0x%02X\",\"VERSION\":\"0x%02X\",\"MARCSTATE\":\"0x%02X\",\"Mode\":\"%s\",\"Preset\":\"%s\",\"RSSI\":%d,\"Rx\":%u,\"Decoded\":%u,\"Tx\":%u,\"Reinit\":%u,\"Overflow\":%u,\"Repeats\":%u,\"Raw\":%d,\"Hass\":%d,\"SecplusId\":%llu,\"Rolling\":%u}}"),
              Cc.present, Cc.partnum, Cc.version, Cc.present ? Cc.radio->marcstate() : 0,
              CcCfg.mode == CC_MODE_WEATHER ? "weather" : "remotes", cc_preset_name(Cc.preset),
-             Cc.present ? Cc.radio->rssi_dbm() : 0, Cc.rx, Cc.decoded, Cc.tx, Cc.reinit, Cc.overflow, Cc.repeats, CcCfg.raw,
+             Cc.present ? Cc.radio->rssi_dbm() : 0, Cc.rx, Cc.decoded, Cc.tx, Cc.reinit, Cc.overflow, Cc.repeats, CcCfg.raw, CcCfg.hass,
              (unsigned long long)CcCfg.secplus_id, (unsigned)CcCfg.rolling);
 }
 void CmndCcRaw(void) {
   if (XdrvMailbox.data_len) { CcCfg.raw = (XdrvMailbox.payload != 0); CcCfgSave(); }
   ResponseCmndNumber(CcCfg.raw);
+}
+void CmndCcHass(void) {  // CcHass 0|1 — 0: rtl_433/nodes/<host>/events (aggregator); 1: rtl_433/<host>/events (direct HA autodiscovery)
+  if (XdrvMailbox.data_len) { CcCfg.hass = (XdrvMailbox.payload != 0) ? CC_HASS_DIRECT : CC_HASS_AGG; CcCfgSave(); }
+  char topic[96]; cc_events_topic(topic, sizeof topic, CcCfg.hass, NetworkHostname());
+  Response_P(PSTR("{\"CcHass\":%d,\"EventsTopic\":\"%s\"}"), CcCfg.hass, topic);
 }
 
 /* ---------- SX1278 + radio-selection commands ---------- */

@@ -120,8 +120,9 @@ command + argument) and the JSON the driver responds with.
 | `CcMode` | `CcMode [remotes\|weather]` | `CcMode weather` | `"weather"` (plain string; `auto` is accepted syntactically but replies `"auto not implemented (spec follow-on)"` and does not change mode — spec §5.3 follow-on) |
 | `CcPreset` | `CcPreset [name]` (debug: loads a preset and enters RX with it, overriding `CcMode` until the next `CcMode`/reinit) | `CcPreset fineoffset-fsk` | `"fineoffset-fsk"`; unknown name or no radio present → `"fineoffset-fsk\|ook-433\|ook-tx-100k\|ook-tx-4k"` |
 | `CcReg` | `CcReg <addr 0x00-0x3F> [val]` (hex or decimal); writing `addr` in `0x30-0x3D` issues a command **strobe** instead of a register write | `CcReg 0x02 0x0D` | `{"CcReg":{"Addr":"0x02","Value":"0x0D"}}` (`Value` is always read back after any write); no args / no radio → `"addr 0x00-0x3F [val]"` |
-| `CcStatus` | `CcStatus` | `CcStatus` | `{"CcStatus":{"Present":1,"PARTNUM":"0x00","VERSION":"0x14","MARCSTATE":"0x0D","Mode":"remotes","Preset":"ook-433","RSSI":-84,"Rx":1234,"Decoded":412,"Tx":3,"Reinit":0,"Overflow":0,"Repeats":57,"Raw":0,"SecplusId":0,"Rolling":0}}` |
+| `CcStatus` | `CcStatus` | `CcStatus` | `{"CcStatus":{"Present":1,"PARTNUM":"0x00","VERSION":"0x14","MARCSTATE":"0x0D","Mode":"remotes","Preset":"ook-433","RSSI":-84,"Rx":1234,"Decoded":412,"Tx":3,"Reinit":0,"Overflow":0,"Repeats":57,"Raw":0,"Hass":0,"SecplusId":0,"Rolling":0}}` |
 | `CcRaw` | `CcRaw <0\|1>` | `CcRaw 1` | `1` (plain number; then every captured OOK frame also publishes `tele/<topic>/CCRAW`, and every undecoded FSK packet too — see MQTT topics below) |
+| `CcHass` | `CcHass [0\|1]` — decoded-events topic layout: `0` (default) `rtl_433/nodes/<host>/events` (aggregator-fronted); `1` `rtl_433/<host>/events` (matches the HA add-on's `rtl_433/+/events` for direct autodiscovery). Persisted to `/cc1101.cfg`. | `CcHass 1` | `{"CcHass":1,"EventsTopic":"rtl_433/cc1101-welland-carport/events"}` — see [`docs/mqtt-home-assistant.md`](docs/mqtt-home-assistant.md) |
 | `CcRfSend` | `CcRfSend {"Data":"0x..","Bits":8-32,"Protocol":1,"Pulse":100-2000,"Repeat":n}` (or a bare decimal/hex `Data` value using the defaults `Bits:24 Protocol:1 Pulse:350 Repeat:10`) — named `CcRfSend`, **not** `RfSend`: see note below | `CcRfSend {"Data":"0x00AABB","Bits":24,"Pulse":350,"Repeat":5}` | `"Done"` / `"Failed"` / `"no radio"` / `"rate limited"` / `"only Protocol 1, Bits 8..32, Pulse 100..2000"`; before transmitting it announces on `rtl_433/nodes/<host>/tx` (see below) |
 | `SecplusId` | `SecplusId [id]` (36-bit id, masked to `0xF0FFFFFFFF`) | `SecplusId 12345` | `{"SecplusId":12345}` |
 | `SecplusCounter` | `SecplusCounter [n]` (28-bit rolling counter, masked to `0x0FFFFFFF`) | `SecplusCounter` | `0` (plain number; normally left alone — `SecplusSend` increments and persists it itself) |
@@ -136,9 +137,13 @@ Notes:
 
 ## MQTT topics
 
+For the full per-field JSON schema of every device, the Home Assistant
+autodiscovery setup, and the (still-pending) live-broker validation procedure,
+see [`docs/mqtt-home-assistant.md`](docs/mqtt-home-assistant.md).
+
 | Direction | Topic | Example payload |
 |---|---|---|
-| decoded events (per receiver) | `rtl_433/nodes/<host>/events` | OOK-PWM: `{"time":"2026-08-24T10:15:03","receiver":"cc1101-welland-carport","rssi":-61,"model":"OOK-PWM",...}` (decoder-specific fields follow `rssi`); Security+: `{"time":"...","receiver":"...","rssi":-70,"model":"Secplus-v2","id":12345,"button":1,"rolling":842}`; Fineoffset weather in `weather` mode: `{"time":"...","receiver":"...","rssi":-84,"model":"Fineoffset-WS69","id":174,"temperature_C":13.1,"humidity":82,...}` |
+| decoded events (per receiver) | `rtl_433/nodes/<host>/events` (`CcHass 0`, default) or `rtl_433/<host>/events` (`CcHass 1`, direct HA autodiscovery) | OOK-PWM: `{"time":"2026-08-24T10:15:03","receiver":"cc1101-welland-carport","rssi":-61,"model":"OOK-PWM",...}` (decoder-specific fields follow `rssi`); Security+: `{"time":"...","receiver":"...","rssi":-70,"model":"Secplus-v2","id":12345,"button":1,"rolling":842}`; Fineoffset weather in `weather` mode: `{"time":"...","receiver":"...","rssi":-84,"model":"Fineoffset-WS69","id":174,"temperature_C":13.1,"humidity":82,...}` |
 | Tasmota-style remote result (per receiver) | `tele/<topic>/RESULT` | `{"RfReceived":{"Data":"0x00AABB","Bits":25,"Protocol":1,"Pulse":350,"RSSI":-61}}` — published only for the OOK-PWM (`remotes`-mode) decode path, alongside the `events` publish for the same frame |
 | raw capture (bench, `CcRaw 1`) | `tele/<topic>/CCRAW` | OOK: `{"Pulses":[350,-1050,700,-700,...]}` (positive = mark, negative = space, in µs); FSK undecoded packet: `{"Packet":"24AE5D8213...","RSSI":-84,"LQI":37}` |
 | TX announcement (before keying, ~50 ms lead) | `rtl_433/nodes/<host>/tx` | `CcRfSend`: `{"Data":"0x00AABB","Bits":24,"Protocol":1,"Pulse":350,"model":"OOK-PWM","code":"00aabb"}`; `SecplusSend`: `{"model":"Secplus-v2","id":12345,"button":1,"rolling":843,"fixed":...}` |
@@ -163,13 +168,14 @@ at boot and re-saved whenever a setting changes:
 | `version` | `uint8_t` | config struct version, currently `1` |
 | `mode` | `uint8_t` | `0` = `remotes`, `1` = `weather` (`CcMode`) |
 | `raw` | `uint8_t` | `CcRaw` flag (0/1) |
+| `hass` | `uint8_t` | `CcHass` events-topic layout: `0` = `rtl_433/nodes/<host>/events` (aggregator), `1` = `rtl_433/<host>/events` (direct HA). Carved from the trailing reserved padding, so `sizeof(CcConfig)` is unchanged and pre-existing config files load with `hass = 0` (no version bump) |
 | `secplus_id` | `uint64_t` | this node's Security+ 2.0 transmitter identity (`SecplusId`), masked to 36 bits |
 | `rolling` | `uint32_t` | Security+ rolling counter (`SecplusCounter`), masked to 28 bits |
 | `tx_count` | `uint32_t` | lifetime transmit count (mirrors `CcStatus`'s `Tx`, but persisted) |
 | `secplus_freq[3]` | `double[3]` | configured Security+ TX frequency legs, MHz (`SecplusFreq`) |
 | `secplus_nfreq` | `uint8_t` | how many of `secplus_freq[0..2]` are in use (default `1`, `secplus_freq[0] = 433.92`) |
 
-Defaults (`CcCfgDefaults()`): `mode = remotes`, `raw = 0`, `secplus_id = 0`, `rolling = 0`,
+Defaults (`CcCfgDefaults()`): `mode = remotes`, `raw = 0`, `hass = 0`, `secplus_id = 0`, `rolling = 0`,
 `secplus_freq = [433.92, 0, 0]`, `secplus_nfreq = 1`. See `RECOVERY.md` for restoring/backing up
 this file.
 
@@ -187,6 +193,7 @@ glue in `xdrv_95_cc1101.ino` itself (that only builds inside the full PlatformIO
 
 - `RECOVERY.md` — reflashing a bricked/misbehaving board, `Reset 5`/`Reset 6`, restoring
   `/cc1101.cfg`.
+- `docs/mqtt-home-assistant.md` — full MQTT message schema, Home Assistant autodiscovery setup, node MQTT config, and the live-broker validation procedure.
 - `docs/esp32c3-cc1101-node.md` — wiring, BOM, commissioning runbook, bench verification log.
 - `docs/HWTEST-RESULTS-cc1101.md` — on-hardware validation log (CC1101 blue/green, SX1278 RA-02).
 - The full design spec and numbered rulings (R1-R8) referenced above live in the project repo
