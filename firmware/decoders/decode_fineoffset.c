@@ -1,6 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later
  * Ported from rtl_433 (c) Christian W. Zuckschwerdt and contributors:
- *   src/devices/fineoffset.c (fineoffset_WH24_callback), fineoffset_ws85.c. */
+ *   src/devices/fineoffset.c (fineoffset_WH24_callback, fineoffset_WH51_callback),
+ *   fineoffset_ws85.c. */
 #include "decode_common.h"
 #include "decode_fineoffset.h"
 
@@ -88,10 +89,42 @@ static int decode_ws85(const uint8_t *b, size_t n, char *json, size_t json_len)
     return len < 0 ? RF_DECODE_TRUNCATED : RF_DECODE_OK;
 }
 
+/* WH51 soil moisture: FF II II II TB YY MM ZA AA XX XX XX CC SS  (14 bytes after 2DD4 sync).
+ *   FF = family 0x51 ; IIIIII = 24-bit id ; T (b[4]>>5) = TX-period boost ; B (b[4]&0x1F) =
+ *   battery in 100 mV steps ; MM = moisture % ; AAA (b[7] bit0 = MSB, b[8] = LSB) = 9-bit
+ *   raw AD ; CC = CRC-8 poly 0x31 init 0 over b[0..11] ; SS = sum(b[0..12]) & 0xFF.
+ * rtl_433 fineoffset.c fineoffset_WH51_callback. Trailing bytes beyond the 14 are ignored,
+ * so a WH51 frame is decoded even when it arrives inside a longer fixed-length FSK read. */
+static int decode_wh51(const uint8_t *b, size_t n, char *json, size_t json_len)
+{
+    if (n < 14) return RF_DECODE_TOO_SHORT;
+    if (rf_add_bytes(b, 13) != b[13]) return RF_DECODE_BAD_MIC;   /* additive checksum over b[0..12] */
+    if (rf_crc8(b, 12, 0x31, 0x00) != b[12]) return RF_DECODE_BAD_MIC;
+
+    int boost        = (b[4] & 0xE0) >> 5;
+    int battery_bits = b[4] & 0x1F;
+    int battery_mv   = battery_bits * 100;
+    int moisture     = b[6];
+    int ad_raw       = (((int)b[7] & 0x01) << 8) | (int)b[8];
+    /* rtl_433 maps the 5-bit battery reading to a coarse level (alkaline AA assumed). */
+    double battery_level = battery_bits >= 16 ? 1.0
+                         : battery_bits == 15 ? 0.9
+                         : battery_bits == 14 ? 0.5
+                         : battery_bits == 13 ? 0.1 : 0.0;
+
+    int len = 0;
+    len = rf_json_append(json, json_len, len,
+        "{\"model\":\"Fineoffset-WH51\",\"id\":\"%02x%02x%02x\",\"battery_ok\":%.1f,\"battery_mV\":%d,"
+        "\"moisture\":%d,\"boost\":%d,\"ad_raw\":%d,\"mic\":\"CRC\"}",
+        b[1], b[2], b[3], battery_level, battery_mv, moisture, boost, ad_raw);
+    return len < 0 ? RF_DECODE_TRUNCATED : RF_DECODE_OK;
+}
+
 int fineoffset_decode(const uint8_t *b, size_t n, char *json, size_t json_len)
 {
     if (n < 1) return RF_DECODE_TOO_SHORT;
     if (b[0] == 0x24) return decode_wh24_family(b, n, json, json_len);
+    if (b[0] == 0x51) return decode_wh51(b, n, json, json_len);
     if (b[0] == 0x85) return decode_ws85(b, n, json, json_len);
     return RF_DECODE_NONE;
 }
