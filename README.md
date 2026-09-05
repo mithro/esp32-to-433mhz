@@ -174,14 +174,14 @@ The same hook-up with Dupont jumper wires instead of the adapter, so the
 firmware setup is identical. Both boards are shown from the back, deadbug
 style, the way they lie with their header pins pointing at you (the
 E07-M1101D's back silk lists its pins). Colours follow the rainbow-ribbon
-order, GND brown, 3V3 red, then orange to grey for GPIO5 to GPIO10, with
-the chip select on GPIO0 taking the next colour, white. The orange wire is
-the radio-type strap: for the Ra-02 breakout it goes from GPIO5 to GPIO1,
-which the firmware drives low while reading the strap (the SuperMini's
-only GND pin is taken by the brown wire); for a CC1101 board it is left
-open. The two socket positions fed from the SuperMini's power column,
-GPIO4 and GPIO3, take the ribbon's remaining colours, white and black.
-Drawn by `scripts/draw_wiring.py`.
+order: GND brown, 3V3 red, then orange, yellow, green, purple and grey for
+GPIO5, 6, 7, 9 and 10, with the two socket positions fed from the
+SuperMini's power column, GPIO4 and GPIO3, taking the ribbon's remaining
+colours, white and black. The orange wire is the radio-type strap: for the
+Ra-02 breakout it goes from GPIO5 to GPIO1, which the firmware drives low
+while reading the strap (the SuperMini's only GND pin is taken by the
+brown wire); for a CC1101 board it is left open. Drawn by
+`scripts/draw_wiring.py`.
 
 ![Jumper wires from the SuperMini to the blue CC1101 E07-M1101D board](docs/images/wiring-cc1101.svg)
 

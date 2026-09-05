@@ -19,13 +19,14 @@
   past the SuperMini's edge) so it can be fitted with header pins or
   soldered flat by its castellations.
 
-Both use the same GPIO assignment (see PINMAP) so firmware can share the SPI
-setup.  Routing is done by hand in this file and checked by DRC
-(scripts/verify_boards.py).
+Both use the same GPIOs (see PINMAP and RADIO_PINMAP; the module adapter
+swaps MOSI and SCK) so firmware needs only a pin map per radio.  Routing is
+done by hand in this file and checked by DRC (scripts/verify_boards.py).
 
-GPIO choice: GPIO2/8/9 are ESP32-C3 strapping pins and GPIO8 also drives the
-SuperMini LED, so radio outputs (DIO/GDO) are kept off them; the radio RESET
-input is driven from GPIO8, which is safe.  GPIO20/21 (UART) are left free.
+GPIO choice: GPIO2/8/9 are ESP32-C3 boot strapping pins, so no socket
+position that is a radio output on any board goes to them; they carry only
+ESP32 outputs (RESET) or a position that is an input on every radio (the
+chip select).  GPIO20/21 (UART) are left free.
 """
 
 from __future__ import annotations
@@ -41,10 +42,8 @@ from kicadgen import Design, Footprint, Model, Pad, Part, SymbolRef, Track, Via,
 # ---------------------------------------------------------------------------
 # Shared: GPIO assignment and SuperMini geometry
 # ---------------------------------------------------------------------------
-# GPIO assignment shared by both adapters (see build_radio for why): the
-# radio signals sit on the GPIO row, in the order the socket / module pads
-# want them, with CSN/NSS on GPIO0.  GPIO8 and GPIO9 are boot strapping pins
-# but only ever carry ESP32 outputs (MOSI, SCK), which float at boot.
+# SX1278 module adapter's assignment (see RADIO_PINMAP for the socket
+# adapter's, which it matches apart from swapping MOSI and SCK).
 PINMAP = {
     "DIO1": "GPIO6",  # GDO2 on the CC1101
     "MISO": "GPIO7",
@@ -81,7 +80,7 @@ COAX = SymbolRef("Connector.kicad_sym", "Connector", "Conn_Coaxial")
 CONN2 = SymbolRef("Connector_Generic.kicad_sym", "Connector_Generic", "Conn_01x02")
 RES = SymbolRef("Device.kicad_sym", "Device", "R")
 
-# Radio-type strap: firmware reads GPIO1 (net RADIO_ID) once with the internal
+# Radio-type strap: firmware reads GPIO5 (net RADIO_ID) once with the internal
 # pull-down and once with the pull-up enabled, which tells the three states
 # apart.  GPIO5 is not an ESP32-C3 boot strapping pin, so tying it is safe.
 RADIO_ID_GPIO = "GPIO5"
@@ -536,8 +535,9 @@ GPIO8_RISE_X = 9.5  # GPIO8 climbs between the GPIO3 and GPIO4 drops to reach th
 RADIO_PINMAP = {"MOSI": "GPIO4", "SCK": "GPIO3", "CSN_NSS": "GPIO9", "GDO0_RST": "GPIO10", "MISO": "GPIO7", "GDO2_DIO0": "GPIO6", "RADIO_ID": RADIO_ID_GPIO}
 # Expansion header J4 on the top edge, centred between the mounting holes:
 # 3V3 plus every GPIO the radio does not use (5V cannot be reached on one
-# layer: the top-left hole sits over its pad).  GPIO4..1 rise straight from
-# the power row; GPIO21/20 come from the GPIO row up the right-hand strip.
+# layer: the top-left hole sits over its pad).  GPIO2/1/0 rise straight from
+# the power row, GPIO8 climbs from the GPIO row between the rows, and
+# GPIO21/20 come from the GPIO row up the right-hand strip.
 EXP_PINS = ["+3V3", "GPIO8", "GPIO2", "GPIO1", "GPIO0", "GPIO21", "GPIO20"]
 EXP_UART = {"GPIO21": "TX", "GPIO20": "RX"}  # UART0 on the ESP32-C3
 EXP_LABELS = {"+3V3": "3V3", "GPIO8": "8", "GPIO2": "2", "GPIO1": "1", "GPIO0": "0", "GPIO21": "21", "GPIO20": "20"}
