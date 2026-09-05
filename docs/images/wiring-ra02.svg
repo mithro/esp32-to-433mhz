@@ -124,10 +124,10 @@
 <path d="M 191.2 257.0 L 166.1 257.0 Q 148.5 257.0 148.5 274.6 L 148.5 570.5 Q 148.5 588.1 166.1 588.1 L 640.4 588.1 Q 656.9 588.1 656.9 571.6 L 656.9 555.1" fill="none" stroke="#f4f4f4" stroke-width="9.3" stroke-linecap="round"/>
 <circle cx="191.2" cy="257.0" r="8.8" fill="#f4f4f4" stroke="#1a1a2e" stroke-width="1.6"/>
 <circle cx="656.9" cy="555.1" r="8.8" fill="#f4f4f4" stroke="#1a1a2e" stroke-width="1.6"/>
-<path d="M 191.2 284.9 L 146.3 284.9 Q 128.7 284.9 128.7 302.5 L 128.7 485.3 Q 128.7 502.9 146.3 502.9 L 644.8 502.9 Q 656.9 502.9 656.9 515.0 L 656.9 527.1" fill="none" stroke="#9a9a9a" stroke-width="14.3" stroke-linecap="round"/>
-<path d="M 191.2 284.9 L 146.3 284.9 Q 128.7 284.9 128.7 302.5 L 128.7 485.3 Q 128.7 502.9 146.3 502.9 L 644.8 502.9 Q 656.9 502.9 656.9 515.0 L 656.9 527.1" fill="none" stroke="#1a1a1a" stroke-width="9.3" stroke-linecap="round"/>
-<circle cx="191.2" cy="284.9" r="8.8" fill="#1a1a1a" stroke="#9a9a9a" stroke-width="1.6"/>
-<circle cx="656.9" cy="527.1" r="8.8" fill="#1a1a1a" stroke="#9a9a9a" stroke-width="1.6"/>
+<path d="M 191.2 284.9 L 146.3 284.9 Q 128.7 284.9 128.7 302.5 L 128.7 485.3 Q 128.7 502.9 146.3 502.9 L 644.8 502.9 Q 656.9 502.9 656.9 515.0 L 656.9 527.1" fill="none" stroke="#1a1a2e" stroke-width="14.3" stroke-linecap="round"/>
+<path d="M 191.2 284.9 L 146.3 284.9 Q 128.7 284.9 128.7 302.5 L 128.7 485.3 Q 128.7 502.9 146.3 502.9 L 644.8 502.9 Q 656.9 502.9 656.9 515.0 L 656.9 527.1" fill="none" stroke="#2464c8" stroke-width="9.3" stroke-linecap="round"/>
+<circle cx="191.2" cy="284.9" r="8.8" fill="#2464c8" stroke="#1a1a2e" stroke-width="1.6"/>
+<circle cx="656.9" cy="527.1" r="8.8" fill="#2464c8" stroke="#1a1a2e" stroke-width="1.6"/>
 <path d="M 358.8 173.1 L 358.8 138.6 Q 358.8 121.0 341.2 121.0 L 256.1 121.0 Q 238.5 121.0 238.5 138.6 L 238.5 323.2 Q 238.5 340.8 220.9 340.8 L 191.2 340.8" fill="none" stroke="#1a1a2e" stroke-width="14.3" stroke-linecap="round"/>
 <path d="M 358.8 173.1 L 358.8 138.6 Q 358.8 121.0 341.2 121.0 L 256.1 121.0 Q 238.5 121.0 238.5 138.6 L 238.5 323.2 Q 238.5 340.8 220.9 340.8 L 191.2 340.8" fill="none" stroke="#f28c1e" stroke-width="9.3" stroke-linecap="round"/>
 <circle cx="358.8" cy="173.1" r="8.8" fill="#f28c1e" stroke="#1a1a2e" stroke-width="1.6"/>
@@ -185,8 +185,8 @@
 <text x="220.0" y="936.3" font-size="12.1" font-family="Helvetica, Arial, sans-serif" fill="#1a1a2e" dy="0.36em">9 (GPIO9)</text>
 <text x="352.0" y="936.3" font-size="12.1" font-family="Helvetica, Arial, sans-serif" fill="#1a1a2e" dy="0.36em">NSS</text>
 <text x="528.0" y="936.3" font-size="12.1" font-family="Helvetica, Arial, sans-serif" fill="#1a1a2e" dy="0.36em">SPI chip select</text>
-<rect x="88.0" y="951.7" width="44.0" height="13.2" fill="#1a1a1a" stroke="#1a1a2e" stroke-width="1.1" rx="5.5"/>
-<text x="143.0" y="958.3" font-size="12.1" font-family="Helvetica, Arial, sans-serif" fill="#1a1a2e" dy="0.36em">black</text>
+<rect x="88.0" y="951.7" width="44.0" height="13.2" fill="#2464c8" stroke="#1a1a2e" stroke-width="1.1" rx="5.5"/>
+<text x="143.0" y="958.3" font-size="12.1" font-family="Helvetica, Arial, sans-serif" fill="#1a1a2e" dy="0.36em">blue</text>
 <text x="220.0" y="958.3" font-size="12.1" font-family="Helvetica, Arial, sans-serif" fill="#1a1a2e" dy="0.36em">3 (GPIO3)</text>
 <text x="352.0" y="958.3" font-size="12.1" font-family="Helvetica, Arial, sans-serif" fill="#1a1a2e" dy="0.36em">SCK</text>
 <text x="528.0" y="958.3" font-size="12.1" font-family="Helvetica, Arial, sans-serif" fill="#1a1a2e" dy="0.36em">SPI clock</text>

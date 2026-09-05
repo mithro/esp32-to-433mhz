@@ -175,9 +175,9 @@ firmware setup is identical. Both boards are shown from the back, deadbug
 style, the way they lie with their header pins pointing at you (the
 E07-M1101D's back silk lists its pins). Colours follow the rainbow-ribbon
 order: GND brown, 3V3 red, then orange, yellow, green, purple and grey for
-GPIO5, 6, 7, 9 and 10, with the two socket positions fed from the
-SuperMini's power column, GPIO4 and GPIO3, taking the ribbon's remaining
-colours, white and black. The orange wire is the radio-type strap: for the
+GPIO5, 6, 7, 9 and 10. GPIO8 is not wired to the radio, so its blue goes to
+GPIO3, and GPIO4, the other power-column pin the socket uses, takes the
+ribbon's remaining colour, white. The orange wire is the radio-type strap: for the
 Ra-02 breakout it goes from GPIO5 to GPIO1, which the firmware drives low
 while reading the strap (the SuperMini's only GND pin is taken by the
 brown wire); for a CC1101 board it is left open. Drawn by

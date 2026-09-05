@@ -7,9 +7,10 @@
 using the socket adapter's GPIO assignment, as docs/images/wiring-<radio>.svg.
 
 Wire colours follow the rainbow ribbon order the user asked for (brown GND,
-red 3V3, orange GPIO5, yellow GPIO6, green GPIO7, purple GPIO9, grey GPIO10);
-the two power-row pins the socket uses, GPIO4 and GPIO3, take the ribbon's
-remaining colours, white and black.  GPIO5 is the radio-type strap: for the
+red 3V3, orange GPIO5, yellow GPIO6, green GPIO7, blue GPIO8, purple GPIO9,
+grey GPIO10).  GPIO8 is not wired to the radio, so its blue goes to GPIO3,
+and GPIO4, the other power-row pin the socket uses, takes the ribbon's
+remaining colour, white.  GPIO5 is the radio-type strap: for the
 Ra-02 breakout it goes to GPIO1, which the firmware drives low while it reads
 the strap (the SuperMini's only GND pin is taken by the brown wire); for a
 CC1101 board it is left open.
@@ -55,7 +56,7 @@ WIRES = {
     "9": ("purple", "#7d3fa8"),
     "10": ("grey", "#8c8c8c"),
     "4": ("white", "#f4f4f4"),
-    "3": ("black", "#1a1a1a"),
+    "3": ("blue", "#2464c8"),
 }
 # SuperMini columns, top to bottom (front view, USB-C up).
 SM_LEFT = ["5", "6", "7", "8", "9", "10", "20", "21"]
@@ -204,11 +205,10 @@ def draw(radio: str) -> None:
         wires.append((WIRES["5"][1], [(smx, smy), (gap_x[0] * S, smy), (gap_x[0] * S, smy - 3.5 * S)]))
     for fill, pts in wires:
         d = rounded_path(pts, 1.6 * S)
-        outline = "#9a9a9a" if fill == "#1a1a1a" else INK  # the black wire gets a light edge
-        parts.append(f'<path d="{d}" fill="none" stroke="{outline}" stroke-width="{1.3 * S:.1f}" stroke-linecap="round"/>')
+        parts.append(f'<path d="{d}" fill="none" stroke="{INK}" stroke-width="{1.3 * S:.1f}" stroke-linecap="round"/>')
         parts.append(f'<path d="{d}" fill="none" stroke="{fill}" stroke-width="{0.85 * S:.1f}" stroke-linecap="round"/>')
         for x, y in (pts[0], pts[-1]):  # crimp ends
-            parts.append(f'<circle cx="{x:.1f}" cy="{y:.1f}" r="{0.8 * S:.1f}" fill="{fill}" stroke="{outline}" stroke-width="{0.15 * S:.1f}"/>')
+            parts.append(f'<circle cx="{x:.1f}" cy="{y:.1f}" r="{0.8 * S:.1f}" fill="{fill}" stroke="{INK}" stroke-width="{0.15 * S:.1f}"/>')
     note_x = (gap_x[0] + 1.2) * S
     if radio == "ra02":
         parts.append(f'<text x="{(sx + smv.w / 2) * S:.1f}" y="{(sy - 4.6) * S:.1f}" font-size="{0.95 * S:.1f}" font-family="Helvetica, Arial, sans-serif" fill="{INK}" text-anchor="middle" dy="0.36em">GPIO5 strap to GPIO1 (firmware drives GPIO1 low to read it)</text>')
