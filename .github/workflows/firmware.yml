@@ -99,26 +99,29 @@ jobs:
 
       - name: Run Renode emulation suites
         working-directory: renode-espemu
+        # Each Robot suite file is named test.robot; Robot refuses to run
+        # multiple suites with the same basename in one invocation, so run each
+        # suite separately into its own results dir and fail if any suite fails.
         run: |
-          renode-test \
-            --variable "BASE:$PWD" \
-            --variable "ROM_ELF:$ROM_ELF" \
-            peripherals/spi2/test.robot \
-            peripherals/gpio/test.robot \
-            hello_world/test.robot \
-            peripherals/cc1101/test.robot \
-            peripherals/sx1278/test.robot \
-            peripherals/cc1101_rx/test.robot \
-            peripherals/sx1278_rx/test.robot
+          fail=0
+          for suite in peripherals/spi2 peripherals/gpio hello_world \
+                       peripherals/cc1101 peripherals/sx1278 \
+                       peripherals/cc1101_rx peripherals/sx1278_rx; do
+            name=$(echo "$suite" | tr '/' '_')
+            echo "::group::renode-test $suite"
+            renode-test \
+              --variable "BASE:$PWD" \
+              --variable "ROM_ELF:$ROM_ELF" \
+              -r "results/$name" \
+              "$suite/test.robot" || fail=1
+            echo "::endgroup::"
+          done
+          exit $fail
 
       - name: Upload Renode test results
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: renode-test-results
-          path: |
-            renode-espemu/robot_output.xml
-            renode-espemu/log.html
-            renode-espemu/report.html
-            renode-espemu/logs/
+          path: renode-espemu/results/
           retention-days: 14
