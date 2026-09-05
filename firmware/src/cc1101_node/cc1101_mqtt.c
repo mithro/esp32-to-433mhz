@@ -30,6 +30,10 @@ int cc_wrap_event(char *out, size_t out_len, const char *time,
 {
     const char *body = decoder_json;
     if (*body == '{') body++;                 /* splice our prefix in ahead of the decoder fields */
+    if (*body == '}')                          /* decoder_json was "{}": no fields to splice in, so
+                                                 * skip the comma to avoid a trailing-comma object */
+        return fit(out, out_len, snprintf(out, out_len,
+            "{\"time\":\"%s\",\"receiver\":\"%s\",\"rssi\":%d}", time, receiver, rssi));
     return fit(out, out_len, snprintf(out, out_len,
         "{\"time\":\"%s\",\"receiver\":\"%s\",\"rssi\":%d,%s", time, receiver, rssi, body));
 }

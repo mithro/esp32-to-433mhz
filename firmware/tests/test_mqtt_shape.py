@@ -152,3 +152,13 @@ def test_wrap_event_truncation_returns_error():
     assert L.cc_wrap_event(buf, 16, b"2026-09-05T14:03:11", b"host", -71,
                            b'{"model":"X"}') == -1
     assert buf.value == b""
+
+
+def test_wrap_event_empty_decoder_object_is_still_valid_json():
+    # decoder_json == "{}" (no decoder fields) must not leave a trailing comma
+    # before the closing brace, e.g. {...,"rssi":-71,} which json.loads rejects.
+    L = lib()
+    n, ev = wrap_event(L, "2026-09-05T14:03:11", "cc1101-welland-carport", -71, "{}")
+    assert n == len(ev)
+    obj = json.loads(ev)
+    assert obj == {"time": "2026-09-05T14:03:11", "receiver": "cc1101-welland-carport", "rssi": -71}
