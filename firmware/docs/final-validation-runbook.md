@@ -30,9 +30,16 @@ Confirm boot over USB-CDC console (persistent pyserial, `dtr=False rts=False`): 
 The Pluto (`rpi-sdr-pluto`) is a single tuner shared with GPS-SDR and is currently deaf on 433 (0 decodes/20 min even free) — needs a VDD power-cycle. Either: coordinate with the "ten64 gps setup" session + get user approval to power-cycle the Pluto, run `rtl_433 -d driver=plutosdr -f 433.92M -s 1024k -g 73 -M level -M time:iso -F json` for ~30 min to catch a WS69, and cross-check vs rpi5; **or** accept the byte-identical rpi5 LilyGo/CC1101 cross-check as (b)'s "other 433 MHz receivers" and note the Pluto's known poor broadband 433 sensitivity.
 
 ## 5. Close (e) — live HA MQTT (see firmware/docs/mqtt-home-assistant.md)
-- WiFi: `SSID1 ansells-iot`, `Password1 <PSK>` — read the PSK on rpi5: `sudo nmcli -s -g 802-11-wireless-security.psk connection show netplan-wlan0-ansells-iot`. Confirm the node joins (`Status 5` → gets an IP).
-- MQTT creds: generate/deploy via `gdoc2netcfg` (locate it via the "gdoc2netcfg" session/host — not on rpi5). Set `MqttHost ha.welland.mithis.com`, `MqttUser`/`MqttPassword`, `Topic cc1101-welland-bench`, and `CcHass 1` (publishes on `rtl_433/<host>/events`, which HA's rtl433-autodiscovery add-on matches via `rtl_433/+/events`).
-- Verify PUBLISH: `mosquitto_sub -h ha.welland.mithis.com -t 'rtl_433/#'` (or HA) shows a decoded WS69/WH51 event from the node; confirm HA auto-creates the entity.
+Confirmed procedure from the gdoc2netcfg session (verify against its CLAUDE.md "Per-device MQTT broker credentials", ~line 620). gdoc2netcfg runs on **ten64 (welland)** from `/opt/gdoc2netcfg` as root via `.venv/bin/gdoc2netcfg` (NOT `uv run`). Creds are *derived*, not stored: user `tas-<hostname_with_underscores>`, password from `[tasmota] mqtt_secret` in `gdoc2netcfg.toml` — so the device must exist in inventory first.
+
+Prerequisite chain (do per node, once its WiFi MAC is known from the recovered node):
+1. **Inventory:** add a row to the "iot.welland - IoT Devices" tab of the "Tim's Home Network IP addresses" sheet — Machine (hostname, e.g. `cc1101-welland-bench`), MAC Address (**required**; the node's WiFi STA MAC), IP (`10.X.90.N`). (Do WITH the user — editing the sheet + DNS is home-network admin, not to be done unattended.)
+2. **DNS/DHCP reservation:** on ten64, `sudo .venv/bin/gdoc2netcfg fetch` then `sudo make deploy-dns`.
+3. **WiFi on the node:** `SSID1 ansells-iot`, `Password1 <PSK>` — read the PSK on rpi5: `sudo nmcli -s -g 802-11-wireless-security.psk connection show netplan-wlan0-ansells-iot`. Confirm `Status 5` → node joins and gets its reserved IP.
+4. **Discover:** on ten64, `sudo .venv/bin/gdoc2netcfg tasmota scan` (finds the node at its IoT IP).
+5. **Broker login:** `sudo .venv/bin/gdoc2netcfg tasmota register-broker` (dry-run first) — merges the `tas-*` login into the HA core_mosquitto add-on.
+6. **Push creds:** `sudo .venv/bin/gdoc2netcfg tasmota configure <hostname>` (dry-run first) — pushes MqttHost/MqttUser/MqttPassword over the device HTTP API. Then set `Topic <hostname>` and `CcHass 1` (publishes on `rtl_433/<host>/events`, which HA's rtl433-autodiscovery add-on matches via `rtl_433/+/events`). No topic ACL is managed by gdoc2netcfg (the add-on grants full pub/sub unless a custom ACL is set — check add-on config if a publish is refused).
+- Verify PUBLISH: `mosquitto_sub -h ha.welland.mithis.com -t 'rtl_433/#'` (or HA UI) shows a decoded WS69/WH51 event from the node; confirm HA auto-creates the entity.
 - Verify RECEIVE: `mosquitto_pub` a `cmnd/<topic>/CcStatus` → `stat/<topic>/RESULT` returns the JSON. This closes (e).
 
 ## 6. Final adversarial confirmation review
