@@ -22,7 +22,7 @@ the decoders and the radio firmware as native shared objects (host `cc`) and
 exercise them without hardware: OOK/PWM and Fine Offset (WH24/WS69/WS85/WH51)
 decoding, CC1101/SX1278 register presets, the fake-SPI-bus radio drivers, the
 aggregate runner, the MQTT topic/event-JSON shaping, and the capture-format
-conversion. 128 tests.
+conversion. 129 tests.
 
 ### `renode` — instruction-level emulation tests
 Checks out `mithro/renode-espemu` at ref `feature/renode-433-air`, installs
@@ -57,7 +57,7 @@ Firmware build and host tests (this repo):
 ```bash
 export PATH="$HOME/.local/bin:$PATH"          # where the uv installer puts uv
 python3 firmware/build.py                      # ~15-20 min the first time
-uv run --with pytest pytest firmware/tests     # 128 tests, ~20-30 s
+uv run --with pytest pytest firmware/tests     # 129 tests, ~20-30 s
 ```
 
 Renode suites (in a `mithro/renode-espemu` checkout on
@@ -95,10 +95,10 @@ exit $fail
   Renode startup dominate its runtime. It is generously bounded
   (`timeout-minutes: 120`).
 - The individual commands in every job were dry-run on
-  `desktop.buddy.mithis.com` (firmware build, the 128 host tests, an `idf.py`
+  `desktop.buddy.mithis.com` (firmware build, the 129 host tests, an `idf.py`
   test-firmware build, and the per-suite `renode-test` loop above all pass
-  there). A live GitHub Actions run is still needed to confirm the
-  end-to-end workflow — especially the ESP-IDF install step and network
-  fetches on a hosted runner.
+  there). A live GitHub Actions run has since confirmed the end-to-end workflow
+  — including the ESP-IDF install step and network fetches on a hosted
+  runner — passing green (build, 129 host tests, and all eight Renode suites).
 - The emulation covers packet/FSK RX; OOK-edge RX and the TX path are not yet
   modelled (see `renode-espemu` WAVE3-REPORT.md).

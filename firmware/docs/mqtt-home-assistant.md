@@ -95,9 +95,9 @@ invalid. All decoders route their decimals through `rf_ftoa`, so
 `temperature_C`, `wind_avg_m_s`, `rain_mm`, etc. arrive as `13.1`, not `*float*`.
 (This is host-asserted in `test_mqtt_shape.py::test_wrap_event_float_field_is_numeric_not_star_float`.
 The `*float*` note in the 2026-09-05 SX1278 row of `HWTEST-RESULTS-cc1101.md`
-predates this fix — commit `4c85365`, later the same day — and is stale; a fresh
-on-air capture would confirm numeric floats, but that recapture has **not** been
-run yet.)
+predates this fix — commit `4c85365`, later the same day — and is stale. A fresh on-air SX1278
+capture was subsequently run (FIX-A, commit `eeea6f7`) and confirmed the
+decimals render as real JSON numbers, not `*float*`.)
 
 ### Fineoffset WS69 / WH65B (weather station, family byte `0x24`)
 
