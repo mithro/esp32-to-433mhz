@@ -15,6 +15,7 @@
 #include "cc1101_node/sx1278_radio.h"
 #include "cc1101_node/cc1101_presets.h"
 #include "cc1101_node/cc1101_weather.h"
+#include "cc1101_node/sx1278_weather.h"
 #include "cc1101_node/cc1101_pulse.h"
 #include "cc1101_node/secplus2.h"
 #include "cc1101_node/decoders/decode_common.h"
@@ -109,10 +110,12 @@ struct CcState {
 };
 static CcState Cc;
 
-/* ---------- SX1278 (RA-02) state — foundation: identify / register I/O only ---------- */
+/* ---------- SX1278 (RA-02) state — identify / register I/O + Fine Offset FSK RX ---------- */
 struct SxState {
   ArduinoSpiBus bus; ArduinoResetLine rst; SX1278Radio* radio = nullptr;
   bool present = false; uint8_t version = 0; int rst_pin = -1;
+  bool weather_rx = false;                              // FSK RX preset programmed + RX entered
+  uint32_t rx = 0, decoded = 0; int last_rssi = -128;   // weather RX counters
 };
 static SxState Sx;
 static uint8_t CcActiveRadio = RADIO_CC1101;            // which engine bring-up selected
@@ -120,6 +123,9 @@ static uint8_t CcActiveRadio = RADIO_CC1101;            // which engine bring-up
 static void CcPublishEvent(const char* json);         // forward (below)
 static bool CcRepeatSuppressed(const char* key, uint32_t now);
 void CcEnterMode(void);                               // forward (Task 5 extends)
+static bool SxConfigureWeatherRx(void);               // forward: SX1278 FSK RX preset + enter RX
+static void SxWeatherPoll(void);                      // forward: SX1278 weather-RX drain (FUNC_EVERY_50_MSECOND)
+static void CcApplyMode(void);                        // forward: dispatch mode entry to the active radio
 static void CcSecplusFrame(const uint32_t* us, size_t n, uint32_t now);  // Task 6 replaces the stub below
 void CmndSecplusId(void); void CmndSecplusSend(void); void CmndSecplusCounter(void); void CmndSecplusFreq(void);  // forward: table below is defined before these bodies
 
@@ -397,6 +403,8 @@ static void CcSx1278BringUp(void) {
            Sx.version, SX_MAP_RA02.sck, SX_MAP_RA02.miso, SX_MAP_RA02.mosi, SX_MAP_RA02.nss, SX_MAP_RA02.rst, SX_MAP_RA02.dio0);
   else
     AddLog(LOG_LEVEL_ERROR, PSTR(CC_LOGPFX "no SX1278 (RegVersion 0x%02X, expected 0x12) - check SPI/RST wiring"), Sx.version);
+  Sx.weather_rx = false;
+  if (Sx.present && CcCfg.mode == CC_MODE_WEATHER) SxConfigureWeatherRx();  // arm FSK RX at boot when commissioned for weather
 }
 static void CcRadioBringUp(void) {
   uint8_t sel = CcCfg.radio;
@@ -437,6 +445,38 @@ static void CcWeatherPoll(void) {
   }
 }
 
+/* ---------- SX1278 (RA-02) Fine Offset FSK weather path ----------
+ * The SX127x counterpart of the CC1101 weather path: program the 2-FSK RX preset
+ * (433.92 MHz, 17.241 kbps, ~50 kHz fdev, sync 0x2DD4, fixed-length packet = SX_FSK_RX_LEN),
+ * enter RX, and each poll drain a fixed byte count out of RegFifo on PayloadReady and
+ * dispatch by family byte via fineoffset_decode (sx1278_weather.cpp, shared with the host
+ * harness tests/sx1278_host.cpp so tests/test_sx1278_weather_rx.py exercises identical logic).
+ * SX1278 OOK-continuous "remotes" RX is NOT possible on this adapter (DIO2 is not routed —
+ * see the roadmap in sx1278_radio.cpp), so the SX1278 supports weather RX only. */
+static bool SxConfigureWeatherRx(void) {
+  if (!Sx.present || !Sx.radio) { Sx.weather_rx = false; return false; }
+  Sx.radio->configure_fineoffset_fsk();
+  Sx.radio->enter_rx();
+  Sx.weather_rx = true;
+  AddLog(LOG_LEVEL_INFO, PSTR(CC_LOGPFX "SX1278 FSK weather RX: 433.92 MHz 17.241 kbps sync 0x2DD4, fixed len %d"), (int)SX_FSK_RX_LEN);
+  return true;
+}
+static void SxWeatherPoll(void) {                                 // FUNC_EVERY_50_MSECOND when SX1278 active + weather
+  uint8_t raw[SX_FSK_DRAIN_LEN]; size_t nbytes = 0; int rssi = 0; char dec[RF_JSON_MAX];
+  int rc = sx_weather_drain(*Sx.radio, raw, sizeof raw, &nbytes, &rssi, dec, sizeof dec);
+  if (rc == SX_WX_IDLE) return;
+  Sx.rx++; Sx.last_rssi = rssi;
+  if (rc == SX_WX_DECODED) {
+    Sx.decoded++;
+    if (!CcRepeatSuppressed(dec, millis())) { char ev[RF_JSON_MAX + 96]; CcWrapEvent(dec, rssi, ev, sizeof ev); CcPublishEvent(ev); }
+  } else if (CcCfg.raw) {                                         // SX_WX_RAW: drained but undecodable — publish hex if raw mode on
+    char rawmsg[128]; int l = snprintf_P(rawmsg, sizeof rawmsg, PSTR("{\"Packet\":\""));
+    for (size_t i = 0; i < nbytes && l < (int)sizeof rawmsg - 8; i++) l += snprintf_P(rawmsg + l, sizeof rawmsg - l, PSTR("%02X"), raw[i]);
+    snprintf_P(rawmsg + l, sizeof rawmsg - l, PSTR("\",\"RSSI\":%d}"), rssi);
+    MqttPublishPayloadPrefixTopicRulesProcess_P(TELE, PSTR("CCRAW"), rawmsg);
+  }
+}
+
 /* ---------- mode entry (Task 5 adds the OOK capture start/stop) ---------- */
 void CcEnterMode(void) {
   if (!Cc.present) return;
@@ -445,6 +485,20 @@ void CcEnterMode(void) {
   if (CcCfg.mode == CC_MODE_REMOTES) CcCaptureStart(); else CcCaptureStop();
   Cc.bad_state_ms = 0;
   AddLog(LOG_LEVEL_INFO, PSTR(CC_LOGPFX "mode %s preset %s"), CcCfg.mode == CC_MODE_WEATHER ? "weather" : "remotes", cc_preset_name(Cc.preset));
+}
+/* Dispatch mode entry to whichever radio bring-up selected. The CC1101 does OOK "remotes"
+ * + Fine Offset "weather"; the SX1278 does "weather" (FSK RX) only. */
+static void CcApplyMode(void) {
+  if (CcActiveRadio == RADIO_SX1278) {
+    if (CcCfg.mode == CC_MODE_WEATHER) { SxConfigureWeatherRx(); }
+    else {
+      Sx.weather_rx = false;
+      if (Sx.present && Sx.radio) Sx.radio->standby();
+      AddLog(LOG_LEVEL_INFO, PSTR(CC_LOGPFX "SX1278 remotes mode unsupported (OOK-continuous needs DIO2, not routed) — idle"));
+    }
+  } else {
+    CcEnterMode();
+  }
 }
 static void CcHealth50ms(void) {
   uint8_t m = Cc.radio->marcstate();
@@ -470,7 +524,7 @@ void CmndCcMode(void) {
     else if (!strcasecmp(XdrvMailbox.data, "remotes")) CcCfg.mode = CC_MODE_REMOTES;
     else if (!strcasecmp(XdrvMailbox.data, "auto")) { ResponseCmndChar_P(PSTR("auto not implemented (spec follow-on)")); return; }
     else { ResponseCmndChar_P(PSTR("remotes|weather")); return; }
-    CcCfgSave(); CcEnterMode();
+    CcCfgSave(); CcApplyMode();
   }
   ResponseCmndChar_P(CcCfg.mode == CC_MODE_WEATHER ? PSTR("weather") : PSTR("remotes"));
 }
@@ -505,8 +559,10 @@ void CmndCcRaw(void) {
 
 /* ---------- SX1278 + radio-selection commands ---------- */
 void CmndSxStatus(void) {
-  Response_P(PSTR("{\"SxStatus\":{\"Present\":%d,\"VERSION\":\"0x%02X\",\"Active\":%d}}"),
-             Sx.present, Sx.version, CcActiveRadio == RADIO_SX1278);
+  Response_P(PSTR("{\"SxStatus\":{\"Present\":%d,\"VERSION\":\"0x%02X\",\"Active\":%d,\"Mode\":\"%s\",\"WeatherRx\":%d,\"RSSI\":%d,\"Rx\":%u,\"Decoded\":%u}}"),
+             Sx.present, Sx.version, CcActiveRadio == RADIO_SX1278,
+             CcCfg.mode == CC_MODE_WEATHER ? "weather" : "remotes", Sx.weather_rx,
+             (Sx.present && Sx.weather_rx) ? Sx.radio->rssi_dbm() : 0, Sx.rx, Sx.decoded);
 }
 void CmndSxReg(void) {             // SxReg <addr 0x00-0x7F> [val]; SX127x address byte bit7 = write
   if (!Sx.radio || CcActiveRadio != RADIO_SX1278 || !XdrvMailbox.data_len) { ResponseCmndChar_P(PSTR("addr 0x00-0x7F [val] (SX1278 must be the active radio)")); return; }
@@ -552,7 +608,9 @@ static void CcShowJson(void) {
 #ifdef USE_WEBSERVER
 static void CcShowWeb(void) {
   if (CcActiveRadio == RADIO_SX1278) {
-    WSContentSend_PD(PSTR("{s}SX1278 %s{m}RegVersion 0x%02X{e}"), Sx.present ? "" : "(absent)", Sx.version);
+    WSContentSend_PD(PSTR("{s}SX1278 %s{m}RegVersion 0x%02X, %s, rx %u, decoded %u{e}"),
+                     Sx.present ? "" : "(absent)", Sx.version,
+                     Sx.weather_rx ? "weather FSK RX" : "idle", Sx.rx, Sx.decoded);
     return;
   }
   WSContentSend_PD(PSTR("{s}CC1101 %s{m}%s, RSSI %d dBm, rx %u, decoded %u{e}"),
@@ -576,7 +634,9 @@ bool Xdrv95(uint32_t function) {
       Cc1101NodeInit();
       break;
     case FUNC_EVERY_50_MSECOND:
-      if (Cc.present) {
+      if (CcActiveRadio == RADIO_SX1278) {
+        if (Sx.present && Sx.weather_rx) SxWeatherPoll();
+      } else if (Cc.present) {
         if (CcCfg.mode == CC_MODE_WEATHER) CcWeatherPoll(); else CcCapturePoll();
         CcHealth50ms();
       }

@@ -36,7 +36,8 @@ def build_radio_host():
 
 def build_sx1278_host():
     os.makedirs(BUILD, exist_ok=True)
-    subprocess.run(["c++", "-std=c++14", "-Wall", "-Wextra", "-Werror", "-O1", "-I", FW,
-                    "-o", SX1278_HOST, os.path.join(FW, "sx1278_radio.cpp"),
+    subprocess.run(["c++", "-std=c++14", "-Wall", "-Wextra", "-Werror", "-O1", "-I", FW, "-I", DEC,
+                    "-o", SX1278_HOST, os.path.join(FW, "sx1278_radio.cpp"), os.path.join(FW, "sx1278_weather.cpp"),
+                    os.path.join(DEC, "decode_fineoffset.c"), os.path.join(DEC, "decode_common.c"),
                     os.path.join(HERE, "sx1278_host.cpp")], check=True)
     return SX1278_HOST
