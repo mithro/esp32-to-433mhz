@@ -1,0 +1,25 @@
+# rf433 per-site aggregator. Install:
+#   sudo useradd --system --no-create-home --shell /usr/sbin/nologin rf433   # skip if it already exists
+#   sudo mkdir -p /opt/rf433 /etc/rf433
+#   sudo cp rf433_aggregate.py /opt/rf433/ && sudo cp rf433_aggregate.example.toml /etc/rf433/rf433_aggregate.toml  # then edit
+#   sudo chown root:rf433 /etc/rf433/rf433_aggregate.toml && sudo chmod 640 /etc/rf433/rf433_aggregate.toml   # restrict access (holds broker credentials)
+#   sudo apt install python3-paho-mqtt   (Debian ≥ 12; Python ≥ 3.11 for tomllib)
+#   sudo cp rf433-aggregate.service /etc/systemd/system/ && sudo systemctl enable --now rf433-aggregate
+[Unit]
+Description=rf433 aggregator (433 MHz receivers -> one HA event stream)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/python3 /opt/rf433/rf433_aggregate.py --config /etc/rf433/rf433_aggregate.toml
+Restart=always
+RestartSec=5
+User=rf433
+Group=rf433
+NoNewPrivileges=yes
+ProtectSystem=strict
+ProtectHome=yes
+
+[Install]
+WantedBy=multi-user.target
