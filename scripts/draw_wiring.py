@@ -8,10 +8,12 @@ using the socket adapter's GPIO assignment, as docs/images/wiring-<radio>.svg.
 
 Wire colours follow the rainbow ribbon order the user asked for (brown GND,
 red 3V3, orange GPIO5, yellow GPIO6, green GPIO7, blue GPIO8, purple GPIO9,
-grey GPIO10).  GPIO8 is not wired to the radio, so its blue goes to GPIO3,
-and GPIO4, the other power-row pin the socket uses, takes the ribbon's
-remaining colour, white.  GPIO5 is the radio-type strap: for the
-Ra-02 breakout it goes to GPIO1, which the firmware drives low while it reads
+grey GPIO10).  GPIO8 and GPIO9 are boot straps the socket no longer uses, so
+their blue and purple go instead to the power-row pins the socket does use at
+those positions -- blue to GPIO3 (SCK), purple to GPIO1 (CSN/SCK/NSS) -- and
+GPIO4 (MOSI) takes the ribbon's remaining colour, white.  GPIO5 is the
+radio-type strap: for the
+Ra-02 breakout it goes to GPIO0, which the firmware drives low while it reads
 the strap (the SuperMini's only GND pin is taken by the brown wire); for a
 CC1101 board it is left open.
 
@@ -53,7 +55,7 @@ WIRES = {
     "5": ("orange", "#f28c1e"),
     "6": ("yellow", "#f2d21e"),
     "7": ("green", "#2e9e4f"),
-    "9": ("purple", "#7d3fa8"),
+    "1": ("purple", "#7d3fa8"),
     "10": ("grey", "#8c8c8c"),
     "4": ("white", "#f4f4f4"),
     "3": ("blue", "#2464c8"),
@@ -64,7 +66,7 @@ SM_RIGHT = ["5V", "G", "3V3", "4", "3", "2", "1", "0"]
 # Socket position (numbered like the E07-M1101D: pin 1 right of the outer
 # row seen from the front, even pins in the inner row, columns to -x) ->
 # SuperMini pin, as on the socket adapter.
-POS_PIN = {1: "G", 2: "3V3", 3: "10", 4: "9", 5: "3", 6: "4", 7: "7", 8: "6"}
+POS_PIN = {1: "G", 2: "3V3", 3: "10", 4: "1", 5: "3", 6: "4", 7: "7", 8: "6"}
 # ... and -> the signal name printed on each radio board.
 E07_NAMES = {1: "GND", 2: "VCC", 3: "GDO0", 4: "CSN", 5: "SCK", 6: "MOSI", 7: "MISO", 8: "GDO2"}
 DSUN_NAMES = {1: "GND", 2: "VCC", 3: "MOSI", 4: "SCK", 5: "MISO", 6: "GDO2", 7: "GDO0", 8: "CSN"}
@@ -195,10 +197,10 @@ def draw(radio: str) -> None:
     (smx, smy), (hx, hy) = sp("3"), hp(5)
     ly = lane_y[4] * S
     wires.append((WIRES["3"][1], [(smx, smy), (left_x[1] * S, smy), (left_x[1] * S, ly), (hx, ly), (hx, hy)]))
-    # Strap: GPIO5 over the top of the SuperMini to GPIO1 (Ra-02), or a free end (CC1101).
+    # Strap: GPIO5 over the top of the SuperMini to GPIO0 (Ra-02), or a free end (CC1101).
     (smx, smy) = sp("5")
     if radio == "ra02":
-        gx, gy = sp("1")
+        gx, gy = sp("0")
         over = (sy - 3.0) * S
         wires.append((WIRES["5"][1], [(smx, smy), (smx, over), (gx + 4.3 * S, over), (gx + 4.3 * S, gy), (gx, gy)]))
     else:
@@ -211,7 +213,7 @@ def draw(radio: str) -> None:
             parts.append(f'<circle cx="{x:.1f}" cy="{y:.1f}" r="{0.8 * S:.1f}" fill="{fill}" stroke="{INK}" stroke-width="{0.15 * S:.1f}"/>')
     note_x = (gap_x[0] + 1.2) * S
     if radio == "ra02":
-        parts.append(f'<text x="{(sx + smv.w / 2) * S:.1f}" y="{(sy - 4.6) * S:.1f}" font-size="{0.95 * S:.1f}" font-family="Helvetica, Arial, sans-serif" fill="{INK}" text-anchor="middle" dy="0.36em">GPIO5 strap to GPIO1 (firmware drives GPIO1 low to read it)</text>')
+        parts.append(f'<text x="{(sx + smv.w / 2) * S:.1f}" y="{(sy - 4.6) * S:.1f}" font-size="{0.95 * S:.1f}" font-family="Helvetica, Arial, sans-serif" fill="{INK}" text-anchor="middle" dy="0.36em">GPIO5 strap to GPIO0 (firmware drives GPIO0 low to read it)</text>')
     else:
         parts.append(f'<text x="{note_x:.1f}" y="{smy - 5.0 * S:.1f}" font-size="{0.95 * S:.1f}" font-family="Helvetica, Arial, sans-serif" fill="{INK}" text-anchor="middle" dy="0.36em">GPIO5: leave open</text>')
     # The header's pin names again, on top of the wires (with a halo).
@@ -237,7 +239,7 @@ def draw(radio: str) -> None:
     for x, t in cols:
         parts.append(f'<text x="{x * S:.1f}" y="{ly0 * S:.1f}" font-size="{1.2 * S:.1f}" font-family="Helvetica, Arial, sans-serif" font-weight="bold" fill="{INK}" dy="0.36em">{t}</text>')
     rows = [(POS_PIN[n], names[n], SIGNAL[names[n]]) for n in range(1, 9)]
-    rows.append(("5", "(to the SuperMini's GPIO1)" if radio == "ra02" else "(none)", "radio-type strap: to GPIO1 for the Ra-02, open for a CC1101"))
+    rows.append(("5", "(to the SuperMini's GPIO0)" if radio == "ra02" else "(none)", "radio-type strap: to GPIO0 for the Ra-02, open for a CC1101"))
     for i, (pin, name, signal) in enumerate(rows):
         colour, fill = WIRES[pin]
         y = ly0 + 2.0 + i * 2.0

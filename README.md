@@ -46,26 +46,31 @@ component side):
 | 1 | GND | GND | GND | GND |
 | 2 | 3V3 | VCC | VCC | 3V3 |
 | 3 | GPIO10 | GDO0 (output) | MOSI | RST (input; drive it as an output) |
-| 4 | GPIO9 | CSN | SCK | NSS |
+| 4 | GPIO1 | CSN | SCK | NSS |
 | 5 | GPIO3 | SCK | MISO (output) | SCK |
 | 6 | GPIO4 | MOSI | GDO2 (output) | MOSI |
 | 7 | GPIO7 | MISO (output) | GDO0 (output) | MISO (output) |
 | 8 | GPIO6 | GDO2 (output) | CSN | DIO0 (output) |
-| strap | GPIO5 | JP1 open, R1 not fitted | as the blue board | jumper on JP1 or 0R in R1 (to GND); with jumper wires, to GPIO1 |
+| strap | GPIO5 | JP1 open, R1 not fitted | as the blue board | jumper on JP1 or 0R in R1 (to GND); with jumper wires, to GPIO0 |
 
-Read as per-board maps: blue E07 MOSI 4, SCK 3, CSN 9, MISO 7, GDO0 10,
-GDO2 6; green D-Sun MOSI 10, SCK 9, CSN 6, MISO 3, GDO0 7, GDO2 4; Ra-02
-MOSI 4, SCK 3, NSS 9, MISO 7, RST 10, DIO0 6.
+Read as per-board maps: blue E07 MOSI 4, SCK 3, CSN 1, MISO 7, GDO0 10,
+GDO2 6; green D-Sun MOSI 10, SCK 1, CSN 6, MISO 3, GDO0 7, GDO2 4; Ra-02
+MOSI 4, SCK 3, NSS 1, MISO 7, RST 10, DIO0 6.
 
-The rule behind the assignment: no socket position that is a radio
-*output* on any of the three boards may be an ESP32-C3 boot strapping pin
-(GPIO2, GPIO8, GPIO9), because a radio driving one of those at reset could
-put the chip into the wrong boot mode. Only position 4 is an input on
-every board (CSN, SCK, NSS), so it takes GPIO9, whose internal pull-up
-keeps it high while the radio leaves it alone; the other six positions are
-plain GPIOs and GPIO8 goes to the spare header. GPIO5 is the radio-type
-strap (below); 3V3 and the unused GPIOs (GPIO0, 1, 2, 8 and the UART pair
-GPIO20/21) are brought out to a 1x7 header on the top edge. The
+The rule behind the assignment: **no socket position may be an ESP32-C3
+boot strapping pin (GPIO2, GPIO8, GPIO9).** Whatever a radio pin does, it
+loads the net with enough capacitance that, through the chip's weak internal
+pull-up, a strap can rise too slowly for the mask ROM to read it high at
+reset; the ROM then latches BOOT (GPIO9) low and drops into USB download
+mode instead of running the firmware. This was measured on the bench on
+2026-09-06, and it is not fixable in software (the ROM samples the strap
+before any code runs). Position 4 (CSN/SCK/NSS) therefore takes **GPIO1**,
+not GPIO9; GPIO9 is left unconnected, where its internal pull-up floats it
+high -- the safest state, since nothing can pull an unconnected pin low.
+GPIO5 is the radio-type strap (below); a second 3V3 and the unused GPIOs
+(GPIO0, 2, 8 and the UART pair GPIO20/21) are brought out to a 1x7 header on
+the top edge, and the two straps that stay on that header (GPIO8, GPIO2)
+each have an optional do-not-populate pull-up-to-3V3 footprint. The
 SuperMini's pins go into 1.0 mm through-holes so it
 can be fitted with headers, and the pads are also extended past the
 SuperMini's edge so it can be soldered flat by its castellations; its USB-C
@@ -112,14 +117,14 @@ the two board-dependent signals read "GDO0/RST" (GPIO10) and "GDO2/DIO0"
 Lying sideways puts the SuperMini's GPIO row directly above the socket and
 its power row behind it, which together with the GPIO assignment lets
 every net, header and strap included, route on the back copper without
-jumpers. Position 3 (GPIO10) drops straight into the socket; position 4
-(GPIO9) leaves its pad sideways into the next gap and drops from there;
-position 7 (GPIO7) takes a short lane into the column under GPIO8's pad,
-and position 8 (GPIO6) goes down the left of the socket into its pad from
-below. Positions 5 and 6 are fed from the power row (GPIO3, GPIO4): they
-come down between the SuperMini rows, through the gaps either side of
-GPIO8's pad, into the socket from above and from the side, while GPIO8
-itself climbs between them to the header. GND and 3V3 leave the power row
+jumpers. Position 3 (GPIO10) drops straight into the socket; position 7
+(GPIO7) takes a short lane into the column under GPIO8's pad, and position
+8 (GPIO6) goes down the left of the socket into its pad from below.
+Positions 4, 5 and 6 are fed from the power row: SCK (GPIO3) and MOSI
+(GPIO4) come down between the SuperMini rows into positions 5 and 6, and
+CSN (GPIO1) crosses over between the rows and drops into position 4 from
+the left -- the corridor GPIO9 used to occupy. GPIO8 climbs between the
+drops to the header. GND and 3V3 leave the power row
 upward, run along the top edge above the expansion header and down the
 strip right of the SuperMini into the socket's right column, GND
 continuing under the socket to the strap. The layout plot shows the
@@ -129,15 +134,17 @@ back-copper tracks in blue.
 
 J4 is a 1x7 2.54 mm header on the top edge, centred between the mounting
 holes, carrying 3V3 and every GPIO the radio does not use in the order 3V3,
-GPIO8, GPIO2, GPIO1, GPIO0, GPIO21, GPIO20 (pin 1, square, at the left; the
+GPIO8, GPIO2, 3V3, GPIO0, GPIO21, GPIO20 (pin 1, square, at the left; the
 silk names them the way the SuperMini does, with the spare UART marked
-"21TX" and "20RX"). GPIO2, 1 and 0 rise straight from the power row, GPIO8
+"21TX" and "20RX"). The second 3V3 sits where GPIO1 used to, now that GPIO1
+drives the socket. GPIO2 and 0 rise straight from the power row, GPIO8
 climbs from the GPIO row between the rows, and GPIO21 and GPIO20 leave the
 GPIO row's right end and come up the strip right of the SuperMini, the
 same strip GND and 3V3 come down. 5V is not on the header: its pad sits
 under the top-left mounting hole and cannot be reached on one layer. GPIO2
-and GPIO8 are boot strapping pins, so whatever is hung on those two must
-not pull them low at reset.
+and GPIO8 are boot strapping pins, so R2 and R3 -- optional do-not-populate
+0805s that bridge each to the adjacent 3V3 pin -- can pull them high at
+reset if whatever is hung on those two would otherwise hold them low.
 
 JP1 and R1, in the bottom-left corner beside the plugged-in radio board,
 strap GPIO5 (net `RADIO_ID`) to GND so firmware can tell which radio it is
@@ -152,14 +159,14 @@ giving three distinct states:
 | low | this adapter with the Ra-02 breakout: jumper on JP1 or 0R in R1 |
 | high | the SX1278 module adapter (GPIO5 hard-wired to 3V3) |
 
-To read it, first drive GPIO1 low as an output (see below), then enable
+To read it, first drive GPIO0 low as an output (see below), then enable
 GPIO5's internal pull-down and sample (high means the SX1278 module
 adapter), then enable the pull-up and sample again (low means the Ra-02;
 high means the pin is floating, i.e. a CC1101). GPIO5 is not an ESP32-C3
-boot strapping pin, so tying it either way is harmless. Driving GPIO1 low
+boot strapping pin, so tying it either way is harmless. Driving GPIO0 low
 covers the [jumper-wire build](#jumper-wire-version), where the SuperMini's
-only GND pin is taken and the strap wire goes from GPIO5 to GPIO1 instead;
-on the adapters GPIO1 is a spare pin on the header, so it makes no
+only GND pin is taken and the strap wire goes from GPIO5 to GPIO0 instead;
+on the adapters GPIO0 is a spare pin on the header, so it makes no
 difference there.
 
 The strap does not tell the two CC1101 boards apart; the firmware can,
@@ -175,12 +182,14 @@ firmware setup is identical. Both boards are shown from the back, deadbug
 style, the way they lie with their header pins pointing at you (the
 E07-M1101D's back silk lists its pins). Colours follow the rainbow-ribbon
 order: GND brown, 3V3 red, then orange, yellow, green, purple and grey for
-GPIO5, 6, 7, 9 and 10. GPIO8 is not wired to the radio, so its blue goes to
-GPIO3, and GPIO4, the other power-column pin the socket uses, takes the
-ribbon's remaining colour, white. The orange wire is the radio-type strap: for the
-Ra-02 breakout it goes from GPIO5 to GPIO1, which the firmware drives low
-while reading the strap (the SuperMini's only GND pin is taken by the
-brown wire); for a CC1101 board it is left open. Drawn by
+GPIO5, 6, 7, 9 and 10. GPIO8 and GPIO9 are boot straps the socket no longer
+uses, so their blue and purple go instead to the power-row pins the socket
+uses at those positions -- blue to GPIO3 (SCK), purple to GPIO1 (CSN/SCK/
+NSS) -- and GPIO4 (MOSI) takes the ribbon's remaining colour, white. The
+orange wire is the radio-type strap: for the Ra-02 breakout it goes from
+GPIO5 to GPIO0, which the firmware drives low while reading the strap (the
+SuperMini's only GND pin is taken by the brown wire); for a CC1101 board it
+is left open. Drawn by
 `scripts/draw_wiring.py`.
 
 ![Jumper wires from the SuperMini to the blue CC1101 E07-M1101D board](docs/images/wiring-cc1101.svg)
@@ -208,7 +217,7 @@ odd/even numbering used for the Ra-02 breakout in this repository:
 | Outer row, column 4 (right) | 1 GND | 7 GND | GND |
 | Inner row, column 1 (left) | 8 GDO2 (output) | 2 DIO0 (output) | GPIO6 |
 | Inner row, column 2 | 6 MOSI | 4 MOSI | GPIO4 |
-| Inner row, column 3 | 4 CSN | 6 NSS | GPIO9 |
+| Inner row, column 3 | 4 CSN | 6 NSS | GPIO1 |
 | Inner row, column 4 (right) | 2 VCC | 8 3V3 | 3V3 |
 
 Only column 3's outer pin and column 1's inner pin differ: the CC1101 board
@@ -236,11 +245,9 @@ columns left to right, outer / inner row):
 
 Plugged into the socket it is powered correctly and its signals arrive on
 GPIO7 (GDO0), GPIO6 (CSN), GPIO3 (MISO), GPIO4 (GDO2), GPIO10 (MOSI) and
-GPIO9 (SCK), which the firmware's D-Sun pin map absorbs. The GPIO
-assignment was chosen with this in mind: the positions that carry the
-green board's outputs (5, 6, 7) are plain GPIOs, and its SCK lands on the
-strapping pin GPIO9 only because that position is an input on every
-board. Its reference board is [below](#cc1101-d-sun-green-board).
+GPIO1 (SCK), which the firmware's D-Sun pin map absorbs. Its SCK lands on
+position 4, which -- like every socket position -- is a plain, non-strapping
+GPIO. Its reference board is [below](#cc1101-d-sun-green-board).
 
 (Diagram drawn by `scripts/draw_pinouts.py` from the generators' geometry.)
 
