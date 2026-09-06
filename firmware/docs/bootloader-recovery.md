@@ -108,6 +108,17 @@ The stock safeboot image is built from the **same pinned Tasmota tree** (env `ta
 no OTA_URL dependency) — its only job is to bring up WiFi and accept an OTA of the main app. CI
 builds it, merges it, and asserts both slots are populated (`test_combined_image.py`).
 
+**Why this layout needs safeboot for OTA at all (source-verified).** This partition table has a
+single OTA app partition (`ota_0`) plus the `factory` safeboot slot, so Tasmota's
+`EspSingleOtaPartition()` (`tasmota_support/support_esp32.ino`) is **true**. In that mode Tasmota
+cannot flash the running app in place: to update the main app it calls `EspPrepRestartToSafeBoot()`,
+which **erases otadata** so the next boot lands in the `factory` (safeboot) partition, and safeboot
+then flashes the new image into `ota_0` and sets otadata back. Consequences:
+- A **populated safeboot slot is required for OTA to work** here, not merely for recovery — the
+  main-only image (blank safeboot) would erase otadata and have no safeboot to boot into.
+- An OTA interrupted mid-flash leaves otadata erased → the node returns in **safeboot** (WiFi),
+  where you simply re-upload. This is the button-free failed-OTA recovery below.
+
 **Honest recovery matrix** for a node flashed with the combined image:
 
 | Failure | Recovers without the BOOT button? | How |
