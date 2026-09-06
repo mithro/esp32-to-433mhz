@@ -148,7 +148,7 @@ def draw(radio: str) -> None:
     lane_y = [sm_bot + 2.0 + k * LANE for k in range(5)]  # horizontal lanes, highest first
     bx = gap_x[-1] + 5.0
     by = lane_y[-1] + 2.5 - cc.HDR_ROW_Y
-    left_x = [sx - 2.5 - i * LANE for i in range(4)]  # left-side lanes, innermost first: GPIO4, GPIO3, 3V3, GND
+    left_x = [sx - 2.5 - i * LANE for i in range(5)]  # left-side lanes, innermost first: GPIO4, GPIO3, 3V3, GND, GPIO1
     total_w = max(bx + board.w + 8.0, 102.0)  # room for the legend's signal column
     hang = 4.0 if radio == "ra02" else 14.5  # the SMA jack and size caption below the outline
     legend_y = by + board.h + hang + 4.0
@@ -169,10 +169,11 @@ def draw(radio: str) -> None:
     half = cc.PITCH / 2 * S
     wires: list[tuple[str, list[tuple[float, float]]]] = []
     # GPIO column: positions 7/8 (column D, from the top pins GPIO7/6) take
-    # the outer gap lanes and the top horizontal lanes, positions 3/4 (column
-    # B, GPIO10/9) the inner and lower ones, so none of them cross.  Inner-row
-    # pins are entered by a drop just right of their column.
-    for n, gi, li in ((8, 4, 0), (7, 3, 1), (4, 1, 2), (3, 0, 3)):
+    # the outer gap lanes and the top horizontal lanes, position 3 (GPIO10)
+    # an inner/lower one, so none of them cross.  Inner-row pins are entered
+    # by a drop just right of their column.  Position 4 (CSN) is now GPIO1, a
+    # power-column pin, and is routed with the left-column signals below.
+    for n, gi, li in ((8, 4, 0), (7, 3, 1), (3, 0, 3)):
         pin = POS_PIN[n]
         (smx, smy), (hx, hy) = sp(pin), hp(n)
         gx, ly = gap_x[gi] * S, lane_y[li] * S
@@ -197,6 +198,12 @@ def draw(radio: str) -> None:
     (smx, smy), (hx, hy) = sp("3"), hp(5)
     ly = lane_y[4] * S
     wires.append((WIRES["3"][1], [(smx, smy), (left_x[1] * S, smy), (left_x[1] * S, ly), (hx, ly), (hx, hy)]))
+    # GPIO1 -> position 4 (CSN, inner row): on the power column, so it goes out
+    # the far-left lane and along the back of the radio below GPIO4's approach,
+    # then up into the pin -- never crossing the GPIO column or the GPIO20 pad.
+    (smx, smy), (hx, hy) = sp("1"), hp(4)
+    ly = hp(6)[1] + 4.5 * S
+    wires.append((WIRES["1"][1], [(smx, smy), (left_x[4] * S, smy), (left_x[4] * S, ly), (hx, ly), (hx, hy)]))
     # Strap: GPIO5 over the top of the SuperMini to GPIO0 (Ra-02), or a free end (CC1101).
     (smx, smy) = sp("5")
     if radio == "ra02":
