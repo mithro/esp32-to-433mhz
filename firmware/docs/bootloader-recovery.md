@@ -1,14 +1,35 @@
 # Bootloader / USB recovery and boot-safety hardening — ESP32-C3 + CC1101 node
 
-Three field nodes went dark (presented **no USB** at all) after abrupt power cuts. This document
-is the "it's our code, not the hardware" audit: it records why the firmware **cannot** prevent the
-ESP32-C3 from bringing up USB or entering ROM download mode on power-on, the safeguards added to
-keep it that way, and the exact procedure to recover a dark node once it is physically reachable.
+The radio nodes appeared "dark" (never running the app). This document records the **confirmed
+root cause**, the design fix, why the firmware cannot block USB/ROM recovery, and the recovery
+procedure.
 
-> **Status: UNVERIFIED ON HARDWARE.** All three nodes are currently bricked/dark and none is
-> reachable. The changes here are code-level and build-verified only; the recovery procedure and
-> the safeguards have **not** been confirmed against a real board. Re-verify on the first node
-> recovered (checklist at the bottom).
+> ## Root cause — CONFIRMED on hardware (2026-09-06)
+>
+> The nodes were **not** power-cut bricks, and they were **not** presenting "no USB." They were
+> booting straight into **ROM USB download mode every power-up** and sitting there forever (the
+> ESP32-C3 ROM samples the BOOT strap once at reset; if low it enters download mode with **no
+> timeout** and never runs the app). So they enumerated as `303a:1001` but never ran Tasmota.
+>
+> **Why:** the original socket adapter routed the position-4 SPI signal (CC1101 **CSN** / green
+> **SCK** / RA-02 **NSS**) to **GPIO9**, which is the ESP32-C3 **BOOT** strapping pin. At reset the
+> ESP drives nothing, so GPIO9 rises only through its ~45 kΩ internal pull-up; the radio's input
+> capacitance on that net slows the rise so GPIO9 is still below V_IH when the ROM samples the
+> strap → download mode. It is a **slow-rise-at-reset**, not a static pull-down (measured: GPIO9
+> reads high at rest with only the internal pull-up) and not the SPI idle level (that is post-boot).
+>
+> **Evidence:** on node `4F:D8`, with `FORCE_DOWNLOAD_BOOT`=0 and BOOT released, every reset lands
+> in `boot:0x5 DOWNLOAD`; a radio-less reference board under the identical reset lands in
+> `boot:0xd SPI_FAST_FLASH_BOOT` and runs its app. (An earlier in-session claim of confirmation via
+> a `uhubctl` power-cycle was **invalid** — the Genesys hub is ganged/self-powered, so the cycle
+> re-enumerated USB without cutting VDD; an RTC-memory marker survived it, proving power never
+> dropped. The clean reset above, on the same controller, is the valid test.)
+>
+> **Fix (both, per design decision):** (1) adapter rev moves position-4 off GPIO9 to **GPIO1**
+> (a non-strapping pin); GPIO9 becomes an unconnected spare. (2) optional pull-up footprints on the
+> strap pins so they latch high at reset. Firmware pin maps updated to GPIO1 and a compile-time
+> guard now rejects any map using a strapping pin (GPIO2/8/9) — see `src/xdrv_95_cc1101.ino`.
+> On-hardware re-validation of the GPIO1 rev is pending the rewire.
 
 ## Why the app firmware essentially cannot brick USB
 

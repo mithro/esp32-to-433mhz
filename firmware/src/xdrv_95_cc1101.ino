@@ -97,18 +97,36 @@ class ArduinoResetLine : public Sx1278ResetLine {
  * board-type strap (float = CC1101, tied low = SX1278) and is NOT used by any map. */
 struct CcPins { int8_t sck, miso, mosi, cs, gdo0, gdo2; };
 struct SxPins { int8_t sck, miso, mosi, nss, rst, dio0; };
-static const CcPins CC_MAP_BLUE  = { 3, 7, 4, 9, 10, 6 };   // blue E07:    SCK3 MISO7 MOSI4 CSN9  GDO0=10 GDO2=6
-static const CcPins CC_MAP_GREEN = { 9, 3, 10, 6, 7, 4 };   // green D-Sun: SCK9 MISO3 MOSI10 CSN6 GDO0=7  GDO2=4
-static const SxPins SX_MAP_RA02  = { 3, 7, 4, 9, 10, 6 };   // RA-02:       SCK3 MISO7 MOSI4 NSS9  RST=10  DIO0=6
+static constexpr CcPins CC_MAP_BLUE  = { 3, 7, 4, 1, 10, 6 };   // blue E07:    SCK3 MISO7 MOSI4 CSN1  GDO0=10 GDO2=6  (CSN moved 9->1: GPIO9 is BOOT strap)
+static constexpr CcPins CC_MAP_GREEN = { 1, 3, 10, 6, 7, 4 };   // green D-Sun: SCK1 MISO3 MOSI10 CSN6 GDO0=7  GDO2=4  (SCK moved 9->1: GPIO9 is BOOT strap)
+static constexpr SxPins SX_MAP_RA02  = { 3, 7, 4, 1, 10, 6 };   // RA-02:       SCK3 MISO7 MOSI4 NSS1  RST=10  DIO0=6  (NSS moved 9->1: GPIO9 is BOOT strap)
 #define CC_STRAP_PIN 5
-/* Boot-strap safety (see firmware/docs/bootloader-recovery.md): no pin map above touches GPIO2
- * or GPIO8 (ESP32-C3 strapping pins) or GPIO18/19 (USB D-/D+). GPIO9 (the BOOT strap) appears
- * only as the blue-board CSN or the green-board SCK and is driven solely by the SPI bring-up
- * that runs at FUNC_INIT -- long after the ROM/2nd-stage bootloader has sampled the straps and
- * brought USB up. ArduinoSpiBus::begin() sets CS to OUTPUT and idles it HIGH, and every SPI op
- * ends with deselect() (CS HIGH), so GPIO9 rests HIGH between transactions. No gpio_hold / RTC
- * hold / deep-sleep hold is used, so no pin state persists across a reset to change boot mode;
- * the driver also does no pin I/O before FUNC_INIT (there is no FUNC_PRE_INIT hook). */
+/* Boot-strap safety -- ROOT CAUSE CONFIRMED 2026-09-06 (see firmware/docs/bootloader-recovery.md).
+ * GPIO2/8/9 are ESP32-C3 strapping pins sampled by the mask ROM at reset; GPIO9 is BOOT. The
+ * original socket adapter put the position-4 SPI signal (CC1101 CSN / green SCK / RA-02 NSS) on
+ * GPIO9. At reset the ESP drives nothing, so GPIO9 rises only through its ~45k internal pull-up;
+ * the radio's input capacitance on that net slows the rise enough that GPIO9 is still below V_IH
+ * when the ROM samples the strap -> the ROM enters USB download mode and NEVER runs the app (no
+ * timeout). That -- not a power-cut brick -- is why the radio nodes were dark. Verified on node
+ * 4F:D8: with FORCE_DOWNLOAD_BOOT=0 and BOOT released it resets to boot:0x5 DOWNLOAD every time,
+ * while a radio-less board resets to boot:0xd SPI_FAST_FLASH_BOOT. (An earlier claim that GPIO9
+ * was safe because the driver only drives it at FUNC_INIT was WRONG: the ROM samples it long
+ * before any code runs.) Fix (adapter rev): position-4 moved off GPIO9 to GPIO1 (non-strap),
+ * plus optional strap pull-up footprints on the adapter. Firmware must keep every radio signal
+ * off GPIO2/8/9 -- enforced at compile time below. */
+static constexpr bool cc_no_strap(const CcPins& p) {
+  const int8_t a[] = { p.sck, p.miso, p.mosi, p.cs, p.gdo0, p.gdo2 };
+  for (int8_t v : a) { if (v == 2 || v == 8 || v == 9) return false; }
+  return true;
+}
+static constexpr bool sx_no_strap(const SxPins& p) {
+  const int8_t a[] = { p.sck, p.miso, p.mosi, p.nss, p.rst, p.dio0 };
+  for (int8_t v : a) { if (v == 2 || v == 8 || v == 9) return false; }
+  return true;
+}
+static_assert(cc_no_strap(CC_MAP_BLUE),  "blue CC1101 pin map uses an ESP32-C3 strapping pin (GPIO2/8/9)");
+static_assert(cc_no_strap(CC_MAP_GREEN), "green CC1101 pin map uses an ESP32-C3 strapping pin (GPIO2/8/9)");
+static_assert(sx_no_strap(SX_MAP_RA02),  "RA-02 pin map uses an ESP32-C3 strapping pin (GPIO2/8/9)");
 
 /* ---------- driver state ---------- */
 struct CcState {
