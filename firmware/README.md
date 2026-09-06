@@ -10,10 +10,14 @@ ESP32 platform (~1 GB). Artefacts land in `firmware/dist/`:
 
 | File | Use |
 |---|---|
-| `tasmota32c3-cc1101.factory.bin` | first flash, at offset `0x0`, over native USB with `esptool.py` |
+| `tasmota32c3-cc1101-combined.factory.bin` | **preferred** first flash, at offset `0x0` — main firmware **plus** a populated safeboot fallback slot (button-free recovery from a bad OTA / corrupt app; see `RECOVERY.md`). Built by `tools/combine_safeboot.py`. |
+| `tasmota32c3-cc1101.factory.bin` | first flash, main app only (blank safeboot slot — no button-free fallback); use only if the combined image is unavailable |
 | `tasmota32c3-cc1101.bin` | later updates, uploaded through the Tasmota web UI (Firmware Upgrade) |
 | `tasmota32c3-cc1101.elf` / `.map` | debugging (symbols, section sizes) |
-| `build-info.json` | Tasmota tag/SHA, build timestamp, artefact sizes |
+| `build-info.json` / `build-info-<env>.json` | Tasmota tag/SHA, build timestamp, artefact sizes (per built env) |
+
+To produce the combined image, build both envs then merge:
+`python3 build.py` (main) → `python3 build.py --env tasmota32c3-safeboot` → `python3 tools/combine_safeboot.py`.
 
 `build.py --overlay-only` just refreshes the copied-in overlay files without compiling;
 `build.py --clean` wipes the PlatformIO `.pio/build` dir first (use after changing build flags,
@@ -29,11 +33,12 @@ ROM download mode the first time (board is blank or running something else):
 3. The board enumerates as `303a:1001`. On the deployment host a udev rule symlinks it to
    a stable `/dev/radio-cc1101-node-<serial>` name (see `docs/esp32c3-cc1101-node.md` for the
    USB mapping story).
-4. Flash the **factory** image at offset `0x0` (it includes the bootloader + partition table, so
-   it is the only image that works on a blank/foreign chip):
+4. Flash the **combined factory** image at offset `0x0` (bootloader + partition table + safeboot +
+   main app — the only image that works on a blank/foreign chip, and the one that leaves a
+   button-free safeboot fallback for future recoveries):
 
        esptool.py --chip esp32c3 --port /dev/radio-cc1101-node-<serial> write_flash 0x0 \
-           firmware/dist/tasmota32c3-cc1101.factory.bin
+           firmware/dist/tasmota32c3-cc1101-combined.factory.bin
 
 5. Reset (unplug/replug, no BOOT held this time) and it boots into Tasmota's captive-portal WiFi
    setup (`tasmota-XXXX` AP) or the console over the same USB-CDC port at 115200 baud.

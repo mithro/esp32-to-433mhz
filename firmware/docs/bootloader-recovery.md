@@ -65,12 +65,16 @@ JTAG probe, no case opening.
    `flash_id`). `--before no_reset` tells esptool the board is *already* in download mode, so it
    does **not** try its own reset dance (which the SuperMini's minimal auto-reset wiring may not
    support).
-3. **Reflash the factory image.** Always the `.factory.bin` (bootloader + partition table + app),
-   never the OTA `.bin`, because a dark node's flash/partitions are in an unknown state:
+3. **Reflash the factory image.** Always a `.factory.bin` (bootloader + partition table + app),
+   never the OTA `.bin`, because a dark node's flash/partitions are in an unknown state. Prefer the
+   **combined** image, which additionally populates the safeboot fallback slot (see the next
+   section) so subsequent recoveries need no BOOT button:
    ```
    esptool.py --chip esp32c3 --port <port> --before no_reset --after hard_reset \
-       write_flash 0x0 firmware/dist/tasmota32c3-cc1101.factory.bin
+       write_flash 0x0 firmware/dist/tasmota32c3-cc1101-combined.factory.bin
    ```
+   (`tasmota32c3-cc1101.factory.bin` — main app only, blank safeboot slot — also boots, but leaves
+   no button-free fallback; use it only if the combined image is unavailable.)
    If sync still fails, first prove the ROM is alive with a full erase
    (`esptool.py --chip esp32c3 --port <port> --before no_reset erase_flash`), then write again.
    `--after hard_reset` reboots into the freshly flashed firmware; if the board has no auto-reset
@@ -86,6 +90,42 @@ JTAG probe, no case opening.
 If the node still boots and enumerates normally, no BOOT press is needed — `esptool.py` with the
 default `--before default_reset` will reset it into the bootloader over the same USB port. The
 BOOT-button dance above is only for a node that is dark or running unknown/foreign firmware.
+
+## Safeboot fallback — making the button-press the last one
+
+The BOOT-button path above always works, but it needs a human at the board. To remove the button
+from every recovery *except* a full USB brick, the node ships a **combined factory image**
+(`firmware/tools/combine_safeboot.py` → `tasmota32c3-cc1101-combined.factory.bin`) that populates
+two app slots at once:
+
+| Partition | Offset | Contents | Role |
+|---|---|---|---|
+| `otadata` | `0x0E000` | boot_app0 (→ ota_0) | selects the main app by default |
+| `safeboot` (factory) | `0x10000` | stock Tasmota safeboot | minimal WiFi + web-OTA recovery image |
+| `app0` (ota_0) | `0xE0000` | CC1101-node firmware | the normal firmware |
+
+The stock safeboot image is built from the **same pinned Tasmota tree** (env `tasmota32c3-safeboot`,
+no OTA_URL dependency) — its only job is to bring up WiFi and accept an OTA of the main app. CI
+builds it, merges it, and asserts both slots are populated (`test_combined_image.py`).
+
+**Honest recovery matrix** for a node flashed with the combined image:
+
+| Failure | Recovers without the BOOT button? | How |
+|---|---|---|
+| Failed / interrupted OTA of the main app | **Yes** | Tasmota does the main-app OTA *from* safeboot; an interrupted flash leaves otadata pointing at safeboot, so the node comes back up in safeboot → re-upload over WiFi. |
+| Corrupt `app0` image (bad magic/checksum) | **Yes** | The IDF bootloader rejects an invalid selected app and falls back to the `factory` (safeboot) partition → recover over WiFi. |
+| Blank `app0` / invalid `otadata` | **Yes** | Bootloader boots the `factory` (safeboot) partition. |
+| Main app boots "valid" but then misbehaves in a loop | **Partial** | Tasmota's fast-power-cycle recovery (RTC `fast_reboot_count`; power-cycle several times) resets settings. There is **no automatic revert of a bootloader-valid image** — see the limitation below. |
+| Node dark / presents no USB (the power-cut brick) | **No** | Below the safeboot layer entirely — needs the BOOT button + ROM loader above. FIX-BOOTSAFE is the mitigation for *causing* this. |
+
+**Limitation — no IDF anti-rollback.** True bootloader auto-rollback
+(`CONFIG_BOOTLOADER_APP_ROLLBACK_ENABLE`, which would auto-revert a bootlooping *valid* image)
+lives inside the **precompiled** Arduino-framework second-stage bootloader, where it ships
+**disabled** (`# CONFIG_BOOTLOADER_APP_ROLLBACK_ENABLE is not set`). Enabling it would require
+rebuilding the framework/bootloader, which conflicts with the pinned-framework boot-safety
+constraint above and would not have prevented the power-cut brick anyway (that is below this layer).
+Safeboot therefore covers the *bad-OTA* and *corrupt-image* cases button-free, but not a
+valid-but-crashing image; for that, use the fast-power-cycle reset or the BOOT-button reflash.
 
 ## Files touched by this hardening
 

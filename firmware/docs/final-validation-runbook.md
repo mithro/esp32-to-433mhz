@@ -2,7 +2,7 @@
 
 Everything code-side is done, hardened, and CI-green. This runbook is the turnkey sequence to finish (b) real-hardware validation and (e) live HA MQTT once the three ESP32 nodes are physically recovered. Do it per node; the blue CC1101 is the priority (proves CC1101 on-radio weather/moisture decode), then green, then the RA-02 re-check.
 
-Hosts: build/git on `desktop.buddy.mithis.com` (`~/esp32-to-433mhz-fw`, branch `add-tasmota-firmware`). Flash/console on `rpi5-433mhz` (`ssh tim@ipv4.eth0.rpi5-433mhz.iot.welland.mithis.com`). Firmware image: `firmware/dist/tasmota32c3-cc1101.factory.bin` (rebuild with `python3 firmware/build.py` if stale).
+Hosts: build/git on `desktop.buddy.mithis.com` (`~/esp32-to-433mhz-fw`, branch `add-tasmota-firmware`). Flash/console on `rpi5-433mhz` (`ssh tim@ipv4.eth0.rpi5-433mhz.iot.welland.mithis.com`). Firmware image: `firmware/dist/tasmota32c3-cc1101-combined.factory.bin` (main + populated safeboot fallback; rebuild with `python3 firmware/build.py && python3 firmware/build.py --env tasmota32c3-safeboot && python3 firmware/tools/combine_safeboot.py`). Flashing the combined image at the one BOOT-press means later recoveries from a bad OTA / corrupt app are button-free over WiFi — see `firmware/docs/bootloader-recovery.md` → "Safeboot fallback".
 
 ## 0. Recover a dark node (see firmware/docs/bootloader-recovery.md)
 The three nodes present no USB after abrupt power cuts (flash wedge — the firmware is confirmed NOT to block bootloader). To recover one:
@@ -12,9 +12,11 @@ The three nodes present no USB after abrupt power cuts (flash wedge — the firm
 4. Confirm: `ls /dev/serial/by-id/ | grep -i JTAG` shows the node (per-MAC name).
 
 ## 1. Flash
-`scp firmware/dist/tasmota32c3-cc1101.factory.bin` to rpi5, then:
-`esptool --chip esp32c3 --port <dev> --before default_reset --after hard_reset write_flash 0x0 tasmota32c3-cc1101.factory.bin`
+`scp firmware/dist/tasmota32c3-cc1101-combined.factory.bin` to rpi5, then:
+`esptool --chip esp32c3 --port <dev> --before default_reset --after hard_reset write_flash 0x0 tasmota32c3-cc1101-combined.factory.bin`
+(The node is already in ROM download mode from step 0's BOOT press, so `--before default_reset` still works; if esptool reports sync trouble, use `--before no_reset`.)
 Confirm boot over USB-CDC console (persistent pyserial, `dtr=False rts=False`): `Version 15.5.0(cc1101-node)`.
+Optional: verify the safeboot fallback is present by uploading a bad OTA later and confirming the node returns over WiFi in safeboot (see bootloader-recovery.md recovery matrix) — do this AFTER (b)/(e) pass so a failed test does not block validation.
 
 ## 2. Commission (per board — verified templates)
 - **Blue E07 (CC1101):** `Template {"NAME":"CC1101blue","GPIO":[0,0,0,736,704,0,4576,672,0,768,4544,0,0,0,0,0,0,0,0,0,0,0],"FLAG":0,"BASE":1}` → `Module 0` → `Radio cc1101` → `CcMode weather`.

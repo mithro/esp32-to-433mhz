@@ -26,11 +26,18 @@ flash) — the same reason C2 is unbrickable for the EFM8 boards and HVPP for th
 # 1. Hold BOOT, plug in USB-C (or press RESET while still holding BOOT), then release.
 # 2. Board re-enumerates as 303a:1001 -> /dev/radio-cc1101-node-<serial> (udev rule).
 esptool.py --chip esp32c3 --port /dev/radio-cc1101-node-<serial> write_flash 0x0 \
-    firmware/dist/tasmota32c3-cc1101.factory.bin
+    firmware/dist/tasmota32c3-cc1101-combined.factory.bin
 # 3. Unplug/replug WITHOUT holding BOOT -> boots the freshly flashed firmware.
 ```
 
-Always flash the **`.factory.bin`** here, not the OTA `.bin` — the factory image includes the
+Prefer the **combined** factory image (`tasmota32c3-cc1101-combined.factory.bin`): it lays down the
+main firmware **and** a stock Tasmota safeboot image in the reserved factory slot, so after this one
+BOOT-button flash, later recoveries from a bad OTA or corrupt app happen **over WiFi with no button**
+(see [`docs/bootloader-recovery.md`](docs/bootloader-recovery.md) → "Safeboot fallback" for the full
+recovery matrix and its one limitation). The main-only `tasmota32c3-cc1101.factory.bin` also boots
+but leaves the safeboot slot blank (no button-free fallback).
+
+Always flash a **`.factory.bin`** here, not the OTA `.bin` — the factory image includes the
 bootloader and partition table, so it is the only one guaranteed to boot a device in an unknown
 state (wrong partition table, foreign firmware, blank chip). Because it re-lays the whole flash,
 this also wipes NVS/settings and the LittleFS filesystem (including `/cc1101.cfg`) — back those up
@@ -88,8 +95,16 @@ There is no console command to erase just this one file — the file manager pag
 commands have nowhere to pull from — an accidental `Upgrade 1` fails safely rather than replacing
 this firmware with stock `tasmota32c3`. A **manual** web-UI/`curl` upload of the wrong `.bin` (e.g.
 another node's build, or `tasmota32c3-cc1101.factory.bin` instead of the OTA image) can still
-leave the device in a bad state; if the web UI becomes unreachable afterwards, fall back to the
-BOOT-button reflash above.
+leave the device in a bad state.
+
+If the node was flashed with the **combined** image (safeboot slot populated), an interrupted or
+bad main-app OTA does **not** need the BOOT button: Tasmota performs the main-app OTA from safeboot,
+so a failed flash leaves the node in safeboot (reachable over WiFi) to retry, and a corrupt `app0`
+makes the bootloader fall back to safeboot. Re-upload the main app over WiFi from the safeboot web
+UI. Only a node with a blank safeboot slot (main-only image) or a full USB brick needs the
+BOOT-button reflash above. See [`docs/bootloader-recovery.md`](docs/bootloader-recovery.md) →
+"Safeboot fallback" for the full recovery matrix and its one limitation (no auto-revert of a
+valid-but-crashing image).
 
 ## Recovery decision tree
 
@@ -100,8 +115,10 @@ Device misbehaving?
 │      re-run commissioning.
 ├─ Web UI/console reachable, want a clean Security+ identity
 │   └─ Manage File system -> delete /cc1101.cfg -> reboot -> re-pair.
-├─ Web UI/console NOT reachable (bad flash, wrong firmware, blank chip, bricked OTA)
-│   └─ hold BOOT, reflash tasmota32c3-cc1101.factory.bin over native USB. Always works.
+├─ Bad/interrupted main-app OTA, node flashed with the combined image
+│   └─ node comes up in safeboot (WiFi) -> re-upload the main app over WiFi. No button.
+├─ Web UI/console NOT reachable (blank chip, foreign firmware, blank safeboot slot, dark node)
+│   └─ hold BOOT, reflash tasmota32c3-cc1101-combined.factory.bin over native USB. Always works.
 └─ Want to preserve /cc1101.cfg across a factory reflash
     └─ back it up via Manage File system BEFORE reflashing (a factory image wipes the
        filesystem); restore it the same way afterwards.
