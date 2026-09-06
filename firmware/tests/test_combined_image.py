@@ -1,10 +1,11 @@
 """Structural verification of the combined safeboot + main factory image.
 
 The combined image (firmware/dist/tasmota32c3-cc1101-combined.factory.bin, produced by
-firmware/tools/combine_safeboot.py) must populate BOTH app slots so the node self-recovers
-over WiFi without the BOOT button. This test parses the image's own partition table and
-asserts every slot that the recovery story depends on is actually filled -- the exact thing
-that was NOT true of the plain .factory.bin (safeboot slot left blank).
+firmware/tools/combine_safeboot.py) must have both app slots populated and, crucially, must
+hold OUR locally-built pinned safeboot in the factory slot -- NOT the network-fetched release
+safeboot that the stock .factory.bin ships (the stock image already populates the slot; the
+distinguishing test below is the one the stock image would fail). This parses the image's own
+partition table and checks each slot the recovery story depends on.
 
 Skipped (not failed) when the combined image has not been built, so the host-tests CI job
 -- which does not build firmware -- stays green; the build CI job builds + combines first,
@@ -15,7 +16,9 @@ from pathlib import Path
 
 import pytest
 
-IMAGE = Path(__file__).resolve().parents[1] / "dist" / "tasmota32c3-cc1101-combined.factory.bin"
+DIST = Path(__file__).resolve().parents[1] / "dist"
+IMAGE = DIST / "tasmota32c3-cc1101-combined.factory.bin"
+LOCAL_SAFEBOOT = DIST / "tasmota32c3-safeboot.bin"
 
 PART_MAGIC = 0x50AA
 PARTTABLE_OFFSET = 0x8000
@@ -82,3 +85,18 @@ def test_otadata_selects_an_app(image):
     off, size = _find(_parse_partitions(image), PART_TYPE_DATA, SUBTYPE_DATA_OTA)
     region = image[off:off + size]
     assert any(b != 0xFF for b in region), "otadata is blank -- node would always boot safeboot"
+
+
+def test_safeboot_slot_holds_our_local_safeboot(image):
+    """The feature's actual value: the factory slot must hold OUR locally-built, pinned safeboot
+    (not the network-fetched release safeboot the stock factory.bin ships). This is the assertion
+    the plain stock factory.bin would FAIL -- so it distinguishes the combined image from stock,
+    which the populated/magic checks alone do not.
+    """
+    if not LOCAL_SAFEBOOT.exists():
+        pytest.skip("local safeboot .bin not built (build.py --env tasmota32c3-safeboot)")
+    safeboot = LOCAL_SAFEBOOT.read_bytes()
+    off, size = _find(_parse_partitions(image), PART_TYPE_APP, SUBTYPE_FACTORY)
+    assert len(safeboot) <= size, "local safeboot does not fit the factory slot"
+    assert image[off:off + len(safeboot)] == safeboot, \
+        "factory slot does not contain our local safeboot (still the fetched one, or wrong build)"
