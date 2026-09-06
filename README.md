@@ -594,26 +594,29 @@ The reference boards render with the products' parts on them:
 A second carrier, `hardware/esp32c3-sx1278-adapter`, takes the 16-pin
 castellated SX1278 module (PXL1276-D01) instead of a socketed board. It uses
 the socket adapter's GPIOs, with MOSI and SCK swapped so that its bottom
-copper routes, plus GPIO8 for the module's reset (an ESP32 output, so the
-strapping pin is harmless there):
+copper routes.  Its signals also keep clear of the boot straps: NSS, DIO0
+and RESET moved off GPIO9/GPIO10/GPIO8 to GPIO10/GPIO20/GPIO21 (GPIO8 and
+GPIO9 are left unused), for the same reset-into-download reason as the
+socket adapter:
 
 | Signal | ESP32-C3 GPIO | SX1278 module pin |
 | --- | --- | --- |
 | MOSI | GPIO3 | 7 MOSI |
 | SCK | GPIO4 | 8 SCK |
-| Chip select | GPIO9 | 9 NSS |
+| Chip select | GPIO10 | 9 NSS |
 | MISO | GPIO7 | 6 MISO |
-| IRQ / packet | GPIO10 | 10 DIO0 |
+| IRQ / packet | GPIO20 | 10 DIO0 |
 | Second IRQ | GPIO6 | 2 DIO1 |
-| Reset | GPIO8 | 11 RESET |
+| Reset | GPIO21 | 11 RESET |
 | 3.3 V | 3V3 | 5 VCC |
 | GND | GND | 1, 12, 15 GND |
 | Radio-type strap | GPIO5 | tied to 3V3 (reads high) |
 
-This adapter is two-layer: the GPIO-column signals run on the top copper in
-nested horizontal lanes below the SuperMini (the GPIO order matches the
-module's pad order, so no lane crosses another), while power, reset, MOSI
-and SCK run on the bottom copper, with vias to the SMD module pads. GPIO5 is hard-wired to 3V3 (silk "ID=3V3") so the
+This adapter is two-layer: the GPIO-column signals (DIO1, MISO, NSS, DIO0,
+RESET) run on the top copper in nested horizontal lanes below the SuperMini
+(the GPIO order matches the module's pad order, so no lane crosses another),
+while power, MOSI and SCK run on the bottom copper, with vias to the SMD
+module pads. GPIO5 is hard-wired to 3V3 (silk "ID=3V3") so the
 [radio-type strap](#expansion-header-and-radio-type-strap) reads high here.
 Its manufacturing packages are built alongside the pin-header adapter's.
 

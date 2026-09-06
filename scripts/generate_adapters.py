@@ -47,9 +47,9 @@ from kicadgen import Design, Footprint, Model, Pad, Part, SymbolRef, Track, Via,
 PINMAP = {
     "DIO1": "GPIO6",  # GDO2 on the CC1101
     "MISO": "GPIO7",
-    "RESET": "GPIO8",  # SX1278 module only (an ESP32 output, so a strapping pin is fine)
-    "NSS": "GPIO9",  # CSN on the CC1101; an input on every radio, so the strapping pin is fine
-    "DIO0": "GPIO10",  # GDO0 on the CC1101
+    "NSS": "GPIO10",  # CSN on the CC1101; moved off the GPIO9 boot strap
+    "DIO0": "GPIO20",  # GDO0 on the CC1101; moved off GPIO10 to make room for NSS
+    "RESET": "GPIO21",  # SX1278 module only; moved off the GPIO8 boot strap
     "MOSI": "GPIO3",  # (GPIO4 on the socket adapter: the two swap so this adapter's bottom copper routes)
     "SCK": "GPIO4",
     "+3V3": "GPIO5",  # radio-type strap (see RADIO_ID below): tied high on this adapter
@@ -224,7 +224,7 @@ def build_sx1278() -> Design:
         height=SX_H,
         thickness=1.6,
         castellated_refs=["J4"],  # the SMA's edge-mount pads sit on the board edge
-        sch_note="ESP32-C3 SuperMini (J1 left row, J2 right row) driving an SX1278 LoRa module (U2).\\nSPI: MOSI=GPIO3 SCK=GPIO4 NSS=GPIO9 MISO=GPIO7; RESET=GPIO8 DIO0=GPIO10 DIO1=GPIO6.\\nGPIO5 is tied to 3V3: the radio-type strap reads high on this adapter.\\nJ3 is the spring antenna wire hole; J4 an optional edge-mount SMA jack (fit one or the other).",
+        sch_note="ESP32-C3 SuperMini (J1 left row, J2 right row) driving an SX1278 LoRa module (U2).\\nSPI: MOSI=GPIO3 SCK=GPIO4 NSS=GPIO10 MISO=GPIO7; RESET=GPIO21 DIO0=GPIO20 DIO1=GPIO6.  GPIO8/GPIO9 (boot straps) are left unused.\\nGPIO5 is tied to 3V3: the radio-type strap reads high on this adapter.\\nJ3 is the spring antenna wire hole; J4 an optional edge-mount SMA jack (fit one or the other).",
     )
     bx, by = d.bx, d.by
     left, right = supermini_nets(PINMAP)
@@ -250,8 +250,9 @@ def build_sx1278() -> Design:
     # never cross another lane.  (Pin 4, RESET, is on B.Cu.)
     left_bus(2, 7.2, 26.0, row_x(2), "DIO1")  # GPIO6 -> DIO1 pad 2
     left_bus(3, 6.7, 26.5, row_x(6), "MISO")  # GPIO7 -> MISO pad 6
-    left_bus(5, 6.2, 27.0, row_x(9), "NSS")  # GPIO9 -> NSS pad 9
-    left_bus(6, 5.7, 27.5, row_x(10), "DIO0")  # GPIO10 -> DIO0 pad 10
+    left_bus(6, 6.2, 27.0, row_x(9), "NSS")  # GPIO10 -> NSS pad 9
+    left_bus(7, 5.7, 27.5, row_x(10), "DIO0")  # GPIO20 -> DIO0 pad 10
+    left_bus(8, 5.2, 28.0, row_x(11), "RESET")  # GPIO21 -> RESET pad 11
 
     # B.Cu: power, reset and NSS (from the right column), with vias just
     # above the land pads.
@@ -266,10 +267,8 @@ def build_sx1278() -> Design:
     V33_LANE_Y = VIA_Y - 0.8
     T.append(Track("+3V3", B, 0.4, [(bx + SM_RIGHT_X, by + sm_y(3)), (bx + 20.6, by + sm_y(3)), (bx + 20.6, by + V33_LANE_Y), (bx + row_x(5), by + V33_LANE_Y), (bx + row_x(5), by + VIA_Y)]))
     via_to_pad("+3V3", row_x(5))
-    # RESET from the left column (GPIO8), SCK and MOSI from the right column
-    # (GPIO4 above GPIO3, and SCK's pad left of MOSI's, so they nest).
-    T.append(Track("RESET", B, TRACK, [(bx + SM_LEFT_X, by + sm_y(4)), (bx + row_x(11), by + sm_y(4)), (bx + row_x(11), by + VIA_Y)]))
-    via_to_pad("RESET", row_x(11))
+    # SCK and MOSI from the right column (GPIO4 above GPIO3, and SCK's pad left
+    # of MOSI's, so they nest).  RESET/NSS/DIO0 are on the F.Cu left bus above.
     T.append(Track("SCK", B, TRACK, [(bx + SM_RIGHT_X, by + sm_y(4)), (bx + row_x(8), by + sm_y(4)), (bx + row_x(8), by + VIA_Y)]))
     via_to_pad("SCK", row_x(8))
     T.append(Track("MOSI", B, TRACK, [(bx + SM_RIGHT_X, by + sm_y(5)), (bx + row_x(7), by + sm_y(5)), (bx + row_x(7), by + VIA_Y)]))
