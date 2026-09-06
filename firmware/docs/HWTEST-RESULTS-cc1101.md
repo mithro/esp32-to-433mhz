@@ -214,3 +214,67 @@ Project name:     radio_pin_probe
 - [`firmware/README.md`](firmware/README.md) — command reference, build/flash instructions.
 - [`esp32c3-cc1101-node.md`](esp32c3-cc1101-node.md) — wiring, commissioning runbook, bench
   bring-up plan (stages 2–4/6 still pending real remotes/WS85/soak).
+
+
+---
+
+# On-hardware decode validation & RX-bandwidth fix (2026-09-06)
+
+This session ran on the **rewired** boards (the position-4 SPI signal moved off the GPIO9 BOOT
+strap to GPIO1 — see `bootloader-recovery.md`). Pin maps in effect:
+- **blue** `3E:B8` CC1101: SCK=3 MISO=7 MOSI=4 CS=1 GDO0=10 GDO2=6
+- **green** `4F:D8` CC1101: SCK=1 MISO=3 MOSI=10 CS=6 GDO0=7 GDO2=4
+
+Reference receivers on `rpi5-433mhz`, all decoding the same live sensors concurrently:
+- SPI CC1101 (`~/cc1101-rx`, `~/wh51-watch/cc1101_watch.py`) — 26 MHz, 101 kHz BW, WH51/WS69 at ~-72 dBm.
+- LilyGo SX1276 (`lilygo_watch.py`) — WH51/WS69 at ~-58..-75 dBm.
+
+## Bug: CC1101 `Rx>0, Decoded=0`
+
+The blue CC1101 node counted RX frames (`Rx` climbing ~0.25/s) but decoded none (`Decoded=0`),
+while the SX1278 node and both reference receivers decoded the same frames cleanly. A raw-mode
+capture (`CcRaw 1`) showed every drained packet was high-entropy noise with no family byte
+(0x24/0x51/0x85) at the head.
+
+## Root cause: RX bandwidth too narrow for the crystal offset
+
+Verified by direct register readback (`CcReg`) that **every** CC1101 register on blue — frequency,
+data rate, deviation, sync word, AGC, front-end, TEST — was identical to the bench-proven
+reference; SPI, the `SCAL` calibration in `enter_rx()`, and the eFuses were all correct. A fine
+frequency sweep at the narrow 101 kHz bandwidth decoded **only** at a +40 kHz center offset (zero
+at nominal and every other point): blue's crystal is ~92 ppm high. The CC1101 frequency-offset
+compensation only pulls in ±BW/4, so at 101 kHz (±25 kHz) the +40 kHz frame fell outside the
+passband and the receiver could only false-sync on noise. This is not an antenna/hardware fault
+(the antenna hears -70 dBm cleanly once tuned) — it is the preset choosing too narrow a filter for
+real-world crystal spread.
+
+## Fix: `MDMCFG4` `0xC9` -> `0x59` (101 kHz -> 325 kHz)
+
+Bandwidth sweep on blue (45 s each): 101 kHz = 0 decodes, 203 kHz = 2, 406 kHz = 4, 812 kHz = 1.
+325 kHz (FOC ±81 kHz) covers blue's +40 kHz with margin and worst-case cheap-module crystal spread
+(~±90 ppm) across boards, at a ~5 dB noise-floor cost negligible for the local -70 dBm sensors.
+Validated on blue at 325 kHz (90 s): **Decoded=10, Rx=14**, byte-exact with the references:
+
+| model | id | reading | node RSSI |
+|-------|----|---------|-----------|
+| Fineoffset-WS69 | 174 | 12.3 °C, 86% RH | -68..-71 dBm |
+| Fineoffset-WH51 | 0f4b37 | moisture 24%, ad_raw 150 | -76 dBm |
+| Fineoffset-WH51 | 0f5d66 | moisture 38%, ad_raw 194 | -79 dBm |
+| Fineoffset-WH51 | 0f5d7f | moisture 38%, ad_raw 198 | -75 dBm |
+
+Committed in `cc1101_presets.c`; `test_presets.py` passes 325 kHz into the reference math so the
+preset still matches `cc1101.py` register-for-register outside PKTCTRL0. All 36 host tests pass.
+
+## SX1278 status
+
+Contrary to earlier "foundation only" notes, the SX1278 node **decodes Fine Offset FSK on
+hardware**: WS69 and WH51 received and decoded byte-exact against the LilyGo and CC1101 reference
+loggers (moisture / ad_raw / battery all matching). The SX1278 uses fixed-length FSK RX and did not
+exhibit the CC1101 bandwidth issue (its crystal offset is within its passband).
+
+## Remaining
+- **green** (`4F:D8`): flashed with the 325 kHz firmware; awaiting a VDD power cycle to boot from
+  flash (the post-flash USB-serial-JTAG download state clears only on VDD removal — GPIO9 measured
+  healthy/high, not a strap fault).
+- **blue**: fix proven via runtime override; reflash to the baked-in image pending a power cycle.
+- Pluto SDR cross-check; full Home Assistant MQTT publish/subscribe round-trip.
