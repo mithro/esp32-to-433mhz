@@ -263,7 +263,9 @@ Validated on blue at 325 kHz (90 s): **Decoded=10, Rx=14**, byte-exact with the 
 | Fineoffset-WH51 | 0f5d7f | moisture 38%, ad_raw 198 | -75 dBm |
 
 Committed in `cc1101_presets.c`; `test_presets.py` passes 325 kHz into the reference math so the
-preset still matches `cc1101.py` register-for-register outside PKTCTRL0. All 36 host tests pass.
+preset still matches `cc1101.py` register-for-register outside PKTCTRL0. The full host suite passes (135 tests; the ~36 preset/decoder/weather tests are the directly affected subset).
+
+Known refinement (raised by adversarial review): FSCTRL1 (IF ≈ 152 kHz) was left unchanged, so with the wider 325 kHz filter the IF now sits just below BW/2. It decodes cleanly on hardware (10/10 above), but TI SmartRF guidance raises FREQ_IF when the channel filter is widened this far — a future pass could bump it for extra low-frequency margin.
 
 ## SX1278 status
 
