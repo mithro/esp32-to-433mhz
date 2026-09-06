@@ -96,19 +96,25 @@ def pio(args, jobs):
     run(cmd, cwd=CLONE)
 
 
-def collect():
+def collect(env):
     os.makedirs(DIST, exist_ok=True)
-    src = os.path.join(CLONE, ".pio", "build", ENV)
-    info = {"tasmota_tag": TASMOTA_TAG, "tasmota_sha": TASMOTA_SHA, "env": ENV,
+    src = os.path.join(CLONE, ".pio", "build", env)
+    info = {"tasmota_tag": TASMOTA_TAG, "tasmota_sha": TASMOTA_SHA, "env": env,
             "built": datetime.datetime.now().astimezone().isoformat(timespec="seconds"), "artefacts": {}}
     for name in ("firmware.bin", "firmware.factory.bin", "firmware.elf", "firmware.map"):
         p = os.path.join(src, name)
         if os.path.exists(p):
-            dst = os.path.join(DIST, name.replace("firmware", ENV))
+            dst = os.path.join(DIST, name.replace("firmware", env))
             shutil.copy2(p, dst)
             info["artefacts"][os.path.basename(dst)] = os.path.getsize(dst)
-    with open(os.path.join(DIST, "build-info.json"), "w") as f:
+    # Per-env manifest (so a safeboot build does not clobber the main build's record),
+    # plus build-info.json kept as an alias for the default env for backward compatibility
+    # (docs/ci.md uploads build-info.json as the firmware artifact).
+    with open(os.path.join(DIST, "build-info-%s.json" % env), "w") as f:
         json.dump(info, f, indent=2)
+    if env == ENV:
+        with open(os.path.join(DIST, "build-info.json"), "w") as f:
+            json.dump(info, f, indent=2)
     print(json.dumps(info, indent=2))
 
 
@@ -127,7 +133,7 @@ def main():
     if args.clean:
         shutil.rmtree(os.path.join(CLONE, ".pio", "build", args.env), ignore_errors=True)
     pio(["run", "-e", args.env], args.jobs)
-    collect()
+    collect(args.env)
 
 
 if __name__ == "__main__":
