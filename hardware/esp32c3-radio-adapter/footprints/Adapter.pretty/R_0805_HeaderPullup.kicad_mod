@@ -1,0 +1,90 @@
+(footprint "R_0805_HeaderPullup"
+	(version 20241229)
+	(generator "kicadgen.py")
+	(generator_version "9.0")
+	(layer "F.Cu")
+	(descr "0805 resistor bridging two adjacent 2.54 mm header pins, on the back copper (optional strap pull-up)")
+	(tags "resistor 0805 pull-up header")
+	(property "Reference" "REF**"
+		(at 0 -1.8 0)
+		(layer "F.SilkS")
+		(uuid "3bb4ebdf-393f-59c4-bbc9-a13c205e4088")
+		(effects
+			(font
+				(size 0.8 0.8)
+				(thickness 0.12)
+			)
+		)
+	)
+	(property "Value" "R_0805_HeaderPullup"
+		(at 0 1.8 0)
+		(layer "F.Fab")
+		(uuid "4c2ab793-0e2a-5827-abfa-a6ea7d7b525c")
+		(effects
+			(font
+				(size 0.8 0.8)
+				(thickness 0.12)
+			)
+		)
+	)
+	(property "Datasheet" ""
+		(at 0 0 0)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "e2d5a963-f3bf-57ef-b635-ecae1cf8d786")
+		(effects
+			(font
+				(size 1.27 1.27)
+				(thickness 0.1905)
+			)
+		)
+	)
+	(property "Description" ""
+		(at 0 0 0)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "a9f5304e-3b98-5134-86f3-9f7d166f18a3")
+		(effects
+			(font
+				(size 1.27 1.27)
+				(thickness 0.1905)
+			)
+		)
+	)
+	(attr smd)
+	(fp_text user "${REFERENCE}"
+		(at 0 -1.8 0)
+		(layer "F.Fab")
+		(uuid "d515bd96-6532-581f-a75b-44863f293f62")
+		(effects
+			(font
+				(size 0.6 0.6)
+				(thickness 0.09)
+			)
+		)
+	)
+	(fp_rect
+		(start -0.65 -1)
+		(end 0.65 1)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(fill no)
+		(layer "B.Fab")
+		(uuid "5964af00-a308-5a85-9976-c81569e23d54")
+	)
+	(pad "1" smd rect
+		(at -1.27 0)
+		(size 1.4 1.2)
+		(layers "B.Cu" "B.Mask" "B.Paste")
+		(uuid "2aa9c159-c42b-572e-ab3f-32e0f8dc1786")
+	)
+	(pad "2" smd rect
+		(at 1.27 0)
+		(size 1.4 1.2)
+		(layers "B.Cu" "B.Mask" "B.Paste")
+		(uuid "2d4127a7-d881-5f3b-b16b-09ba2b8f8f4c")
+	)
+	(embedded_fonts no)
+)

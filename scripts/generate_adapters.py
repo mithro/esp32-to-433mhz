@@ -402,6 +402,26 @@ def resistor_0805_fp(back: bool = False) -> Footprint:
     )
 
 
+def header_pullup_fp() -> Footprint:
+    """0805 chip resistor whose pads land on two adjacent 2.54 mm header pins (pad 1 at
+    -x, pad 2 at +x), on the back copper, so it bridges a strap pin to 3V3 with no extra
+    track.  Optional / do-not-populate."""
+    layers = ("B.Cu", "B.Mask", "B.Paste")
+    pads = [Pad("1", (-SM_PITCH / 2, 0), (1.4, 1.2), "smd", "rect", layers=layers),
+            Pad("2", (SM_PITCH / 2, 0), (1.4, 1.2), "smd", "rect", layers=layers)]
+    return Footprint(
+        name="R_0805_HeaderPullup",
+        descr="0805 resistor bridging two adjacent 2.54 mm header pins, on the back copper (optional strap pull-up)",
+        tags="resistor 0805 pull-up header",
+        pads=pads,
+        extra=[fp_rect("r:body", -0.65, -1.0, 0.65, 1.0, "B.Fab", 0.1)],
+        attr="smd",
+        courtyard=False,  # it deliberately sits on the header pins
+        ref_pos=(0, -1.8, 0),
+        value_pos=(0, 1.8),
+    )
+
+
 class Carrier:
     """The parts shared by the socket-style adapters: a SuperMini on its side
     with USB-C off the left edge (keyhole pads: header pins or castellated),
@@ -528,19 +548,22 @@ GPIO8_RISE_X = 9.5  # GPIO8 climbs between the GPIO3 and GPIO4 drops to reach th
 
 # Socket net -> GPIO.  The socket also takes the green D-Sun CC1101 board,
 # whose signals sit in a different order, with a different pin map in
-# firmware; so no socket position that carries a radio OUTPUT on any of the
-# three boards may be a boot strapping pin (GPIO2/8/9).  Only position 4
-# (CSN_NSS: blue CSN, green SCK, Ra-02 NSS) is an input on all of them, and
-# it takes GPIO9; GPIO8 goes to the expansion header.
-RADIO_PINMAP = {"MOSI": "GPIO4", "SCK": "GPIO3", "CSN_NSS": "GPIO9", "GDO0_RST": "GPIO10", "MISO": "GPIO7", "GDO2_DIO0": "GPIO6", "RADIO_ID": RADIO_ID_GPIO}
+# firmware; so NO socket position may be a boot strapping pin (GPIO2/8/9).
+# A radio pin on a strap loads it enough that, through the ESP32's weak
+# internal pull-up, it rises too slowly for the ROM to read it high at reset:
+# the chip straps into USB download mode and never runs the app (measured on
+# the bench, 2026-09-06).  Position 4 (CSN_NSS) therefore takes GPIO1; GPIO9
+# is left unconnected -- an unconnected strap floats high on the internal
+# pull-up, the safest state -- and GPIO8/GPIO2 stay on the header with pull-ups.
+RADIO_PINMAP = {"MOSI": "GPIO4", "SCK": "GPIO3", "CSN_NSS": "GPIO1", "GDO0_RST": "GPIO10", "MISO": "GPIO7", "GDO2_DIO0": "GPIO6", "RADIO_ID": RADIO_ID_GPIO}
 # Expansion header J4 on the top edge, centred between the mounting holes:
 # 3V3 plus every GPIO the radio does not use (5V cannot be reached on one
 # layer: the top-left hole sits over its pad).  GPIO2/1/0 rise straight from
 # the power row, GPIO8 climbs from the GPIO row between the rows, and
 # GPIO21/20 come from the GPIO row up the right-hand strip.
-EXP_PINS = ["+3V3", "GPIO8", "GPIO2", "GPIO1", "GPIO0", "GPIO21", "GPIO20"]
+EXP_PINS = ["+3V3", "GPIO8", "GPIO2", "+3V3", "GPIO0", "GPIO21", "GPIO20"]
 EXP_UART = {"GPIO21": "TX", "GPIO20": "RX"}  # UART0 on the ESP32-C3
-EXP_LABELS = {"+3V3": "3V3", "GPIO8": "8", "GPIO2": "2", "GPIO1": "1", "GPIO0": "0", "GPIO21": "21", "GPIO20": "20"}
+EXP_LABELS = {"+3V3": "3V3", "GPIO8": "8", "GPIO2": "2", "GPIO0": "0", "GPIO21": "21", "GPIO20": "20"}
 EXP_Y = 2.55  # header row: pads clear the top lanes above and the jog row below
 EXP_X1 = CC_W / 2 - 3 * SM_PITCH  # 6.88: pin 1 of the 7-pin header, so pin 4 is on the board's centre line
 EXP_JOG_Y = CC_TOP_Y - 3.0  # 4.0: jogs between the power-row keyhole copper (to 4.4) and the header
@@ -586,7 +609,7 @@ def build_radio(radio: str = "e07") -> Design:
         project="esp32c3-radio-adapter",
         title="ESP32-C3 SuperMini to CC1101 (E07-M1101D, D-Sun) or SX1278 Ra-02 breakout adapter",
         comment="Carrier joining an ESP32-C3 SuperMini to a CC1101 board (Ebyte E07-M1101D-SMA or D-Sun) or an SX1278 Ra-02 breakout via one 2x4 socket; all tracks on the back, GND pour on the front",
-        sch_note="ESP32-C3 SuperMini (J1 = GPIO row, J2 = power row; through-hole or castellated) driving a CC1101 E07-M1101D board or an SX1278 Ra-02 breakout in socket J3.\\nSocket positions 3..8 = GPIO10, 9, 3, 4, 7, 6 (blue E07: GDO0 CSN SCK MOSI MISO GDO2; green D-Sun: MOSI SCK MISO GDO2 GDO0 CSN; Ra-02: RST NSS SCK MOSI MISO DIO0).\\nJ4: 3V3 and the unused GPIOs.  JP1 (jumper) or R1 (0R): radio-type strap on GPIO5 (RADIO_ID) to GND, open = CC1101, fitted = Ra-02.\\nH1-H4: M2 mounting holes.  All tracks on B.Cu; F.Cu carries only a GND pour.",
+        sch_note="ESP32-C3 SuperMini (J1 = GPIO row, J2 = power row; through-hole or castellated) driving a CC1101 E07-M1101D board or an SX1278 Ra-02 breakout in socket J3.\\nSocket positions 3..8 = GPIO10, 1, 3, 4, 7, 6 (blue E07: GDO0 CSN SCK MOSI MISO GDO2; green D-Sun: MOSI SCK MISO GDO2 GDO0 CSN; Ra-02: RST NSS SCK MOSI MISO DIO0).  GPIO9 (a boot strap) is NOT used: CSN/SCK/NSS moved to GPIO1 so no radio pin loads a strap.\\nJ4: a 2nd 3V3, the unused GPIOs, and optional pull-ups (R2/R3) on the GPIO8/GPIO2 straps.  JP1 (jumper) or R1 (0R): radio-type strap on GPIO5 (RADIO_ID) to GND, open = CC1101, fitted = Ra-02.\\nH1-H4: M2 mounting holes.  All tracks on B.Cu; F.Cu carries only a GND pour.",
         mapping=RADIO_PINMAP,
         sig_names=RADIO_NAMES,
     )
@@ -609,15 +632,24 @@ def build_radio(radio: str = "e07") -> Design:
     jp1_models = [Model("pin-header-1x02.step")] + ([Model("jumper-cap.step")] if radio == "ra02" else [])
     c.add("JP1", pin_header_fp(2, "y"), (JP1_X, JP1_Y), CONN2, "RA-02", {"1": "RADIO_ID", "2": "GND"}, (177.8, 127.0), "Radio-type strap: fit a jumper for the Ra-02 breakout, leave open for the CC1101", models=jp1_models)
     c.add("R1", resistor_0805_fp(back=True), (R1_X, R1_Y), RES, "0R", {"1": "RADIO_ID", "2": "GND"}, (203.2, 127.0), "Radio-type strap, alternative to JP1: fit 0R for the Ra-02 breakout", models=[Model("r0805.step", (0, 0, -1.6), (180, 0, 0))])
+    # Optional strap pull-ups: 0805s bridging a spare boot-strap header pin to the
+    # adjacent 3V3 pin, biasing it high at reset if that pin is ever wired to a load
+    # that could hold it low at power-up.  Do-not-populate by default (the pins float
+    # high on the internal pull-ups).  GPIO9 -- the strap the socket used to carry --
+    # is left unconnected and needs none.
+    hp = header_pullup_fp()
+    c.add("R2", hp, ((ex(1) + ex(2)) / 2, EXP_Y), RES, "4k7", {"1": "+3V3", "2": "GPIO8"}, (228.6, 127.0), "Optional pull-up: GPIO8 boot strap to 3V3 (DNP unless needed)")
+    c.add("R3", hp, ((ex(3) + ex(4)) / 2, EXP_Y), RES, "4k7", {"1": "GPIO2", "2": "+3V3"}, (241.3, 127.0), "Optional pull-up: GPIO2 boot strap to 3V3 (DNP unless needed)")
     c.holes()
 
     g = lambda a, b: gap(px(a), px(b))  # noqa: E731  gap between two SuperMini pins
     L1, L2, L3, L4 = LANES
     # Radio signals from the GPIO row into the socket.
     c.track("GDO0_RST", TRACK, [(px(6), BOT), (sx(3), SY0)])  # GPIO10 straight down (13.94)
-    # CSN/NSS (GPIO9) leaves its pad sideways into the gap before GPIO10 and
-    # drops to socket pin 4 from the left.
-    c.track("CSN_NSS", TRACK, [(px(5), BOT), (g(5, 6), BOT), (g(5, 6), SY1), (sx(4), SY1)])
+    # CSN/NSS (GPIO1, power row) drops between the rows, crosses to the pad5/pad3
+    # gap and enters socket pad 4 from the left.  GPIO9 (the strap it replaces) is
+    # left unconnected.
+    c.track("CSN_NSS", TRACK, [(px(7), TOP), (px(7), TOP + 5.0), (gap(sx(5), sx(3)), TOP + 5.0), (gap(sx(5), sx(3)), SY1), (sx(4), SY1)])
     # MISO (GPIO7) into pin 7 from above, through the column GPIO8's pad
     # leaves free below it; GDO2/DIO0 (GPIO6) round the left of the socket
     # into pin 8 from below.
@@ -637,9 +669,10 @@ def build_radio(radio: str = "e07") -> Design:
     c.track("GND", TRACK, [(R1_X, JP1_Y + 2.3), (JP1_X, JP1_Y + 2.3)])  # R1 pad 2 to JP1 pin 2
     c.track("+3V3", TRACK, [(px(3), TOP), (V33_RISE_X, TOP - 1.5), (V33_RISE_X, TOP_3V3_Y), (STRIP["+3V3"], TOP_3V3_Y), (STRIP["+3V3"], SY1), (sx(2), SY1)])
     c.track("+3V3", TRACK, [(V33_RISE_X, EXP_Y), (ex(1), EXP_Y)])  # header pin 1
+    c.track("+3V3", TRACK, [(ex(4), TOP_3V3_Y), (ex(4), EXP_Y)])  # header pin 4: a second 3V3, tapped off the top 3V3 lane
     # Expansion header: GPIO2, GPIO1, GPIO0 straight up with a jog to the
     # centred pins; GPIO21 and GPIO20 down the GPIO row's right end and up the strip.
-    for k, pin in ((3, 6), (4, 7), (5, 8)):
+    for k, pin in ((3, 6), (5, 8)):  # GPIO2 -> ex3, GPIO0 -> ex5 (ex4 is GND, below)
         c.track(SM_RIGHT_GPIO[pin - 1], TRACK, [(px(pin), TOP), (px(pin), EXP_JOG_Y), (ex(k), EXP_JOG_Y), (ex(k), EXP_Y)])
     c.track("GPIO21", TRACK, [(px(8), BOT), (px(8), LANE_A), (STRIP["GPIO21"], LANE_A), (STRIP["GPIO21"], EXP_JOG_Y), (ex(6), EXP_JOG_Y), (ex(6), EXP_Y)])
     c.track("GPIO20", TRACK, [(px(7), BOT), (px(7), BOT - 1.24), (g(7, 8), BOT - 1.24), (g(7, 8), LANE_B), (STRIP["GPIO20"], LANE_B), (STRIP["GPIO20"], EXP_Y), (ex(7), EXP_Y)])
