@@ -1,0 +1,9 @@
+{"format": "rf433-packets-v1",
+ "source": "rpi5-433mhz CC1101 spidev, ~/wh51-watch/cc1101_watch.py (configure_fineoffset_fsk_rx packet_length=17); frames as logged in cc1101.hits.jsonl and cross-checked field-by-field against ~/wh51-watch/wh51.py (rtl_433 fineoffset.c fineoffset_WH51_callback port)",
+ "captured": "2026-09-05", "freq_hz": 433920000,
+ "packets": [
+  {"hex": "510F5C54107F28F8D0FFFFFF4BD7", "rssi_dbm": -81.0, "lqi": 127, "crc_ok": true, "note": "WH51 id 0f5c54 (target); moisture 40 pct, battery 1600 mV, ad_raw 208 -- reference cc1101.hits.jsonl ts 1788598016 valid=true"},
+  {"hex": "510F5D660F7F26F8C3FFFFFFA837", "rssi_dbm": -80.5, "lqi": 127, "crc_ok": true, "note": "WH51 id 0f5d66; moisture 38 pct, battery 1500 mV, ad_raw 195 -- reference cc1101.hits.jsonl ts 1788598030 valid=true"},
+  {"hex": "5182174D1C0507F60000000226EE", "rssi_dbm": -63.0, "lqi": 127, "crc_ok": false, "note": "0x51-prefixed noise/glitch match logged with valid=false (crc_ok=false) -- must NOT decode"}
+ ]
+}

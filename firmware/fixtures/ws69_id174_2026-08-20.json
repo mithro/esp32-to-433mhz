@@ -1,0 +1,10 @@
+{"format": "rf433-packets-v1",
+ "source": "rpi5-433mhz CC1101 spidev0.0, ~/cc1101-rx/cc1101_ws69_rx.py --seconds 60 --packet-len 25",
+ "captured": "2026-08-20T20:57:00+09:30", "freq_hz": 433920000,
+ "packets": [
+  {"hex": "24AE5D8213520501072400000000005AA101FFFFFF016B8733", "rssi_dbm": -85.5, "lqi": 127, "crc_ok": true, "note": "WS69 id 174, 20:57:00"},
+  {"hex": "24AE5D8213520501072400000000005AA101FFFFFF016B8733", "rssi_dbm": -87.0, "lqi": 127, "crc_ok": true, "note": "WS69 id 174, 20:57:16 (next 16 s burst, identical readings)"},
+  {"hex": "FF4C476F98C0C1C2C3C4C5C6C7C8C9CACBAAAAD9C7D12C9AEF", "rssi_dbm": -25.0, "lqi": 127, "crc_ok": true, "note": "LilyGo test beacon (0xFF 'LGo' ctr filler) - must NOT decode"},
+  {"hex": "47BE7201D3D80FA5DA03C0084B210F1E278D7B37FFA780562D", "rssi_dbm": -89.5, "lqi": 127, "crc_ok": true, "note": "noise false-sync - must NOT decode"},
+  {"hex": "2D61C628ADA2F0CC696EDBA8B46333D772F1E6A0A8680A744E", "rssi_dbm": -84.0, "lqi": 127, "crc_ok": true, "note": "noise false-sync - must NOT decode"}
+ ]}
