@@ -24,6 +24,21 @@ jobs:
           export PATH="$HOME/.local/bin:$PATH"
           python3 firmware/build.py
 
+      - name: Build stock safeboot recovery image (same pinned Tasmota tree)
+        run: |
+          export PATH="$HOME/.local/bin:$PATH"
+          python3 firmware/build.py --env tasmota32c3-safeboot
+
+      - name: Merge safeboot + main into the combined factory image
+        run: |
+          export PATH="$HOME/.local/bin:$PATH"
+          python3 firmware/tools/combine_safeboot.py
+
+      - name: Verify combined image populates both boot slots
+        run: |
+          export PATH="$HOME/.local/bin:$PATH"
+          uv run --with pytest pytest firmware/tests/test_combined_image.py -v
+
       - uses: actions/upload-artifact@v4
         with:
           name: cc1101-node-firmware
@@ -31,7 +46,7 @@ jobs:
             firmware/dist/*.bin
             firmware/dist/*.elf
             firmware/dist/*.map
-            firmware/dist/build-info.json
+            firmware/dist/build-info*.json
           retention-days: 14
 
   host-tests:
