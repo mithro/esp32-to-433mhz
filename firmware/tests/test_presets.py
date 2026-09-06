@@ -68,16 +68,23 @@ def c_patable(L, pid):
 PKTCTRL0 = 0x08
 
 
+MDMCFG4 = 0x10
+
 def test_fineoffset_preset_matches_cc1101_py(lib):
-    # Every modem/RF register must match the Pi's bench-proven cc1101.py config EXCEPT
-    # PKTCTRL0: the firmware runs infinite packet-length mode (0x02) where the reference
-    # uses fixed length (0x00). Fixed length can only complete one frame size; infinite
-    # length lets the driver drain a fixed count and receive WH51/WS69/WS85 with one config.
+    # Every modem/RF register matches the Pi's bench-proven cc1101.py config EXCEPT PKTCTRL0:
+    # the firmware runs infinite packet-length mode (0x02) where the reference uses fixed length
+    # (0x00) -- both receive every family; the driver drains a fixed count and dispatches by family.
+    # The RX bandwidth is 325 kHz (MDMCFG4=0x59), wider than cc1101.py's 101 kHz default, to tolerate
+    # cheap-module crystal offsets: the blue node measured +40 kHz (~92 ppm) and a 101 kHz filter's
+    # +/-BW/4 offset-compensation range (+/-25 kHz) cannot pull that in, so it decoded nothing until
+    # widened. We pass that bandwidth into the reference math so the comparison holds register-for-
+    # register outside PKTCTRL0.
     m = load_cc1101_py(); r = Recorder()
-    m.configure_fineoffset_fsk_rx(r, packet_length=25)        # the Pi's proven WS69 RX config (25-byte frames)
+    m.configure_fineoffset_fsk_rx(r, packet_length=25, chan_bw_hz=325000)
     fw = c_preset(lib, 0)
     assert r.regs[PKTCTRL0] == 0x00, "reference cc1101.py should program fixed length"
     assert fw[PKTCTRL0] == 0x02, "firmware Fine Offset preset must use CC1101 infinite length mode"
+    assert fw[MDMCFG4] == 0x59, "firmware Fine Offset RX bandwidth must be 325 kHz (MDMCFG4=0x59)"
     fw_rest = {a: v for a, v in fw.items() if a != PKTCTRL0}
     ref_rest = {a: v for a, v in r.regs.items() if a != PKTCTRL0}
     assert fw_rest == ref_rest, "CC_PRESET_FINEOFFSET_FSK diverges from cc1101.py outside PKTCTRL0"
