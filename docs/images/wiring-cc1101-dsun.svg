@@ -68,14 +68,13 @@
 <text x="79.2" y="454.3" font-size="12.1" font-family="Helvetica, Arial, sans-serif" font-weight="normal" fill="#1a1a2e" text-anchor="middle" dy="0.36em">SMA jack</text>
 </g>
 <g transform="translate(176.0 154.0)"><text x="99.0" y="0.0" font-size="0.0" font-family="Helvetica, Arial, sans-serif" font-weight="bold" fill="#1a1a2e" text-anchor="middle"></text>
+<rect x="50.6" y="-28.6" width="96.8" height="57.2" rx="12.1" fill="#b9bdc5" stroke="#1a1a2e" stroke-width="1.32"/>
+<rect x="67.1" y="-20.9" width="63.8" height="49.5" rx="8.8" fill="#8b909a" stroke="none" stroke-width="0.00"/>
 <rect x="0.0" y="0.0" width="198.0" height="247.7" rx="6.6" fill="#1f2430" stroke="#0b0d12" stroke-width="2.75"/>
-<rect x="49.5" y="-16.5" width="99.0" height="80.8" rx="8.8" fill="#e7eaee" stroke="#1a1a2e" stroke-width="1.32" stroke-dasharray="1 1"/>
-<text x="99.0" y="18.7" font-size="11.0" font-family="Helvetica, Arial, sans-serif" font-weight="normal" fill="#1a1a2e" text-anchor="middle" dy="0.36em">USB-C</text>
-<text x="99.0" y="40.7" font-size="7.9" font-family="Helvetica, Arial, sans-serif" font-weight="normal" fill="#1a1a2e" text-anchor="middle" dy="0.36em">(far side)</text>
+<text x="99.0" y="-40.7" font-size="9.3" font-family="Helvetica, Arial, sans-serif" font-weight="normal" fill="#1a1a2e" text-anchor="middle" dy="0.36em">USB-C (far side)</text>
 <text x="99.0" y="127.6" font-size="12.1" font-family="Helvetica, Arial, sans-serif" font-weight="bold" fill="#ffffff" text-anchor="middle" dy="0.36em">ESP32-C3</text>
 <text x="99.0" y="147.4" font-size="12.1" font-family="Helvetica, Arial, sans-serif" font-weight="bold" fill="#ffffff" text-anchor="middle" dy="0.36em">SuperMini</text>
-<text x="99.0" y="173.8" font-size="8.6" font-family="Helvetica, Arial, sans-serif" font-weight="normal" fill="#ffffff" text-anchor="middle" dy="0.36em">back (USB-C on the</text>
-<text x="99.0" y="188.1" font-size="8.6" font-family="Helvetica, Arial, sans-serif" font-weight="normal" fill="#ffffff" text-anchor="middle" dy="0.36em">opposite face)</text>
+<text x="99.0" y="176.0" font-size="9.9" font-family="Helvetica, Arial, sans-serif" font-weight="normal" fill="#ffffff" text-anchor="middle" dy="0.36em">back</text>
 <circle cx="182.8" cy="19.1" r="8.8" fill="#f2c94c" stroke="#1a1a2e" stroke-width="1.32"/>
 <circle cx="182.8" cy="19.1" r="5.0" fill="#ffffff" stroke="#1a1a2e" stroke-width="0.88"/>
 <text x="169.4" y="19.1" font-size="10.4" font-family="Helvetica, Arial, sans-serif" font-weight="bold" fill="#ffffff" text-anchor="end" dy="0.36em">5</text>

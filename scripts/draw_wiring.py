@@ -86,16 +86,16 @@ def supermini_view() -> tuple[View, dict[str, tuple[float, float]]]:
     with every pin named; returns the pin centres (mm, back-view frame)."""
     W, H = sm.BOARD_W, sm.BOARD_H
     v = View(W, H, True)  # mirrored: drawn in front-view coordinates
+    # The USB-C connector is on the component (far) side and overhangs the top
+    # edge.  Draw it first, poking past the top, then the board on top, so only
+    # the overhanging sliver shows and the board hides the rest.
+    v.rect(W / 2 - 4.4, -2.6, W / 2 + 4.4, 2.6, fill="#b9bdc5", stroke=INK, width=0.12, rx=1.1)
+    v.rect(W / 2 - 2.9, -1.9, W / 2 + 2.9, 2.6, fill="#8b909a", stroke="none", width=0.0, rx=0.8)
     v.rect(0, 0, W, H, fill="#1f2430", stroke="#0b0d12", width=0.25, rx=0.6)
-    # We are looking at the BACK (header pins towards us), so the USB-C connector
-    # is on the far / component side: draw it dashed and ghosted and say so.
-    v.rect(W / 2 - 4.5, -1.5, W / 2 + 4.5, 5.85, fill="#e7eaee", stroke=INK, width=0.12, dash="1 1", rx=0.8)
-    v.text(W / 2, 1.7, "USB-C", size=1.0)
-    v.text(W / 2, 3.7, "(far side)", size=0.72)
+    v.text(W / 2, -3.7, "USB-C (far side)", size=0.85)
     v.text(W / 2, 11.6, "ESP32-C3", size=1.1, fill="#ffffff", weight="bold")
     v.text(W / 2, 13.4, "SuperMini", size=1.1, fill="#ffffff", weight="bold")
-    v.text(W / 2, 15.8, "back (USB-C on the", size=0.78, fill="#ffffff")
-    v.text(W / 2, 17.1, "opposite face)", size=0.78, fill="#ffffff")
+    v.text(W / 2, 16.0, "back", size=0.9, fill="#ffffff")
     pins = {}
     for i in range(8):
         y = sm.PIN_TOP_Y + i * sm.PITCH
