@@ -64,6 +64,23 @@ jobs:
           export PATH="$HOME/.local/bin:$PATH"
           uv run --with pytest pytest firmware/tests -v
 
+      - name: Check out renode-espemu (to verify vendored decoder sync)
+        uses: actions/checkout@v4
+        with:
+          repository: mithro/renode-espemu
+          ref: feature/renode-433-air
+          path: renode-espemu
+
+      - name: Verify vendored Renode decoders match the firmware sources
+        # The cc1101_decode Renode suite compiles copies of firmware/decoders/*; they
+        # live in a separate repo the Renode job checks out, so guard against silent drift.
+        run: |
+          vendor=renode-espemu/peripherals/cc1101_decode/firmware/main/decoders
+          for f in decode_fineoffset.c decode_fineoffset.h decode_common.c decode_common.h; do
+            diff -u "firmware/decoders/$f" "$vendor/$f"
+          done
+          echo "vendored Renode decoders are byte-identical to firmware/decoders/"
+
   renode:
     name: Renode emulation tests
     runs-on: ubuntu-latest
