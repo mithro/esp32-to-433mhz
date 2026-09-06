@@ -10,13 +10,13 @@ ESP32 platform (~1 GB). Artefacts land in `firmware/dist/`:
 
 | File | Use |
 |---|---|
-| `tasmota32c3-cc1101-combined.factory.bin` | **preferred** first flash, at offset `0x0` — main firmware **plus** a populated safeboot fallback slot (button-free recovery from a bad OTA / corrupt app; see `RECOVERY.md`). Built by `tools/combine_safeboot.py`. |
-| `tasmota32c3-cc1101.factory.bin` | first flash, main app only (blank safeboot slot — no button-free fallback); use only if the combined image is unavailable |
+| `tasmota32c3-cc1101.factory.bin` | first flash, at offset `0x0`, over native USB. **Already includes a safeboot image** in the factory slot (Tasmota's build fetches `tasmota32c3-safeboot.bin` from ota.tasmota.com at build time and merges it), so button-free WiFi recovery from a failed OTA already works with this image. See `RECOVERY.md`. |
+| `tasmota32c3-cc1101-combined.factory.bin` | same as above **but with our own pinned safeboot** in the factory slot instead of the fetched-release one — reproducible, offline-buildable, source-audited from the same pinned Tasmota SHA. Boot-safety/reproducibility improvement, not a new recovery path. Built by `tools/combine_safeboot.py`. |
 | `tasmota32c3-cc1101.bin` | later updates, uploaded through the Tasmota web UI (Firmware Upgrade) |
 | `tasmota32c3-cc1101.elf` / `.map` | debugging (symbols, section sizes) |
 | `build-info.json` / `build-info-<env>.json` | Tasmota tag/SHA, build timestamp, artefact sizes (per built env) |
 
-To produce the combined image, build both envs then merge:
+To produce the pinned-safeboot combined image, build both envs then merge:
 `python3 build.py` (main) → `python3 build.py --env tasmota32c3-safeboot` → `python3 tools/combine_safeboot.py`.
 
 `build.py --overlay-only` just refreshes the copied-in overlay files without compiling;
@@ -33,9 +33,10 @@ ROM download mode the first time (board is blank or running something else):
 3. The board enumerates as `303a:1001`. On the deployment host a udev rule symlinks it to
    a stable `/dev/radio-cc1101-node-<serial>` name (see `docs/esp32c3-cc1101-node.md` for the
    USB mapping story).
-4. Flash the **combined factory** image at offset `0x0` (bootloader + partition table + safeboot +
-   main app — the only image that works on a blank/foreign chip, and the one that leaves a
-   button-free safeboot fallback for future recoveries):
+4. Flash a **factory** image at offset `0x0` (bootloader + partition table + safeboot + main app —
+   the only image that works on a blank/foreign chip). Either `tasmota32c3-cc1101.factory.bin`
+   (fetched-release safeboot) or, preferred for a reproducible pinned safeboot,
+   `tasmota32c3-cc1101-combined.factory.bin`:
 
        esptool.py --chip esp32c3 --port /dev/radio-cc1101-node-<serial> write_flash 0x0 \
            firmware/dist/tasmota32c3-cc1101-combined.factory.bin

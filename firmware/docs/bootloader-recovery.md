@@ -66,15 +66,16 @@ JTAG probe, no case opening.
    does **not** try its own reset dance (which the SuperMini's minimal auto-reset wiring may not
    support).
 3. **Reflash the factory image.** Always a `.factory.bin` (bootloader + partition table + app),
-   never the OTA `.bin`, because a dark node's flash/partitions are in an unknown state. Prefer the
-   **combined** image, which additionally populates the safeboot fallback slot (see the next
-   section) so subsequent recoveries need no BOOT button:
+   never the OTA `.bin`, because a dark node's flash/partitions are in an unknown state. Both
+   `.factory.bin`s include a populated safeboot slot (see the next section), so either supports
+   button-free WiFi recovery afterwards; prefer the **combined** image for a reproducible pinned
+   safeboot:
    ```
    esptool.py --chip esp32c3 --port <port> --before no_reset --after hard_reset \
        write_flash 0x0 firmware/dist/tasmota32c3-cc1101-combined.factory.bin
    ```
-   (`tasmota32c3-cc1101.factory.bin` — main app only, blank safeboot slot — also boots, but leaves
-   no button-free fallback; use it only if the combined image is unavailable.)
+   (`tasmota32c3-cc1101.factory.bin` works identically for recovery — its safeboot is just the
+   fetched-release build rather than our pinned one.)
    If sync still fails, first prove the ROM is alive with a full erase
    (`esptool.py --chip esp32c3 --port <port> --before no_reset erase_flash`), then write again.
    `--after hard_reset` reboots into the freshly flashed firmware; if the board has no auto-reset
@@ -93,20 +94,28 @@ BOOT-button dance above is only for a node that is dark or running unknown/forei
 
 ## Safeboot fallback — making the button-press the last one
 
-The BOOT-button path above always works, but it needs a human at the board. To remove the button
-from every recovery *except* a full USB brick, the node ships a **combined factory image**
-(`firmware/tools/combine_safeboot.py` → `tasmota32c3-cc1101-combined.factory.bin`) that populates
-two app slots at once:
+The BOOT-button path above always works, but it needs a human at the board. Recovery without the
+button relies on a **populated safeboot slot** — and, importantly, **the stock
+`tasmota32c3-cc1101.factory.bin` already has one**: Tasmota's build step
+(`pio-tools/post_esp32.py`) fetches `tasmota32c3-safeboot.bin` from `ota.tasmota.com` at build time
+and merges it into the factory slot of every `.factory.bin` (verified: byte @ `0x10000` is `0xE9`
+with a real ~800 KB app). So button-free WiFi recovery is available with the plain image; the flash
+layout is:
 
 | Partition | Offset | Contents | Role |
 |---|---|---|---|
 | `otadata` | `0x0E000` | boot_app0 (→ ota_0) | selects the main app by default |
-| `safeboot` (factory) | `0x10000` | stock Tasmota safeboot | minimal WiFi + web-OTA recovery image |
+| `safeboot` (factory) | `0x10000` | Tasmota safeboot | minimal WiFi + web-OTA recovery image |
 | `app0` (ota_0) | `0xE0000` | CC1101-node firmware | the normal firmware |
 
-The stock safeboot image is built from the **same pinned Tasmota tree** (env `tasmota32c3-safeboot`,
-no OTA_URL dependency) — its only job is to bring up WiFi and accept an OTA of the main app. CI
-builds it, merges it, and asserts both slots are populated (`test_combined_image.py`).
+**What the combined image adds.** `firmware/tools/combine_safeboot.py` produces
+`tasmota32c3-cc1101-combined.factory.bin`: the same layout, but with the factory slot holding a
+safeboot built from **our own pinned Tasmota SHA** (env `tasmota32c3-safeboot`) instead of the
+network-fetched release binary — reproducible, offline-buildable, and source-audited, consistent
+with the rest of this pinned build. It does **not** add a recovery path the stock image lacks; it
+removes a build-time dependency on an unpinned downloaded blob. CI builds it, swaps in the local
+safeboot, and asserts the factory slot holds *our* safeboot, not the fetched one
+(`test_combined_image.py`).
 
 **Why this layout needs safeboot for OTA at all (source-verified).** This partition table has a
 single OTA app partition (`ota_0`) plus the `factory` safeboot slot, so Tasmota's
@@ -114,29 +123,39 @@ single OTA app partition (`ota_0`) plus the `factory` safeboot slot, so Tasmota'
 cannot flash the running app in place: to update the main app it calls `EspPrepRestartToSafeBoot()`,
 which **erases otadata** so the next boot lands in the `factory` (safeboot) partition, and safeboot
 then flashes the new image into `ota_0` and sets otadata back. Consequences:
-- A **populated safeboot slot is required for OTA to work** here, not merely for recovery — the
-  main-only image (blank safeboot) would erase otadata and have no safeboot to boot into.
+- A **populated safeboot slot is required for OTA to work** here, not merely for recovery — a
+  hypothetical image with a blank factory slot would erase otadata and have no safeboot to boot
+  into. (Both `.factory.bin`s populate the slot, so this is a warning against ever shipping one
+  that doesn't, not a property of the current images.)
 - An OTA interrupted mid-flash leaves otadata erased → the node returns in **safeboot** (WiFi),
   where you simply re-upload. This is the button-free failed-OTA recovery below.
 
 **Honest recovery matrix** for a node flashed with the combined image:
 
+Every button-free row below recovers by **otadata selection** (an invalid/erased otadata makes the
+bootloader pick the `factory`/safeboot partition) or by **Tasmota's boot-loop counter**, *not* by
+the bootloader validating the app image — this build sets `CONFIG_BOOTLOADER_SKIP_VALIDATE_ALWAYS=y`
+(framework `sdkconfig`), so the bootloader boots whatever otadata selects **without checking it**.
+
 | Failure | Recovers without the BOOT button? | How |
 |---|---|---|
-| Failed / interrupted OTA of the main app | **Yes** | Tasmota does the main-app OTA *from* safeboot; an interrupted flash leaves otadata pointing at safeboot, so the node comes back up in safeboot → re-upload over WiFi. |
-| Corrupt `app0` image (bad magic/checksum) | **Yes** | The IDF bootloader rejects an invalid selected app and falls back to the `factory` (safeboot) partition → recover over WiFi. |
-| Blank `app0` / invalid `otadata` | **Yes** | Bootloader boots the `factory` (safeboot) partition. |
-| Main app boots "valid" but then misbehaves in a loop | **Partial** | Tasmota's fast-power-cycle recovery (RTC `fast_reboot_count`; power-cycle several times) resets settings. There is **no automatic revert of a bootloader-valid image** — see the limitation below. |
+| Failed / interrupted OTA of the main app | **Yes** | Tasmota does the main-app OTA *from* safeboot; the switch erases otadata (`EspPrepRestartToSafeBoot()`), so an interrupted flash boots `factory`/safeboot → re-upload over WiFi. Selection-based, not validation-based. |
+| Invalid / erased `otadata` | **Yes** | Bootloader selects the `factory` (safeboot) partition. |
+| Corrupt `app0` in place (otadata still valid) | **No (usually)** | With `SKIP_VALIDATE_ALWAYS=y` the bootloader boots `app0` **without checking it**, so a corrupt-in-place app is not rejected and does *not* fall back to safeboot. It only recovers if it happens to crash fast enough to trip the boot-loop counter below; otherwise it needs the BOOT button. |
+| Main app boots then crash-loops **fast** (within ~7 s of boot) | **Yes (auto)** | Tasmota counts fast reboots (RTC `fast_reboot_count`) and, with SetOption36≠0 (default **1**), after ~10 fast reboots calls `EspPrepSwitchPartition(0)` → reboots into safeboot (`tasmota.ino:653-661`). No button, no human. |
+| Main app hangs, or crashes **slowly** / too early to count | **Partial / No** | A hang or a crash later than ~7 s after boot does not increment the fast-reboot counter, and a crash before Tasmota's early boot-loop check never reaches it — neither auto-recovers. Fast-power-cycle the board (several quick power cycles) to force the counter, or use the BOOT button. |
 | Node dark / presents no USB (the power-cut brick) | **No** | Below the safeboot layer entirely — needs the BOOT button + ROM loader above. FIX-BOOTSAFE is the mitigation for *causing* this. |
 
 **Limitation — no IDF anti-rollback.** True bootloader auto-rollback
-(`CONFIG_BOOTLOADER_APP_ROLLBACK_ENABLE`, which would auto-revert a bootlooping *valid* image)
-lives inside the **precompiled** Arduino-framework second-stage bootloader, where it ships
-**disabled** (`# CONFIG_BOOTLOADER_APP_ROLLBACK_ENABLE is not set`). Enabling it would require
-rebuilding the framework/bootloader, which conflicts with the pinned-framework boot-safety
-constraint above and would not have prevented the power-cut brick anyway (that is below this layer).
-Safeboot therefore covers the *bad-OTA* and *corrupt-image* cases button-free, but not a
-valid-but-crashing image; for that, use the fast-power-cycle reset or the BOOT-button reflash.
+(`CONFIG_BOOTLOADER_APP_ROLLBACK_ENABLE`, which would mark a new app "pending-verify" and auto-revert
+a bootlooping *valid* image at the bootloader) lives inside the **precompiled** Arduino-framework
+second-stage bootloader, where it ships **disabled** (`# CONFIG_BOOTLOADER_APP_ROLLBACK_ENABLE is
+not set`, `sdkconfig:329`). Enabling it would require rebuilding the framework/bootloader, which
+conflicts with the pinned-framework boot-safety constraint above and would not have prevented the
+power-cut brick anyway (that is below this layer). So the button-free recovery here is Tasmota's
+otadata-erase + boot-loop-counter machinery, not bootloader validation/rollback: it covers a
+**failed OTA**, an **invalid otadata**, and a **fast crash-loop**, but **not** an in-place-corrupt
+`app0` or a slow crash/hang — those need the fast-power-cycle reset or the BOOT-button reflash.
 
 ## Files touched by this hardening
 
