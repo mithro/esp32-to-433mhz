@@ -314,33 +314,42 @@ Confirm the broker connection: `tele/<topic>/LWT` should read `Online`
 
 ## Live validation
 
-**Isolated round-trip: DONE (2026-09-08).** The full publish/receive round-trip was
-validated against a local `mosquitto 2.0.21` broker (the same broker software as the HA
-add-on) on an isolated NAT hotspot, to avoid touching production. Publish, receive and —
-critically - the rtl_433 add-on **script** published all 22 `homeassistant/sensor/.../config` discovery messages (to the local broker; no Home Assistant server consumed them, so HA-side entity creation itself was not observed - the add-on script stands in for it).
+**On the real production broker (`ha.welland.mithis.com`): DONE (2026-09-09).** blue
+(CC1101, `esp32-433mhz-cc1101-blue`) and sx (SX1278, `esp32-433mhz-sx1278`) are commissioned
+onto `ansells-iot` + the production `ha.welland.mithis.com:1883` Mosquitto broker (per-device
+`tas-<node_id>` logins). Both connect (`MqttCount>=1`, retained `tele/<host>/LWT Online`),
+decode the local Fine Offset WS69 (weather) and WH51 (soil moisture) sensors — to identical
+values, cross-validating each other on-air — and publish:
 
-The **criterion-(e) sensor entities** are created only by the rtl_433 add-on
-(`rtl_433_mqtt_hass.py`) consuming `rtl_433/+/events` and publishing
-`homeassistant/.../config` — **not** by Tasmota's native device discovery. Tasmota's own
-`tasmota/discovery/<mac>/config` (`SetOption19`) surfaces the *Tasmota device itself* in
-HA and is a separate system: it is not the weather/moisture sensor integration criterion
-(e) is about, so it is not evidence for (e).
+- the rtl_433-shaped **events** JSON to `rtl_433/nodes/<host>/events`;
+- **native HA MQTT Discovery** (this firmware, `CcHassDisc` default on): per-field state +
+  `homeassistant/sensor/.../config`. **Home Assistant auto-created 10 live entities**,
+  confirmed via the HA states API: `sensor.fineoffset_ws69_174_{temperature, humidity,
+  wind_speed, wind_gust, wind_direction, rain}` and two WH51 `{moisture, battery_voltage}` —
+  with HA unit-converting wind m/s -> the dashboard's km/h from the `wind_speed` device_class.
+- Tasmota's own `tasmota/discovery/<mac>/config` (`SetOption19`) additionally surfaces each
+  **node** in HA (14 entities/node); that is the device itself, separate from the sensor
+  entities above.
 
-Full **topology-A** path validated: blue (`CcHass 0`) -> `rtl_433/nodes/<host>/events` ->
-the project aggregator (`rf433_aggregate.py`, `site=test`) -> `rtl_433/test/events` -> the
-real rtl_433 `rtl_433_mqtt_hass.py` add-on -> **22 `homeassistant/sensor/.../config`
-entity configs** were created: WS69 id 174 (temperature, humidity, wind dir/speed/gust,
-rain, UV, UV-index, lux, battery, rssi) and WH51 0f5d7f (moisture, battery, mV, rssi).
-**Topology B** was also validated: a state-changing command over MQTT,
-`cmnd/<topic>/CcHass 1`, returned `stat/<topic>/RESULT {"CcHass":1,"EventsTopic":"rtl_433/<host>/events"}` and events then flowed on the direct three-level topic that
-`rtl_433/+/events` matches. The `tele/SENSOR`/`STATE`/`LWT` publishes and a
-`cmnd/<topic>/CcStatus` -> `stat/<topic>/RESULT` round-trip were confirmed too.
+A `cmnd/<topic>/CcStatus` -> `stat/<topic>/RESULT` command round-trip and the `tele/SENSOR`/
+`STATE`/`LWT` publishes were confirmed on the same broker.
 
-Honest caveat: this all ran against a **local** `mosquitto` on the isolated hotspot,
-**not** the literal `ha.welland.mithis.com:1883` instance (that broker was only confirmed
-reachable from the boards' network path). Connecting to the real broker remains the
-production-rollout step below. Full log and message captures are in [`HWTEST-RESULTS-cc1101.md`](HWTEST-RESULTS-cc1101.md)
-("MQTT round-trip" section).
+**Dual-receiver note.** A sensor's discovery config is keyed by `model`+`id`, so one physical
+sensor is one HA device (not one per receiver). Its `stat_t`/`avty_t`, however, name a single
+node. If two nodes hear the *same* sensor (e.g. a bench with both boards side by side), the
+last config published wins and the entity tracks that node's state topic and LWT availability.
+The intended topology is one node covering a given sensor's area; geographically separated
+nodes (the normal case) decode disjoint sensor sets and never collide.
+
+**Earlier isolated validation (2026-09-08), superseded but retained for the add-on path.**
+Before the real-broker rollout, the publish/receive round-trip and the *alternative* rtl_433
+add-on discovery path were validated against a local `mosquitto 2.0.21` on an isolated NAT
+hotspot: blue (`CcHass 0`) -> `rtl_433/nodes/<host>/events` -> the project aggregator
+(`rf433_aggregate.py`, `site=test`) -> `rtl_433/test/events` -> `rtl_433_mqtt_hass.py` ->
+**22 `homeassistant/sensor/.../config`** entity configs (WS69 incl. uv/uvi/lux/rssi, WH51). That
+add-on path remains an alternative for estates already running the add-on, but is **not**
+required now that the node self-publishes discovery. Full captures are in
+[`HWTEST-RESULTS-cc1101.md`](HWTEST-RESULTS-cc1101.md) ("MQTT round-trip" section).
 
 **Production rollout** (connecting to the real HA broker) still needs, per site:
 
