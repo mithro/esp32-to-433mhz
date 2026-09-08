@@ -400,11 +400,17 @@ by opening the CDC port / esptool), where the DTR/RTS line state at the reset ed
 a true cold power-on (`rst:0x1`). Green's failure is specifically on the **cold power-on** path;
 it can be coaxed into the app via host-driven resets, which is why the earlier stage passed.
 
-**Open question / limit of this analysis:** the GPIO9 rewire (commit `3dca9ff`, moving the
-position-4 signal off GPIO9) fixed *blue* but did **not** fix *green*, so "slow-rising BOOT
-line on this unit" remains the best-supported explanation but is not independently proven (it
-would need a scope on green's GPIO9 during power-up). What is firmly established is that the
-cause is upstream of firmware. The overlay guardrails deliberately forbid the eFuse burns
-(disable-ROM-download) that could mask it, at the cost of USB recoverability. The CC1101
-functional path is fully proven on blue, which runs the identical image; green is a second
-CC1101 whose board will not cold-boot.
+**Open question / limit of this analysis:** what is firmly established is that the cause is
+**upstream of firmware** — the ROM decides download vs flash-boot from the GPIO9 strap before
+any application code runs, so no code change can alter it. The *specific* mechanism was **not
+determined this session** and needs physical inspection I cannot do remotely: green's
+position-4 wiring was not re-measured, so it is unknown whether green still routes its
+position-4 radio signal to GPIO9 (in which case green needs the same GPIO9->GPIO1 rewire that
+blue received — a wiring step the firmware pin-map change in commit `3dca9ff` assumes) or
+whether a slow-rising BOOT line on that unit is responsible. Either way it is not an
+application-firmware defect, but the outstanding action is to **verify/redo green's position-4
+GPIO9->GPIO1 rewire and re-test a cold boot** (and, if still failing, scope GPIO9 during
+power-up) — not to change firmware. The overlay guardrails deliberately forbid the eFuse burns
+(disable-ROM-download) that could mask a strap problem, at the cost of USB recoverability. The
+CC1101 functional path is fully proven on blue, which runs the identical image; green is a
+second CC1101 board pending that rewire check.
