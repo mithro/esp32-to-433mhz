@@ -302,57 +302,109 @@ override is now a shipped default, not a manual poke.
 To exercise MQTT without touching the production broker, `rpi5-433mhz`'s `wlan0` was turned
 into a NAT hotspot (`cc1101-test`, 2.4 GHz, `ipv4.method=shared`, gateway `10.42.0.1`) and a
 local `mosquitto 2.0.21` broker was run on it (same broker software as the HA add-on). Blue
-joined at `10.42.0.99` and was pointed at `10.42.0.1:1883` with `SetOption19 1` (HA
-discovery). Captured with `mosquitto_sub -v -t '#'`:
+joined at `10.42.0.99` and was pointed at `10.42.0.1:1883`. Captured with
+`mosquitto_sub -v -t '#'`.
 
 **Publish** (device -> broker):
-- `rtl_433/nodes/cc1101-node-8C3EB8-7864/events` — decoded sensor JSON (WS69 & WH51),
-  matching the existing rtl_433 -> HA topic convention.
-- `tasmota/discovery/E83DC18C3EB8/config` and `.../sensors` — native Tasmota HA
-  autodiscovery.
+- `rtl_433/nodes/cc1101-node-8C3EB8-7864/events` — decoded sensor JSON (WS69 & WH51), the
+  rtl_433-shaped envelope the HA path consumes.
 - `tele/cc1101-node_8C3EB8/SENSOR` (with the `CC1101` status block), `STATE`, retained
   `LWT = Online`, `INFO1..3`.
+- `tasmota/discovery/E83DC18C3EB8/config` — this is Tasmota's **native device** discovery
+  (it surfaces the Tasmota node itself), **not** the weather/moisture sensor entities. The
+  sensor entities are created by the rtl_433 add-on, proven separately below. (An earlier
+  draft of this section wrongly implied `SetOption19`/`tasmota/discovery` was the HA sensor
+  integration and that `SetOption19 1` was set; the capture in fact showed `SetOption19 0`.
+  The two discovery systems are unrelated; corrected here.)
+
+**End-to-end HA sensor autodiscovery (topology A).** The full path was then run in isolation
+with the project aggregator and the real rtl_433 add-on script: blue (`CcHass 0`) ->
+`rtl_433/nodes/<host>/events` -> `rf433_aggregate.py` (site `test`) -> `rtl_433/test/events`
+-> `rtl_433_mqtt_hass.py` (subscribed `rtl_433/+/events`) -> **22 `homeassistant/sensor/.../config`
+entity configs** were created — WS69 `id174` (temperature, humidity, wind dir/speed/gust, rain,
+UV, UV-index, lux, battery, rssi) and WH51 `0f5d7f` (moisture, battery, mV, rssi). These are
+exactly the HA entities the estate's `rtl433-mqtt-autodiscovery` add-on would create in
+production.
 
 **Receive** (broker -> device):
-- `cmnd/cc1101-node_8C3EB8/CcStatus` (driver command) -> `stat/cc1101-node_8C3EB8/RESULT`
-  with the full `CcStatus` JSON.
-- `cmnd/cc1101-node_8C3EB8/Status` -> `stat/cc1101-node_8C3EB8/STATUS`.
+- read-only query: `cmnd/cc1101-node_8C3EB8/CcStatus` -> `stat/cc1101-node_8C3EB8/RESULT`
+  with the full `CcStatus` JSON (live counters matching concurrent telemetry, so the handler
+  genuinely ran); `cmnd/.../Status` -> `stat/.../STATUS`.
+- **state-changing** command: `cmnd/cc1101-node_8C3EB8/CcHass 1` ->
+  `stat/.../RESULT {"CcHass":1,"EventsTopic":"rtl_433/cc1101-node-8C3EB8-7864/events"}`; events
+  then flowed on the direct 3-level topic (topology B), which `rtl_433/+/events` sees directly.
 
-This proves the firmware publishes the exact message shapes HA consumes and acts on commands
-delivered over MQTT. The real `ha.welland.mithis.com:1883` broker was confirmed reachable
-(TCP open) from the boards' NAT path; production rollout (device on `ansells-iot`, per-device
-`tas-<node_id>` credential via `gdoc2netcfg tasmota configure` + `register-broker`) is the
-operational step documented in `mqtt-home-assistant.md`.
+This proves the firmware publishes the exact message shapes HA consumes, drives real HA entity
+creation through the standard add-on, and acts on both query and mutating commands delivered
+over MQTT.
+
+**Scope / what is NOT yet proven:** this used a **local** mosquitto broker on an isolated
+hotspot, not the literal `ha.welland.mithis.com` instance, and no Home Assistant server was in
+the loop (the add-on script stands in for it). The real broker was confirmed reachable
+(TCP `1883` open) from the boards' NAT path. Connecting a node to the real broker — device on
+`ansells-iot`, per-device `tas-<node_id>` credential via `gdoc2netcfg tasmota configure` +
+`register-broker` — is the production rollout step (documented in `mqtt-home-assistant.md`),
+deliberately not performed here to avoid unilateral changes to the production sheet/broker.
 
 ## Inter-receiver cross-check (criterion b)
 
-Blue (CC1101) and the SX1278 (RA-02) node were captured simultaneously over 90 s. Both
-independently decoded the same weather station with identical values — WS69 `id174` at
-18.9 °C then 19.0 °C on both radios — confirming two different RF front-ends agree through the
-shared decoder. The SX1278 additionally decoded four distinct WH51 moisture probes
+Blue (CC1101) and the SX1278 (RA-02) node were captured simultaneously over ~90 s. Four WS69
+`id174` frames were **byte-for-byte identical across every decoded field on both radios**
+(e.g. `wind_dir_deg 97, wind_avg 1.1, wind_max 1.5, uv 2619, light_lux 87635.0, hum 47,
+temp 18.9`), differing only in RSSI (blue ~-68..-70 dBm, SX ~-88..-90 dBm) — two different RF
+front-ends agreeing. The SX1278 additionally decoded four distinct WH51 moisture probes
 (`0f5c54` 36 %, `0f5d66` 37 %, `0f5d7f` 35 %, `0f4b37` 24 %), demonstrating multi-sensor
-reception. Pluto SDR reception of the same WH51 transmissions was previously confirmed by
-correlation (SNR 34-39 dB); a byte-level software demod from Pluto IQ remains an open DSP
-item and is not required for firmware correctness.
+reception.
 
-## Green board: boot characterisation (hardware, not firmware)
+**Honest limits of this cross-check** (raised by adversarial review):
+- It is **self-referential for the decoder**: both nodes compile the *same* `decode_fineoffset.c`,
+  so identical output validates the RF front-ends + SPI/driver, **not** the decoder's
+  correctness (a decoder bug would produce identical wrong output on both). An independent
+  oracle — rtl_433 on an RTL-SDR, a Pluto byte-decode, or the site's own rtl_433 pipeline —
+  is not part of this evidence. (The decoder itself is separately checked in host tests against
+  real captured frames with CRC, but that is not an on-air cross-receiver check.)
+- The WH51 moisture readings were decoded by the **SX node only** in this window; blue logged
+  no WH51 in the same span (it is capable — `fineoffset-fsk` mode, non-zero `Decoded`), so the
+  moisture sensors are received but **not inter-receiver cross-checked** here.
+- **Pluto** reception of the WH51 transmissions was confirmed by energy/SNR correlation
+  (SNR 34-39 dB) but **not** by byte-level decode; a software demod from Pluto IQ remains an
+  open DSP item. Criterion (b)'s "cross-check against the pluto SDR" is therefore only partially
+  met (reception, not decode).
 
-Green (`E8:3D:C1:8C:4F:D8`, D-SUN CC1101) does not run its application after a clean power-on;
-it lands in ROM download (`boot:0x5`). This was established to be a board-level trait, **not**
-a firmware defect, by direct evidence:
+## Green board: boot characterisation (a power-on strap problem, not the application image)
 
-- Green's flash is **byte-identical** to blue's working image: `esptool verify_flash 0x0
-  tasmota32c3-cc1101-bwfix.factory.bin` -> `verify OK (digest matched)`.
-- On one true VDD power cycle (RP1 GPIO42 VBUS cut, 8 s), on the same USB hub, **blue's app
-  runs and associates to the AP at t+0 s while green never associates in 45 s.** Same
-  firmware, same power event, opposite result.
+Green (`E8:3D:C1:8C:4F:D8`, D-SUN CC1101) does **not** run its application after a clean VDD
+power-on; it lands in ROM download (`boot:0x5`). The evidence points to the GPIO9/BOOT strap
+being sampled low at the reset edge — a decision the ROM makes **before any firmware runs**, so
+the application code cannot be the cause:
+
+- **The load-bearing argument:** boot mode (flash-boot vs download) is chosen by the ROM from
+  the GPIO9 strap at the reset edge, before the app is even read from flash. No application
+  code can change that outcome.
+- **Discriminating test:** on one true VDD power cycle (RP1 GPIO42 VBUS cut, 8 s), on the same
+  USB hub, **blue's app runs and associates to the AP at t+0 s while green never associates in
+  45 s.** Same firmware image, same power event, opposite result — isolating a *per-unit*
+  difference, not a firmware difference.
+- Green's flash is byte-identical to blue's working image (`esptool verify_flash 0x0 … ->
+  verify OK (digest matched)`). Note this only rules out a *corrupt/divergent application
+  image*; it does not itself bear on download-mode entry (which is decided before flash is
+  read). It is listed as corroboration, not as the primary argument.
 - Green's eFuses are all default (`DIS_FORCE_DOWNLOAD`, `DIS_DOWNLOAD_MODE`,
   `DIS_USB_SERIAL_JTAG_DOWNLOAD_MODE` all `False`) — nothing forces download.
 - GPIO9 reads high in the ROM stub; a controlled DTR-held/RTS-pulsed app-boot reset still
   lands in download.
 
-The ROM samples the GPIO9 (BOOT) strap before any firmware runs, so firmware cannot influence
-this; the symptom is consistent with a slow-rising BOOT line on that unit. The firmware
-already routes its position-4 signal off GPIO9 (commit `3dca9ff`), and the overlay guardrails
-deliberately forbid the eFuse burns (disable-ROM-download) that would mask it at the cost of
-USB recoverability. The CC1101 path is fully proven on blue, which runs the identical image.
+**Reconciling the earlier (2026-09-05) green PASS:** Stage 3 above shows green booting and
+running the app repeatedly — but those were **USB-host-mediated resets** (`rst:0x15`, triggered
+by opening the CDC port / esptool), where the DTR/RTS line state at the reset edge differs from
+a true cold power-on (`rst:0x1`). Green's failure is specifically on the **cold power-on** path;
+it can be coaxed into the app via host-driven resets, which is why the earlier stage passed.
+
+**Open question / limit of this analysis:** the GPIO9 rewire (commit `3dca9ff`, moving the
+position-4 signal off GPIO9) fixed *blue* but did **not** fix *green*, so "slow-rising BOOT
+line on this unit" remains the best-supported explanation but is not independently proven (it
+would need a scope on green's GPIO9 during power-up). What is firmly established is that the
+cause is upstream of firmware. The overlay guardrails deliberately forbid the eFuse burns
+(disable-ROM-download) that could mask it, at the cost of USB recoverability. The CC1101
+functional path is fully proven on blue, which runs the identical image; green is a second
+CC1101 whose board will not cold-boot.
