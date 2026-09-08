@@ -32,6 +32,34 @@ download on green vs 0xd flash on blue), decided in mask ROM before any firmware
 a firmware defect (see [`esp32c3-cc1101-node.md`](esp32c3-cc1101-node.md) and the adapter GPIO9
 pull-up on `main`).
 
+## Pluto SDR cross-check (criterion b) — investigation and status (2026-09-09)
+
+The `rpi-sdr-pluto` PlutoSDR is intended as a fourth, independent cross-check receiver. It does
+**not** currently decode the 433.92 MHz sensors, and the investigation localises the cause to its
+RF front-end, not the firmware or the SDR capture/decode path:
+
+- The Pluto's single RX input (`A_BALANCED`, the only selectable port — `B/C_BALANCED` and the
+  `TX_MONITOR` ports return "cannot select") carries a **GPS-tuned antenna**: the host runs
+  `gnss-sdr` decoding GPS L1 at 1575.42 MHz on that same input. A GPS antenna (resonant at
+  1575 MHz, or active with a 1575 MHz SAW filter + LNA) does not pass 433 MHz.
+- Proven across ~12 methods, all giving **0 decodes**: the reference decoder `rtl_433` finds 0
+  frames of **any** protocol in 40 s; a frequency-agnostic per-burst decoder (handles the sensor
+  crystal offset) finds 0; every LO offset and gain, all RX ports, a full Pluto reboot, and
+  freeing the device from `gnss-sdr` — all 0. **Controlled test:** `sx` transmitting 16 strong,
+  co-located, Fine-Offset-format 2-FSK frames (`SxFskTx` — the same output the rpi5-SPI CC1101
+  decoded 15/15) during a Pluto capture → 0 decoded. When the reference tool fails identically on
+  the same samples and a strong local transmitter is not received, the signal is not reaching the
+  ADC; two self-caused setup bugs found and fixed en route (the device was held by `gnss-sdr`; an
+  earlier demod assumed the sensor was exactly on 433.92 rather than crystal-offset).
+- The Pluto is frequency-accurate (GPS L1 decodes), so its tuning/XO is correct — only the 433 RF
+  path is the limit.
+
+**To complete this cross-check:** connect a passive 433 MHz antenna to the Pluto's RX SMA (bypassing
+the GPS antenna), then run `pluto_smartdecode.py` (frees GPS, captures, decodes at the sensor's real
+frequency, restores GPS) and compare byte-for-byte to blue/sx. Independently of the Pluto, the
+firmware decodes are already cross-validated three ways: blue (CC1101) ↔ sx (SX1278) byte-identical
+on-air, the rpi5-SPI CC1101 `~/wh51-watch` (a different chip + decoder), and Home Assistant ingestion.
+
 ---
 
 ## On-hardware bench validation (2026-09-05)
