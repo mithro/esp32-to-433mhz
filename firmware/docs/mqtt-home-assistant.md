@@ -6,14 +6,14 @@ This is the reference for goal criterion (e) — *"correctly publishing and
 receiving messages with the Home Assistant MQTT setup"*.
 
 > **Status (updated 2026-09-08).** Code + host tests are done and green
-> (`firmware/tests/test_mqtt_shape.py`, part of the 135-test suite). The full
-> publish/receive path — including rtl_433 -> Home Assistant **sensor** entity
-> creation (`homeassistant/sensor/.../config`) for both topologies — is
-> **verified in isolation** against a local Mosquitto broker on a NAT hotspot
-> (see [Live validation](#live-validation)). What remains is the **production
-> rollout**: connecting to the real broker at `ha.welland.mithis.com:1883`,
-> which needs the WiFi SSID/pass and a per-device Mosquitto credential. Record
-> the real-broker result in [`HWTEST-RESULTS-cc1101.md`](HWTEST-RESULTS-cc1101.md).
+> (`firmware/tests/test_mqtt_shape.py` + `test_hass.py`, part of the 146-test suite).
+> **Done on the real production broker (2026-09-09):** blue (CC1101) and sx (SX1278)
+> are commissioned onto `ha.welland.mithis.com:1883`; the node's **native HA MQTT
+> Discovery** (`CcHassDisc`, default on) self-publishes `homeassistant/sensor/.../config`
+> + per-field state, and **Home Assistant auto-created 14 weather/moisture entities**
+> (see [Live validation](#live-validation) and
+> [`HWTEST-RESULTS-cc1101.md`](HWTEST-RESULTS-cc1101.md)). The per-node commissioning
+> steps are under [Production rollout](#production-rollout) below.
 
 ## Architecture
 
@@ -351,7 +351,8 @@ add-on path remains an alternative for estates already running the add-on, but i
 required now that the node self-publishes discovery. Full captures are in
 [`HWTEST-RESULTS-cc1101.md`](HWTEST-RESULTS-cc1101.md) ("MQTT round-trip" section).
 
-**Production rollout** (connecting to the real HA broker) still needs, per site:
+**Production rollout** (connecting to the real HA broker) is **done for blue + sx** (see Live
+validation above). The same two inputs are needed to commission each additional node:
 
 1. **WiFi** — SSID + passphrase for the `ansells-iot` network the node joins.
 2. **MQTT broker credential** — the per-device `tas-<node_id>` Mosquitto login on

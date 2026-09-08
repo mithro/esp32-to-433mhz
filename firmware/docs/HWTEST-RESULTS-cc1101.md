@@ -1,4 +1,40 @@
-# On-hardware bench validation — Plan B Tasmota firmware (2026-09-05)
+# On-hardware bench validation — Plan B Tasmota firmware
+
+## Real production broker (ha.welland) + native HA discovery — 2026-09-09
+
+Criterion (e) closed on the **real** production broker (this supersedes the isolated-broker
+round-trip recorded further below, which stood in before credentials/WiFi were available).
+
+- **blue** (CC1101, `esp32-433mhz-cc1101-blue`, `10.1.90.183`) and **sx** (SX1278,
+  `esp32-433mhz-sx1278`, `10.1.90.71`) commissioned onto `ansells-iot` + `ha.welland.mithis.com:1883`
+  with per-device `tas-<node_id>` logins (via `gdoc2netcfg tasmota register-broker`/`configure`).
+  Both connect: `Status 6` shows `MqttHost:ha.welland.mithis.com`, `MqttCount:1`, and a retained
+  `tele/<host>/LWT = Online`.
+- **Live weather + moisture on the broker.** Subscribing to the broker (as the node's own login)
+  captured both nodes publishing `rtl_433/nodes/<host>/events` — the same Fine Offset WS69 (id 174:
+  12.4 °C, 72 %RH, wind, rain) and WH51 (soil moisture, `mic:CRC`) frames, decoded to **identical
+  values on both radios**, cross-validating each other on-air.
+- **Native HA MQTT Discovery → entities auto-created.** With `CcHassDisc` on (default), the nodes
+  self-published `homeassistant/sensor/.../config` + per-field state; **Home Assistant auto-created
+  14 sensor entities**, confirmed by querying the HA states API: `sensor.fineoffset_ws69_174_{temperature,
+  humidity, wind_speed, wind_gust, wind_direction, rain, battery_ok}` and, for two soil sensors,
+  `sensor.fineoffset_wh51_0f4b37_{moisture, battery_voltage, battery_ok}` +
+  `sensor.fineoffset_wh51_0f5d7f_{…}`. HA unit-converted wind m/s → km/h from the `wind_speed`
+  device_class (proof the discovery metadata is semantically correct). Tasmota's own device
+  discovery (`SetOption19`) additionally surfaced each node as a device (14 entities/node).
+- **RECEIVE round-trip** on the same broker: `cmnd/<topic>/CcStatus` → `stat/<topic>/RESULT` returned
+  the driver JSON.
+- **CI (PR #1)**: Build + Host tests + **Renode emulation** jobs all green on this branch head.
+
+Boot-mode note for green: green is byte-identical firmware to blue but its ESP32-C3 board boots
+ROM download on power-on — JTAG-proven a GPIO9 reset-edge strap decision (`GPIO_STRAP_REG` = 0x5
+download on green vs 0xd flash on blue), decided in mask ROM before any firmware runs, so it is not
+a firmware defect (see [`esp32c3-cc1101-node.md`](esp32c3-cc1101-node.md) and the adapter GPIO9
+pull-up on `main`).
+
+---
+
+## On-hardware bench validation (2026-09-05)
 
 Validates the CC1101 Tasmota firmware overlay (`firmware/src/xdrv_95_cc1101.ino`, built from
 `firmware/build.py` against pinned Tasmota v15.5.0) on two
@@ -263,7 +299,7 @@ Validated on blue at 325 kHz (90 s): **Decoded=10, Rx=14**, byte-exact with the 
 | Fineoffset-WH51 | 0f5d7f | moisture 38%, ad_raw 198 | -75 dBm |
 
 Committed in `cc1101_presets.c`; `test_presets.py` passes 325 kHz into the reference math so the
-preset still matches `cc1101.py` register-for-register outside PKTCTRL0. The full host suite passes (135 tests; the ~36 preset/decoder/weather tests are the directly affected subset).
+preset still matches `cc1101.py` register-for-register outside PKTCTRL0. The full host suite passes (146 tests; the ~36 preset/decoder/weather tests are the directly affected subset).
 
 Known refinement (raised by adversarial review): FSCTRL1 (IF ≈ 152 kHz) was left unchanged, so with the wider 325 kHz filter the IF now sits just below BW/2. It decodes cleanly on hardware (10/10 above), but TI SmartRF guidance raises FREQ_IF when the channel filter is widened this far — a future pass could bump it for extra low-frequency margin.
 

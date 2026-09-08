@@ -1,6 +1,15 @@
 # Final on-hardware validation runbook (closes criteria b & e)
 
-Everything code-side is done, hardened, and CI-green. **Status update (2026-09-08):** the core on-hardware validation is DONE - blue (CC1101) and the RA-02 (SX1278) both decode WS69 + WH51 live and were cross-checked (see [`HWTEST-RESULTS-cc1101.md`](HWTEST-RESULTS-cc1101.md)); the MQTT publish/receive + HA-autodiscovery round-trip is validated against a **local** broker; and SX1278 FSK TX is confirmed on-air. The genuinely-open items are: the **real ha.welland** MQTT rollout, **green's cold-boot** (green boots ROM download on a clean power-on - a strap/rewire issue upstream of the app, not a firmware defect), a clean **OOK live-decode**, and the **Pluto byte-decode**. This runbook stays the per-node commissioning sequence; blue and the RA-02 are already validated.
+Everything code-side is done, hardened, and CI-green. **Status update (2026-09-09):** the core
+on-hardware validation is DONE - blue (CC1101) and the RA-02 (SX1278) both decode WS69 + WH51 live
+and were cross-checked (see [`HWTEST-RESULTS-cc1101.md`](HWTEST-RESULTS-cc1101.md)); **criterion (e)
+is closed on the real `ha.welland.mithis.com` broker** — blue + sx are commissioned onto it, and the
+node's **native HA MQTT Discovery** made Home Assistant auto-create 14 weather/moisture entities
+(verified via the HA states API); and SX1278 FSK TX is confirmed on-air. The genuinely-open items
+are all **hardware/external**, not firmware: **green's cold-boot** (JTAG-proven GPIO9 reset-edge
+strap in mask ROM, upstream of the app — needs the adapter GPIO9 pull-up), the **SX1278 OOK** path
+(RA-02 socket does not route DIO2), and the **Pluto byte-decode** (an rtl_433↔PlutoSDR CS16
+integration issue in the SDR tool). This runbook stays the per-node commissioning sequence.
 
 Hosts: build/git on `desktop.buddy.mithis.com` (`~/esp32-to-433mhz-fw`, branch `add-tasmota-firmware`). Flash/console on `rpi5-433mhz` (`ssh tim@ipv4.eth0.rpi5-433mhz.iot.welland.mithis.com`). Firmware image: `firmware/dist/tasmota32c3-cc1101-combined.factory.bin` (main app + our pinned safeboot; rebuild with `python3 firmware/build.py && python3 firmware/build.py --env tasmota32c3-safeboot && python3 firmware/tools/combine_safeboot.py`). Both `.factory.bin`s ship a safeboot slot, so after this one BOOT-press, later recoveries from a *failed OTA* are button-free over WiFi (the combined image just uses our pinned safeboot instead of the fetched-release one) — see `firmware/docs/bootloader-recovery.md` → "Safeboot fallback" for what is and isn't auto-recovered.
 
@@ -26,7 +35,7 @@ Optional: verify the safeboot fallback is present by uploading a bad OTA later a
 ## 3. Validate (b) — CC1101 on-radio decode (DONE for blue 2026-09-08; re-run to re-confirm)
 - `CcStatus` → `Present:1 PARTNUM:0x00 VERSION:0x14`; `CcReg 0x08` → `0x02` (infinite-length FSK RX active).
 - Capture the console several minutes → confirm decoded **Fineoffset-WS69 id 174** (valid float temperature_C/wind/rain) and **Fineoffset-WH51** (a live id, moisture/battery). No `*float*`.
-- Cross-check the same window against rpi5 `~/wh51-watch/lilygo.hits.jsonl` + `cc1101.hits.jsonl` (always-on reference receivers): same ids/values. This closes (b) for CC1101 on **blue** (done 2026-09-08); SX1278 already proven (WAVE-A2/FIX-A). Both CC1101 boards share one template-driven binary, but **green does not cold-boot its app** (it boots ROM download - see the HWTEST green section), so green is pending a rewire re-test.
+- Cross-check the same window against rpi5 `~/wh51-watch/lilygo.hits.jsonl` + `cc1101.hits.jsonl` (always-on reference receivers): same ids/values. This closes (b) for CC1101 on **blue** (done 2026-09-08); SX1278 FSK RX + TX are already proven on-air (see the SX1278 entries in [`HWTEST-RESULTS-cc1101.md`](HWTEST-RESULTS-cc1101.md) and [`esp32c3-cc1101-node.md`](esp32c3-cc1101-node.md)). Both CC1101 boards share one template-driven binary, but **green does not cold-boot its app** (JTAG-proven GPIO9 reset-edge strap in mask ROM - see the HWTEST green section), so green is pending the adapter GPIO9 pull-up.
 
 ## 4. Pluto cross-check (b) — status + user decision
 The Pluto (`rpi-sdr-pluto`) is a single tuner shared with the GPS-SDR session. Its RX hardware is **proven good** (2026-09-06): after a genuine VDD mains power-cycle, (i) the GPS session acquired 6 satellites through it, and (ii) a wide-IQ FFT (`pluto_fdiag.py`, SoapySDR, staged on `rpi-sdr-pluto`) shows the 433.92 MHz Fine Offset weather/moisture carrier at **~44 dB over noise** — reception is not the problem.
