@@ -286,7 +286,7 @@ Confirm the broker connection: `tele/<topic>/LWT` should read `Online`
 **Isolated round-trip: DONE (2026-09-08).** The full publish/receive round-trip was
 validated against a local `mosquitto 2.0.21` broker (the same broker software as the HA
 add-on) on an isolated NAT hotspot, to avoid touching production. Publish, receive and —
-critically — the rtl_433 -> Home Assistant **sensor** entity creation all passed.
+critically - the rtl_433 add-on **script** published all 22 `homeassistant/sensor/.../config` discovery messages (to the local broker; no Home Assistant server consumed them, so HA-side entity creation itself was not observed - the add-on script stands in for it).
 
 The **criterion-(e) sensor entities** are created only by the rtl_433 add-on
 (`rtl_433_mqtt_hass.py`) consuming `rtl_433/+/events` and publishing

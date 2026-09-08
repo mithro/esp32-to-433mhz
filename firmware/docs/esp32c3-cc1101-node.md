@@ -19,8 +19,8 @@ JSON + `RfReceived` to MQTT (and the same over its native-USB console).
 > *foundation* (detect / register-I/O / radio selection), the CC1101 OOK + FSK
 > weather + decoder functionality, and the **SX1278 (RA-02) Fine Offset FSK
 > receive path** (weather parity with the CC1101 — see the section below). The
-> SX1278 FSK **transmit** is now implemented (host-tested + radio-level confirmed;
-> on-air reception not yet confirmed, see below). SX1278 OOK TX and OOK/LoRa RX are
+> SX1278 FSK **transmit** is now implemented and **confirmed on-air** (15/15 independent
+> decode at +2 dBm, see below). SX1278 OOK TX and OOK/LoRa RX are
 > still future work (OOK-continuous
 > RX also needs a DIO2 wire this adapter does not route); `sx1278_radio.cpp`
 > currently implements only the Fine Offset FSK-RX path.
@@ -34,8 +34,9 @@ repo (github.com/mithro/433mhz, `docs/.../2026-08-20-esp32c3-cc1101-tasmota-desi
 
 One firmware binary (`tasmota32c3-cc1101.bin`) runs on every node regardless of
 which radio is fitted; `Radio auto|cc1101|sx1278` selects the active radio at
-boot (auto-detected from a board-type strap) and the Tasmota template assigns the
-physical pins — there is no separate build per radio family.
+boot and the Tasmota template assigns the physical pins — there is no separate build
+per radio family. (Board-type-strap auto-detection is implemented but was not exercised
+on hardware; every on-hardware session used explicit `Radio cc1101`/`sx1278`.)
 
 The two radio families are **not** at full functional parity, by design/hardware
 constraint rather than by an unclosed code gap:
@@ -43,16 +44,20 @@ constraint rather than by an unclosed code gap:
 | Capability | CC1101 (blue E07 / green D-SUN) | SX1278 (Ra-02) |
 |---|---|---|
 | Fine Offset FSK RX (WS69/WH65B, WH51) | Yes | Yes — same `fineoffset_decode()` decoder as the CC1101 path |
-| Fine Offset FSK RX (WS85, >=28 B frame) | **Not over-air** — the frame exceeds the CC1101's 25-byte fixed packet, so the WS85 branch is unreachable on this RX path (decoder host-tested only) | Yes — 30-byte packet fits WS85 |
-| OOK-PWM remote RX | Yes | **No** — OOK-continuous RX needs the SX127x **DIO2/DATA** pin, which this RA-02 adapter does not route |
+| Fine Offset FSK RX (WS85, >=28 B frame) | **Not over-air** — the frame exceeds the CC1101's 25-byte fixed packet, so the WS85 branch is unreachable on this RX path (decoder host-tested only) | Fits the 30-byte packet (host-tested only; no WS85 sensor on air at the site) |
+| OOK-PWM remote RX | Edge-capture/ISR live on hardware; a clean live OOK **remote decode** is not yet confirmed on air | **No** — OOK-continuous RX needs the SX127x **DIO2/DATA** pin, which this RA-02 adapter does not route |
 | Security+ 2.0 (rolling-code garage remote) | Yes — built on the OOK-PWM RX path | **No** — depends on OOK-PWM RX, which this radio does not have on this adapter |
-| OOK / Security+ 2.0 TX | Yes — template-driven pins, one firmware binary (`CcRfSend`, `SecplusSend`) | **No** — TX is not implemented for this radio yet |
+| OOK / Security+ 2.0 TX | Yes — template-driven pins, one firmware binary (`CcRfSend`, `SecplusSend`) | **No** — OOK TX needs the DIO2 line this adapter does not route |
+| Fine Offset 2-FSK TX | No (this radio does OOK TX only) | **Yes** — `SxFskTx`, confirmed on-air (15/15 independent decode) |
 | Register I/O, reset, radio selection | Yes | Yes |
 
 **Live-hardware status (updated 2026-09-06)** (host-tested/build-verified is not the
 same claim as confirmed decoding on real silicon — kept separate here):
-- CC1101 blue/green: the OOK-PWM edge-capture path is live-verified on hardware
-  (see [`HWTEST-RESULTS-cc1101.md`](HWTEST-RESULTS-cc1101.md)). Fine Offset FSK RX
+- CC1101 blue: the OOK-PWM edge-capture path is live-verified on hardware
+  (see [`HWTEST-RESULTS-cc1101.md`](HWTEST-RESULTS-cc1101.md)). green's edge-capture only
+  ran via host-mediated (USB) resets; green does **not** run its app from a cold power-on
+  (it boots ROM download — see the HWTEST green section), so only blue is a proven-working
+  CC1101. Fine Offset FSK RX
   (WS69/WH51) is now **confirmed decoding live on CC1101 hardware** on blue,
   after the 2026-09-06 RX-bandwidth fix (MDMCFG4 `0xC9` -> `0x59`, 101 kHz ->
   325 kHz — the narrow filter could not cover the module crystal's frequency
@@ -230,8 +235,8 @@ frame lengths so the shorter WH51 is also captured and dispatched:
 **WS85 is not audible at Welland.** A WS85 frame is >=28 bytes — longer than the
 fixed 25-byte packet — so its decode branch is unreachable on this RX path and no
 WS85 was heard on air during the 2026-09-05 survey. WS85 (family 0x85) is
-therefore validated by the decoder host test (real rtl_433 doc vector) and Renode,
-not by a live capture. Raising `CC_FSK_PKTLEN` to fit WS85 would stop the CC1101
+therefore validated by the decoder host test (real rtl_433 doc vector) only — Renode's
+cc1101_decode suite runs WS69+WH51, not WS85 — and not by a live capture. Raising `CC_FSK_PKTLEN` to fit WS85 would stop the CC1101
 completing the shorter WS69 frame, so it is left at 25.
 
 
