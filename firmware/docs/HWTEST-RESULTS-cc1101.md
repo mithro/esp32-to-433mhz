@@ -78,8 +78,25 @@ from the Pluto IQ by **channelizing** like the CC1101 — mix a candidate freque
 crystals cluster ~434.0 MHz) to DC, low-pass to ~60 kHz, decimate to ~128–256 kSa/s, then
 FSK-discriminator-demod and apply the (proven) frame-check. A decoded id matching one the reference
 is logging (e.g. `0F5C54`, `0F5D66`, `0F5D7F`, `0F4B37`) **is** the Pluto cross-check of the real
-sensors. A draft channelizer (`pluto_narrowband_decode.py`) is in progress; it had not yet produced
-a confirmed byte-level decode when this session was interrupted, so **this arm is not yet closed**.
+sensors.
+
+That channelizer is implemented as [`tools/pluto_wh51_channelize.py`](../tools/pluto_wh51_channelize.py)
+and is **validated end-to-end on synthetic data** (a real WH51 frame modulated as 2-FSK under noise +
+off-frequency interferers decodes back to `0F5C54`/moisture 34); building that self-test found and
+fixed two real demod bugs (an FSK long-run droop on `FF FF FF`, fixed with a constant
+mark/space-midpoint threshold; and a formatter bug). Run procedure (heavy DSP → run on
+`desktop.buddy`, not the Pluto Pi):
+
+```sh
+# on rpi-sdr-pluto: capture ~70 s of raw IQ (LO 433.85 MHz, 2.048 MSa/s) with GPS freed/restored
+# then copy it to the intensive-ops host and channelize-decode:
+scp rpi-sdr-pluto:~/aligned.cs16 desktop.buddy.mithis.com:/tmp/
+ssh desktop.buddy.mithis.com 'python3 pluto_wh51_channelize.py /tmp/aligned.cs16 433850000 2048000'
+```
+
+**Status: not yet run against a live Pluto capture** — the tool is built and self-test-validated,
+but the real-capture run had not been executed when this session was interrupted (the Pluto host
+was unreachable), so **this arm is not yet closed**.
 
 Independently of the Pluto, the firmware's real-sensor decodes are already cross-validated three
 ways: blue (CC1101) ↔ sx (SX1278) byte-identical on-air, the rpi5-SPI CC1101 `~/wh51-watch` (a
