@@ -195,36 +195,67 @@ Published to `rtl_433/nodes/<host>/tx` ~50 ms before the radio keys:
 - `CcRfSend`: `{"Data":"0x00AABB","Bits":24,"Protocol":1,"Pulse":350,"model":"OOK-PWM","code":"00aabb"}`
 - `SecplusSend`: `{"model":"Secplus-v2","id":12345,"button":1,"rolling":843,"fixed":...}`
 
-## Home Assistant setup (rtl_433 autodiscovery)
+## Home Assistant setup (native MQTT Discovery)
 
-The estate ingests RF via the **`rtl433-mqtt-autodiscovery`** Home Assistant
-add-on (the rtl_433 project's `rtl_433_mqtt_hass.py`), pointed at the Mosquitto
-broker HA runs at `ha.welland.mithis.com:1883`. It:
+The node **self-publishes Home Assistant MQTT Discovery** for every sensor it
+decodes, so HA creates the entities natively with **no rtl_433 add-on, aggregator,
+or per-device YAML**. This is the default (`CcHassDisc 1`); the byte-shaping is in
+`cc1101_node/cc1101_hass.c` (host-tested by `tests/test_hass.py`).
 
-1. subscribes to `rtl_433/+/events`;
-2. reads each JSON event and, keyed by `model` + `id` (+ `channel` if present),
-   publishes Home Assistant **MQTT discovery** config messages under
-   `homeassistant/…/config`;
-3. HA then auto-creates entities and binds them to the incoming values —
-   temperature/humidity/pressure/wind/rain/UV/light for WS69, moisture + battery
-   for WH51, wind/rain/battery for WS85, etc. `battery_ok` becomes a battery
-   diagnostic. No per-device YAML is needed.
+On each decoded weather/moisture frame the node publishes, keyed by `model` + `id`:
 
-Because the node already emits the exact rtl_433 field names and a valid JSON
-envelope, **no custom HA discovery code lives in the firmware** — this is
-deliberately the "leverage the existing add-on" path the design calls for, rather
-than the node publishing `homeassistant/.../config` itself. (A node with **no**
-aggregator and **no** add-on could instead be given `CcHass 1` and paired with
-the add-on directly; publishing raw HA discovery messages from the node was
-considered and rejected as duplicating the add-on the estate already runs.)
+1. **Per-field state**, retained, one topic per value:
 
-To make a node discoverable:
+   ```
+   rtl_433/nodes/<host>/devices/<model>/<id>/<field>   payload = the raw value
+   e.g. rtl_433/nodes/esp32-433mhz-cc1101-blue/devices/Fineoffset-WS69/174/temperature_C = 12.4
+   ```
 
-- **Topology A (aggregator present):** leave `CcHass 0`. Ensure the aggregator is
-  subscribed to `rtl_433/nodes/+/events` and republishing to `rtl_433/<site>/events`
-  (the add-on's `rtl_433/+/events` then sees it). No node-side change.
-- **Topology B (direct):** set `CcHass 1`. The add-on discovers
-  `rtl_433/<host>/events` directly.
+2. **A discovery config**, retained, once per `(model,id)` per boot:
+
+   ```
+   homeassistant/sensor/<model>-<id>/<model>-<id>-<field>/config
+   {"name":"Temperature","uniq_id":"Fineoffset-WS69-174-temperature_C",
+    "stat_t":"rtl_433/nodes/<host>/devices/Fineoffset-WS69/174/temperature_C",
+    "dev_cla":"temperature","unit_of_meas":"°C","stat_cla":"measurement",
+    "val_tpl":"{{ value|float|round(1) }}",
+    "avty_t":"tele/<host>/LWT","pl_avail":"Online","pl_not_avail":"Offline",
+    "dev":{"ids":["Fineoffset-WS69-174"],"name":"Fineoffset-WS69 174",
+           "mdl":"Fineoffset-WS69","mf":"Fine Offset"}}
+   ```
+
+Each field has its **own** state topic (not the shared `events` JSON), so a WH51
+message never clobbers a WS69 entity, and two sensors of the same model (e.g. two
+WH51 units) each become their own HA device. HA does unit conversion from the
+`device_class` (wind `m/s` is shown as the dashboard's `km/h`, etc.). The config
+publish is gated on `MqttIsConnected()`: the radio decodes within ~1 s of boot,
+before WiFi/MQTT are up, so the guard stops that first config being dropped while
+the sensor is nonetheless marked "seen".
+
+Fields mapped to HA metadata (`cc1101_hass.c` table): `temperature_C`, `humidity`,
+`moisture`, `wind_avg_m_s`, `wind_max_m_s`, `wind_dir_deg`, `rain_mm`,
+`battery_mV`, `battery_pct`, `supercap_V`.
+
+**Verified on real hardware (ha.welland):** blue (CC1101) and sx (SX1278) decoding
+the same sensors produced 10 auto-created HA entities — WS69 temperature/humidity/
+wind speed/gust/direction/rain and two WH51 moisture + battery — with live values.
+
+`CcHassDisc 0` disables the discovery publisher (leaving only the `events` topic
+below). Turn it back on with `CcHassDisc 1`.
+
+### Alternative: the raw events topic + rtl_433 add-on
+
+Independently of discovery, the node always publishes the full rtl_433-shaped
+event JSON (schema above) to an `events` topic, for estates that already run the
+`rtl_433_mqtt_hass.py` add-on / an aggregator against `rtl_433/+/events`:
+
+- **Topology A (aggregator present):** leave `CcHass 0` → `rtl_433/nodes/<host>/events`;
+  the aggregator republishes to `rtl_433/<site>/events`.
+- **Topology B (direct):** `CcHass 1` → `rtl_433/<host>/events`, which the add-on's
+  `rtl_433/+/events` subscription sees directly.
+
+`CcHass` selects only the *events* topic layout; it is independent of `CcHassDisc`
+(the native discovery publisher).
 
 ## Receiving commands over MQTT
 
