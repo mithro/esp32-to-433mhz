@@ -59,6 +59,7 @@ static void CcCfgLoad(void) {
   if (TfsFileExists(CC_CFG_FILE) && TfsFileSize(CC_CFG_FILE) == sizeof tmp &&
       TfsLoadFile(CC_CFG_FILE, (uint8_t*)&tmp, sizeof tmp) && tmp.magic == CC_CFG_MAGIC && tmp.version == 1) {
     CcCfg = tmp;
+    if (CcCfg.secplus_nfreq > 3) CcCfg.secplus_nfreq = 3;   // clamp: an exact-size but corrupt file could OOB-read secplus_freq[]
   }
 #endif
 }
@@ -257,7 +258,6 @@ static void CcProcessFrame(const uint32_t* us, size_t n) {
   CcSecplusFrame(us, n, now);                                      // Task 6 (stub below until then)
 }
 static void CcCapturePoll(void) {                                  // FUNC_EVERY_50_MSECOND in remotes mode
-  uint32_t now_us = (uint32_t)esp_timer_get_time();
   while (CcEdgeTail != CcEdgeHead) {
     CcEdge e; noInterrupts(); e.t_us = CcEdges[CcEdgeTail].t_us; e.level = CcEdges[CcEdgeTail].level; CcEdgeTail = (CcEdgeTail + 1) % CC_EDGE_BUF; interrupts();
     if (CcFrameN && (e.t_us - CcFrameLastUs) > CC_FRAME_GAP_US) {   // gap: close the current frame
@@ -268,6 +268,10 @@ static void CcCapturePoll(void) {                                  // FUNC_EVERY
     if (CcFrameN < CC_MAX_PULSES + 1) { CcFrameT[CcFrameN] = e.t_us; CcFrameL[CcFrameN] = e.level; CcFrameN++; }
     CcFrameLastUs = e.t_us;
   }
+  // Sample the clock AFTER draining: an edge that fired mid-drain has a timestamp later than a
+  // pre-loop sample, which would wrap the unsigned subtraction and spuriously flush an in-progress
+  // frame (adversarial-review finding). Post-loop, now_us >= CcFrameLastUs.
+  uint32_t now_us = (uint32_t)esp_timer_get_time();
   if (CcFrameN && (now_us - CcFrameLastUs) > CC_FRAME_GAP_US) {    // idle: flush the pending frame
     size_t np = edges_to_pulses(CcFrameT, CcFrameL, CcFrameN, CcFramePulses, CC_MAX_PULSES);
     if (np >= 2 * OOKPWM_MIN_BITS) CcProcessFrame(CcFramePulses, np);

@@ -47,6 +47,7 @@ bool CC1101Radio::wait_tx_done(uint32_t timeout_ms) {
   uint32_t t0 = bus_.millis();
   while (bus_.millis() - t0 <= timeout_ms) {
     uint8_t m = marcstate();
+    if (m == 0x16) { strobe(CC_SFTX); err_ = "TX FIFO underflow"; return false; }   // MARC_TXFIFO_UNDERFLOW: FIFO starved mid-TX
     if (m != MARC_TX && m != MARC_TX_END && m != MARC_RXTX_SWITCH) return true;
     bus_.delay_ms(1);
   }
