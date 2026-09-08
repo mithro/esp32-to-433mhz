@@ -289,7 +289,7 @@ static bool CcTxPulses(const uint32_t* us, size_t n, int repeats, uint32_t gap_m
   size_t nbits = pulses_to_chips(us, n, 10, chips, sizeof chips);
   bool was_capturing = CcCapturing; CcCaptureStop();
   bool ok = Cc.radio->load_preset(CC_PRESET_OOK_TX_100K);
-  if (ok && CcCfg.cc_tx_pa) { uint8_t pa = CcCfg.cc_tx_pa; Cc.radio->write_patable(&pa, 1); }  // TX power override
+  if (ok && CcCfg.cc_tx_pa) { uint8_t pa[2] = {0x00, CcCfg.cc_tx_pa}; Cc.radio->write_patable(pa, 2); }  // TX power override
   for (int r = 0; ok && r < repeats; r++) { ok = Cc.radio->tx_bits(chips, nbits, 2000); if (gap_ms) delay(gap_ms); }
   if (!ok) AddLog(LOG_LEVEL_ERROR, PSTR(CC_LOGPFX "tx: %s"), Cc.radio->last_error());
   CcEnterMode(); if (was_capturing) CcCaptureStart();
@@ -376,7 +376,7 @@ void CmndSecplusSend(void) {
   bool ok = true;
   for (int leg = 0; ok && leg < CcCfg.secplus_nfreq; leg++) {
     ok = Cc.radio->load_preset(CC_PRESET_OOK_TX_4K);
-    if (ok && CcCfg.cc_tx_pa) { uint8_t pa = CcCfg.cc_tx_pa; Cc.radio->write_patable(&pa, 1); }
+    if (ok && CcCfg.cc_tx_pa) { uint8_t pa[2] = {0x00, CcCfg.cc_tx_pa}; Cc.radio->write_patable(pa, 2); }
     if (ok) { Cc.radio->set_freq(CcCfg.secplus_freq[leg] * 1e6); ok = Cc.radio->tx_bits(packed, nbits, 3000); }
   }
   CcEnterMode(); if (was_capturing) CcCaptureStart();
@@ -552,7 +552,7 @@ static void CcHealth50ms(void) {
 }
 
 /* ---------- commands ---------- */
-void CmndCcTxPower(void) {   // CcTxPower [byte] -- CC1101 PATABLE[0] (0=preset default; e.g. 0xC0 ~ +10 dBm @433)
+void CmndCcTxPower(void) {   // CcTxPower [byte] -- CC1101 OOK mark level PATABLE[1] (0=preset default; e.g. 0xC0 ~ +10 dBm @433)
   if (XdrvMailbox.data_len) { CcCfg.cc_tx_pa = (uint8_t)strtoul(XdrvMailbox.data, nullptr, 0); CcCfgSave(); }
   Response_P(PSTR("{\"CcTxPower\":\"0x%02X\"}"), CcCfg.cc_tx_pa);
 }
