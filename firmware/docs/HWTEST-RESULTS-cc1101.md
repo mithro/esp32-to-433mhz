@@ -333,7 +333,11 @@ After `sudo reboot` of `rpi5-433mhz`, blue (`E8:3D:C1:8C:3E:B8`) came up `boot:0
 (WS69 `id174` 9.6 °C / 95 %RH; WH51 `0f5d66`/`0f5d7f` 38 %; RSSI -63..-77). The runtime
 override is now a shipped default, not a manual poke.
 
-## Isolated Home Assistant MQTT round-trip (criterion e)
+## Isolated Home Assistant MQTT round-trip (criterion e) — SUPERSEDED
+
+> **Superseded** by the real ha.welland verification at the top of this file (2026-09-09).
+> The section below is the earlier isolated-broker stand-in, kept for the record; where it
+> says "not the literal ha.welland", that gap is now closed on the real broker.
 
 To exercise MQTT without touching the production broker, `rpi5-433mhz`'s `wlan0` was turned
 into a NAT hotspot (`cc1101-test`, 2.4 GHz, `ipv4.method=shared`, gateway `10.42.0.1`) and a
