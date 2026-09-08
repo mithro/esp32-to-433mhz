@@ -137,3 +137,79 @@ int SX1278Radio::rssi_dbm() {
   // calibrated per-frame RSSI (same caveat as the CC1101 weather path).
   return -(int)read_reg(SX_REG_RSSIVALUE) / 2;
 }
+
+/* ============================ Fine Offset 2-FSK TRANSMIT ============================
+ * Fixed-length 2-FSK packet TX matched byte-for-byte to the RX preset (433.92 MHz,
+ * 17.241 kbps, ~50 kHz fdev, 0xAA preamble + 0x2DD4 sync) so a peer node running
+ * configure_fineoffset_fsk() decodes the frame. OOK TX is deliberately NOT provided: OOK
+ * needs the SX1278 continuous-mode DATA line (DIO2), and the RA-02 socket does not route
+ * DIO2 (see SX_MAP_RA02 in the driver). FSK *packet* TX drives the FIFO over SPI only, so it
+ * works on the wiring as built.
+ * ================================================================================= */
+
+void SX1278Radio::configure_fsk_tx(uint8_t payload_len) {
+  // LongRangeMode (RegOpMode bit7) can only change in Sleep: force FSK sleep, then standby.
+  write_reg(SX_REG_OPMODE, SX_OPMODE_FSK_SLEEP);
+  write_reg(SX_REG_OPMODE, SX_OPMODE_FSK_STDBY);
+
+  // Same modem parameters as the RX preset so the two are on-air compatible.
+  write_reg(SX_REG_BITRATE_MSB, 0x07);
+  write_reg(SX_REG_BITRATE_LSB, 0x40);             // 17.241 kbps
+  {
+    uint32_t fdev = (uint32_t)(50000.0 / SX_FSTEP + 0.5);
+    write_reg(SX_REG_FDEV_MSB, (uint8_t)((fdev >> 8) & 0x3F));
+    write_reg(SX_REG_FDEV_LSB, (uint8_t)(fdev));   // ~50 kHz
+  }
+  set_frequency(433920000.0);
+
+  // PA: RA-02 wires the antenna to PA_BOOST (RegPaConfig bit7=1). OutputPower=0x0F -> +17 dBm
+  // (Pout = 17 - (15 - OutputPower)). MaxPower bits are don't-care with PA_BOOST selected.
+  write_reg(SX_REG_PA_CONFIG, 0x8F);
+  write_reg(SX_REG_PA_RAMP, 0x09);                 // 40 us PA ramp, no Gaussian shaping
+
+  // 5-byte 0xAA preamble gives the peer's preamble detector (2-byte, tolerance 10) time to lock.
+  write_reg(SX_REG_PREAMBLE_MSB, 0x00);
+  write_reg(SX_REG_PREAMBLE_LSB, 0x05);
+
+  // Sync: SyncOn, 2 sync bytes, no AutoRestart (a TX-only concern); 0x2DD4 to match the RX preset.
+  write_reg(SX_REG_SYNCCONFIG, 0x11);
+  write_reg(SX_REG_SYNCVALUE1, 0x2D);
+  write_reg(SX_REG_SYNCVALUE2, 0xD4);
+
+  // Fixed-length packet mode, no DcFree/CRC/whitening; packet (not continuous) data mode.
+  write_reg(SX_REG_PACKETCONFIG1, 0x00);
+  write_reg(SX_REG_PACKETCONFIG2, 0x40);
+  set_payload_length(payload_len);
+
+  // TxStartCondition = FifoNotEmpty (bit7=1): begin modulating as soon as the FIFO is loaded.
+  write_reg(SX_REG_FIFOTHRESH, 0x80);
+
+  // DIO0 mapping 00 in packet TX = PacketSent (also polled via RegIrqFlags2, so the wire is optional).
+  write_reg(SX_REG_DIOMAPPING1, 0x00);
+}
+
+void SX1278Radio::write_fifo(const uint8_t* d, size_t n) {
+  bus_.select();
+  bus_.transfer(SX_REG_FIFO | SX_WRITE);           // 0x80: write; FIFO addr (0x00) does not increment
+  for (size_t i = 0; i < n; i++) bus_.transfer(d[i]);
+  bus_.deselect();
+}
+
+void SX1278Radio::enter_tx() { write_reg(SX_REG_OPMODE, SX_OPMODE_FSK_TX); }
+
+bool SX1278Radio::packet_sent() {
+  return (read_reg(SX_REG_IRQFLAGS2) & SX_IRQ2_PACKET_SENT) != 0;
+}
+
+bool SX1278Radio::transmit_fsk(const uint8_t* d, size_t n, uint32_t timeout_ms) {
+  // FIFO is writable in standby; load it, key the transmitter, then wait for PacketSent.
+  standby();
+  write_fifo(d, n);
+  enter_tx();
+  uint32_t t0 = bus_.millis();
+  while (!packet_sent()) {
+    if (bus_.millis() - t0 >= timeout_ms) { standby(); err_ = "tx timeout (no PacketSent)"; return false; }
+  }
+  standby();                                       // drop back to standby; PacketSent clears on leaving TX
+  return true;
+}

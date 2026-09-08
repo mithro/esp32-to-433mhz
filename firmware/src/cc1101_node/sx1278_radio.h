@@ -36,12 +36,15 @@ enum : uint8_t {
   SX_REG_FRF_MSB       = 0x06,   // carrier = Fstep * RegFrf
   SX_REG_FRF_MID       = 0x07,
   SX_REG_FRF_LSB       = 0x08,
-  SX_REG_PA_CONFIG     = 0x09,
+  SX_REG_PA_CONFIG     = 0x09,   // PA select (PA_BOOST vs RFO) + output power
+  SX_REG_PA_RAMP       = 0x0A,   // PA ramp time / no shaping
   SX_REG_LNA           = 0x0C,
   SX_REG_RXCONFIG      = 0x0D,   // AFC/AGC auto + RX trigger source
   SX_REG_RSSIVALUE     = 0x11,   // RSSI[dBm] = -RegRssiValue / 2
   SX_REG_RXBW          = 0x12,   // RX bandwidth (mantissa/exponent)
   SX_REG_AFCBW         = 0x13,
+  SX_REG_PREAMBLE_MSB  = 0x25,   // TX preamble length (bytes of 0xAA sent before sync)
+  SX_REG_PREAMBLE_LSB  = 0x26,
   SX_REG_PREAMBLEDETECT= 0x1F,   // preamble detector on/size/tolerance
   SX_REG_SYNCCONFIG    = 0x27,   // AutoRestartRx + sync-word on/size
   SX_REG_SYNCVALUE1    = 0x28,   // 0x2D
@@ -49,6 +52,7 @@ enum : uint8_t {
   SX_REG_PACKETCONFIG1 = 0x30,   // fixed vs variable length, DcFree, CRC
   SX_REG_PACKETCONFIG2 = 0x31,   // packet vs continuous data mode
   SX_REG_PAYLOADLENGTH = 0x32,   // fixed payload length (bytes drained after sync)
+  SX_REG_FIFOTHRESH    = 0x35,   // TxStartCondition (bit7) + FifoThreshold
   SX_REG_IRQFLAGS1     = 0x3E,   // ModeReady / RxReady / SyncAddressMatch
   SX_REG_IRQFLAGS2     = 0x3F,   // FifoFull / FifoEmpty / FifoOverrun / PayloadReady / CrcOk
   SX_REG_DIOMAPPING1   = 0x40,   // DIO0 = PayloadReady in packet RX
@@ -60,10 +64,12 @@ enum : uint8_t {
   // RegOpMode composed values: LongRangeMode=0 (FSK), LowFrequencyModeOn=1 (bit3, <525 MHz band).
   SX_OPMODE_FSK_SLEEP  = 0x00,   // FSK, sleep (only mode in which LongRangeMode may change)
   SX_OPMODE_FSK_STDBY  = 0x09,   // FSK, low-freq band, standby (0x08 | mode 001)
+  SX_OPMODE_FSK_TX     = 0x0B,   // FSK, low-freq band, transmitter (0x08 | mode 011)
   SX_OPMODE_FSK_RX     = 0x0D,   // FSK, low-freq band, receiver (0x08 | mode 101)
 
-  SX_IRQ2_PAYLOAD_READY= 0x04,   // RegIrqFlags2 bit2
-  SX_IRQ2_FIFO_OVERRUN = 0x08,   // RegIrqFlags2 bit3
+  SX_IRQ2_PAYLOAD_READY= 0x04,   // RegIrqFlags2 bit2 (RX): fixed-length frame drained
+  SX_IRQ2_PACKET_SENT  = 0x08,   // RegIrqFlags2 bit3 (TX): FIFO fully transmitted
+  SX_IRQ2_FIFO_OVERRUN = 0x10,   // RegIrqFlags2 bit4: FIFO overrun (corrected: bit4, not bit3)
 };
 
 /* Active-low hardware RESET line for the SX127x, abstracted so the engine is host-testable
@@ -91,6 +97,17 @@ class SX1278Radio {
   bool payload_ready();                        // RegIrqFlags2 PayloadReady bit set?
   size_t read_fifo(uint8_t* d, size_t n);      // burst-read n bytes out of RegFifo (0x00)
   int rssi_dbm();                              // -RegRssiValue / 2
+
+  // ---- Fine Offset 2-FSK TRANSMIT path (same modulation as the RX preset) ----
+  // The RA-02 adapter routes only DIO0 (no DIO2 continuous-mode DATA line), so the SX1278
+  // cannot do OOK-continuous TX/RX; FSK *packet* TX uses the FIFO and needs no extra wire.
+  void configure_fsk_tx(uint8_t payload_len);  // 2-FSK fixed-length packet TX preset (PA_BOOST)
+  void write_fifo(const uint8_t* d, size_t n); // burst-write n bytes into RegFifo (0x00)
+  void enter_tx();                             // RegOpMode -> FSK TX
+  bool packet_sent();                          // RegIrqFlags2 PacketSent bit set?
+  // One-shot: standby -> load FIFO -> TX -> wait for PacketSent (<= timeout_ms) -> standby.
+  // Returns false (and sets last_error) on timeout. payload_len must match n.
+  bool transmit_fsk(const uint8_t* d, size_t n, uint32_t timeout_ms);
 
   const char* last_error() const { return err_; }
 

@@ -93,8 +93,26 @@ int main(int argc, char** argv) {
     int rc = sx_weather_drain(r, raw, sizeof raw, &n, &rssi, json, sizeof json);
     printf("{\"rc\":%d,\"n\":%zu,\"rssi\":%d,\"json\":%s}\n",
            rc, n, rssi, (rc == SX_WX_DECODED) ? json : "null");
+  } else if (cmd == "transmit") {
+    // transmit <hex-payload> : program the FSK TX preset and send one packet. RegIrqFlags2 is
+    // preseeded with PacketSent so transmit_fsk()'s poll loop completes deterministically (the
+    // fake clock only advances on delay_ms, which the TX path never calls). Report the key TX
+    // registers and the full SPI log so the test can assert the FIFO-write framing + opmode order.
+    std::vector<uint8_t> payload = argc > 2 ? from_hex(argv[2]) : from_hex("510f5c5401");
+    bus.regs[0x3F] = SX_IRQ2_PACKET_SENT;
+    r.configure_fsk_tx((uint8_t)payload.size());
+    bool ok = r.transmit_fsk(payload.data(), payload.size(), 100);
+    printf("{\"ok\":%d,\"opmode\":%d,\"pa_config\":%d,\"pa_ramp\":%d,\"fifothresh\":%d,"
+           "\"packetconfig1\":%d,\"packetconfig2\":%d,\"payloadlength\":%d,\"preamble_lsb\":%d,"
+           "\"sync1\":%d,\"sync2\":%d,\"br_msb\":%d,\"br_lsb\":%d,\"fdev_msb\":%d,\"fdev_lsb\":%d,"
+           "\"frf_msb\":%d,\"diomapping1\":%d,\"log\":[",
+           ok, bus.regs[0x01], bus.regs[0x09], bus.regs[0x0A], bus.regs[0x35],
+           bus.regs[0x30], bus.regs[0x31], bus.regs[0x32], bus.regs[0x26],
+           bus.regs[0x28], bus.regs[0x29], bus.regs[0x02], bus.regs[0x03],
+           bus.regs[0x04], bus.regs[0x05], bus.regs[0x06], bus.regs[0x40]);
+    print_log(bus.log); printf("]}\n");
   } else {
-    fprintf(stderr, "usage: sx1278_host identify|identify_bad|write_reg|read_reg|reset|configure|weather_drain <hex> [irqflags2]\n");
+    fprintf(stderr, "usage: sx1278_host identify|identify_bad|write_reg|read_reg|reset|configure|weather_drain <hex> [irqflags2]|transmit <hex>\n");
     return 2;
   }
   return 0;
