@@ -34,31 +34,38 @@ pull-up on `main`).
 
 ## Pluto SDR cross-check (criterion b) — investigation and status (2026-09-09)
 
-The `rpi-sdr-pluto` PlutoSDR is intended as a fourth, independent cross-check receiver. It does
-**not** currently decode the 433.92 MHz sensors, and the investigation localises the cause to its
-RF front-end, not the firmware or the SDR capture/decode path:
+The `rpi-sdr-pluto` PlutoSDR is the fourth, independent cross-check receiver. Current state:
+**the Pluto's decode path works and its antenna receives 433 MHz**, but the *real* ambient
+weather/moisture sensors are not arriving there strongly enough to decode. (An earlier revision of
+this note wrongly blamed a "GPS-tuned antenna that can't pass 433" — that was disproven below and
+is retracted.)
 
-- The Pluto's single RX input (`A_BALANCED`, the only selectable port — `B/C_BALANCED` and the
-  `TX_MONITOR` ports return "cannot select") carries a **GPS-tuned antenna**: the host runs
-  `gnss-sdr` decoding GPS L1 at 1575.42 MHz on that same input. A GPS antenna (resonant at
-  1575 MHz, or active with a 1575 MHz SAW filter + LNA) does not pass 433 MHz.
-- Proven across ~12 methods, all giving **0 decodes**: the reference decoder `rtl_433` finds 0
-  frames of **any** protocol in 40 s; a frequency-agnostic per-burst decoder (handles the sensor
-  crystal offset) finds 0; every LO offset and gain, all RX ports, a full Pluto reboot, and
-  freeing the device from `gnss-sdr` — all 0. **Controlled test:** `sx` transmitting 16 strong,
-  co-located, Fine-Offset-format 2-FSK frames (`SxFskTx` — the same output the rpi5-SPI CC1101
-  decoded 15/15) during a Pluto capture → 0 decoded. When the reference tool fails identically on
-  the same samples and a strong local transmitter is not received, the signal is not reaching the
-  ADC; two self-caused setup bugs found and fixed en route (the device was held by `gnss-sdr`; an
-  earlier demod assumed the sensor was exactly on 433.92 rather than crystal-offset).
-- The Pluto is frequency-accurate (GPS L1 decodes), so its tuning/XO is correct — only the 433 RF
-  path is the limit.
+- **The Pluto DOES receive 433 MHz — proven.** Running `rtl_433` live on the Pluto
+  (`rtl_433 -d driver=plutosdr -H 8 -f 433.92M -f 434.0M -f 434.1M -s 2048000`) decoded **21
+  valid-CRC Fine Offset frames** from `sx`'s `SxFskTx` transmitter (id `0f5c54`, moisture 40,
+  battery 1600 mV — matching the transmitted fixture), at `freq1` 433.98–434.10 MHz. So the
+  antenna, tuning, and decode path are all good, and the firmware's TX is cross-validated by the
+  Pluto's independent decode.
+- **Three self-caused bugs found and fixed** (the reason it looked like a hardware/antenna problem):
+  (1) I ran `rtl_433 -r` on my own `iio_readdev` `.cs16` captures, which have a format/scaling bug
+  and never decode even a known frame — the fix is `rtl_433` **live** driving the Pluto; (2) I tuned
+  to 433.92 MHz, but Fine Offset crystals sit ~+100 kHz off (decodes land at 434.0–434.1) so the
+  receiver must scan/hop; (3) I passed `-g 73`, but the gain range is `[-3 1 71]` — out of range.
+- **Sensitivity verified maxed:** `hardwaregain = 71 dB, manual` confirmed live during a run;
+  full-band coverage (2 MHz spans 433–435); rtl_433's minimum-SNR gate lowered (`-Y minmax
+  -Y minsnr=3`); fresh Pluto reboot. Under all of these, the **real ambient WS69/WH51 give 0
+  pulses**, while `sx`'s strong co-located TX decodes — and a prior session's rtl_433-on-Pluto
+  config (`pluto_capture.sh`, 433.92 MHz / 60 dB) also decoded 0 real sensors. So the real sensors
+  arrive at the Pluto weaker than `sx`'s transmitter, consistently, even though blue (sitting at the
+  sensors) decodes them.
 
-**To complete this cross-check:** connect a passive 433 MHz antenna to the Pluto's RX SMA (bypassing
-the GPS antenna), then run `pluto_smartdecode.py` (frees GPS, captures, decodes at the sensor's real
-frequency, restores GPS) and compare byte-for-byte to blue/sx. Independently of the Pluto, the
-firmware decodes are already cross-validated three ways: blue (CC1101) ↔ sx (SX1278) byte-identical
-on-air, the rpi5-SPI CC1101 `~/wh51-watch` (a different chip + decoder), and Home Assistant ingestion.
+**To complete this cross-check:** the Pluto (or an antenna on it) needs to be close enough to the
+weather station / moisture sensors for their frames to arrive at a decodable level, or set the
+gain/antenna that captured them previously; then `python3 pluto_real.py` (rtl_433 live at 434.0 MHz,
+max gain — frees GPS, decodes, restores GPS) closes it in one run. Independently of the Pluto, the
+firmware's real-sensor decodes are already cross-validated three ways: blue (CC1101) ↔ sx (SX1278)
+byte-identical on-air, the rpi5-SPI CC1101 `~/wh51-watch` (a different chip + decoder), and Home
+Assistant ingestion.
 
 ---
 
