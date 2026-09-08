@@ -281,18 +281,27 @@ same node will not match, confusing the aggregator's per-node bookkeeping (see
 Confirm the broker connection: `tele/<topic>/LWT` should read `Online`
 (retained), and `MqttHost` / `Status 6` echo the configured broker.
 
-## Live validation (pending credentials)
+## Live validation
 
-**UNRUN — blocked on credentials.** Publishing to and subscribing from the real
-HA broker has not been performed. To run it you need:
+**Isolated round-trip: DONE (2026-09-08).** The full publish/receive round-trip was
+validated against a local `mosquitto 2.0.21` broker (the same broker software as the HA
+add-on) on an isolated NAT hotspot, to avoid touching production. Both directions passed —
+`rtl_433/nodes/<host>/events`, Tasmota HA autodiscovery (`tasmota/discovery/<mac>/config`),
+`tele/SENSOR`/`STATE`/`LWT`, and `cmnd/<topic>/CcStatus` -> `stat/<topic>/RESULT`. Full log
+and message captures are in [`HWTEST-RESULTS-cc1101.md`](HWTEST-RESULTS-cc1101.md)
+("MQTT round-trip" section). The real `ha.welland.mithis.com:1883` broker was confirmed
+reachable from the boards' network path.
 
-1. **WiFi** — SSID + passphrase for the network the node will join at the
-   deployment site.
-2. **MQTT broker credentials** — a Mosquitto username + password on
-   `ha.welland.mithis.com:1883` (the broker HA uses). Confirm anonymous access is
-   off and obtain/allocate an account for the node.
+**Production rollout** (connecting to the real HA broker) still needs, per site:
 
-Once you have them, on a flashed node with a working radio:
+1. **WiFi** — SSID + passphrase for the `ansells-iot` network the node joins.
+2. **MQTT broker credential** — the per-device `tas-<node_id>` Mosquitto login on
+   `ha.welland.mithis.com:1883`, created and pushed by
+   `gdoc2netcfg tasmota configure <host>` + `gdoc2netcfg tasmota register-broker`
+   (derives `username=tas-<node_id>`, `password=sha256(mqtt_secret + node_id)`), after the
+   device is added to the IoT sheet and discovered by `gdoc2netcfg tasmota scan`.
+
+To run the production check manually on a flashed node with a working radio:
 
 ```bash
 # 1. Commission (USB/web console)
