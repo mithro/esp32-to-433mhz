@@ -127,13 +127,60 @@ ESP32-C3 SuperMini x9 · D-SUN CC1101 433 MHz module with antenna x9 ·
 and 5 V supply per deployed node.
 
 ## Modes, commands, MQTT
-See [`../README.md`](../README.md) -> *Command reference* and *MQTT topics* for
-the `Cc*` / `Sx*` / `Secplus*` commands, the `/cc1101.cfg` persisted config, and
-the exact MQTT message shapes as currently implemented. For the full per-field
-MQTT message schema, the Home Assistant autodiscovery setup (the
-`rtl433-mqtt-autodiscovery` add-on on `rtl_433/+/events`), the `CcHass`
-events-topic option, node MQTT configuration, and the live-broker validation
-procedure, see [`mqtt-home-assistant.md`](mqtt-home-assistant.md).
+
+All commands are issued on the Tasmota console or over MQTT as
+`cmnd/<topic>/<Command> [args]`, replying on `stat/<topic>/RESULT`. Config-setting
+commands persist to `/cc1101.cfg`. For the full per-field MQTT message schema, the
+Home Assistant autodiscovery setup (the `rtl433-mqtt-autodiscovery` add-on on
+`rtl_433/+/events`), the `CcHass` events-topic option, node MQTT configuration and
+the live-broker validation procedure, see
+[`mqtt-home-assistant.md`](mqtt-home-assistant.md).
+
+### Command reference
+
+**Radio selection and mode**
+
+| Command | Args | Description |
+|---|---|---|
+| `Radio` | `auto\|cc1101\|sx1278` | Select and persist the active radio engine; re-runs bring-up. |
+| `CcMode` | `weather\|remotes` | CC1101 role: Fine Offset FSK RX (`weather`) or OOK-PWM remotes RX (`remotes`). Persisted. |
+
+**CC1101**
+
+| Command | Args | Description |
+|---|---|---|
+| `CcStatus` | - | Present, PARTNUM/VERSION/MARCSTATE, mode/preset, RSSI, Rx/Decoded/Tx/Overflow counters. |
+| `CcPreset` | `<name>` | Load a named preset and enter RX (debug). |
+| `CcReg` | `<addr> [val]` | Read/write a CC1101 register (0x00-0x3F; writing 0x30-0x3D issues a strobe). |
+| `CcRaw` | `0\|1` | Publish drained-but-undecodable frames as hex on `tele/<topic>/CCRAW`. |
+| `CcHass` | `0\|1` | Events topic layout: `0` = `rtl_433/nodes/<host>/events` (aggregator), `1` = `rtl_433/<host>/events` (direct HA autodiscovery). |
+| `CcRfSend` | `{"Data","Bits","Protocol":1,"Pulse","Repeat"}` | Transmit an OOK-PWM (RCSwitch protocol 1) code. |
+| `CcTxPower` | `[byte]` | CC1101 OOK **mark** level = `PATABLE[1]` (`0` = preset default; e.g. `0xC0` ~ +10 dBm at 433 MHz). Space stays `PATABLE[0]=0x00`. |
+| `CcRxGain` | `[byte]` | CC1101 `AGCCTRL2` (0x1B) RX-gain override (`0` = preset default; lower `MAX_LNA/DVGA_GAIN` reduces sensitivity for a strong co-located source). |
+
+**SX1278 (RA-02)**
+
+| Command | Args | Description |
+|---|---|---|
+| `SxStatus` | - | Present, VERSION, Active, Mode, WeatherRx, RSSI, Rx/Decoded/Tx. |
+| `SxReg` | `<addr> [val]` | Read/write an SX127x register (address bit7 = write). SX1278 must be the active radio. |
+| `SxReset` | - | Hardware reset (RST pulse) and re-identify. |
+| `SxFskTx` | `<hex>` | Transmit the hex payload as a fixed-length 2-FSK packet matched to the RX preset (433.92 MHz, 17.241 kbps, sync 0x2DD4). |
+| `SxTxPower` | `[2..17]` | SX1278 PA_BOOST output power in dBm (`0` = default +17). |
+| `SxRxGain` | `[1..6]` | SX1278 LNA gain (`1` = max G1 .. `6` = min G6; `0` = AGC-auto default). |
+
+**Security+ 2.0** (CC1101 only)
+
+| Command | Args | Description |
+|---|---|---|
+| `SecplusId` | `[id]` | Get/set the persisted Security+ 2.0 device id. |
+| `SecplusCounter` | `[n]` | Get/set the rolling counter (persisted before each keying). |
+| `SecplusFreq` | `[f1 f2 f3]` | Get/set the frequency legs (default 433.92). |
+| `SecplusSend` | - | Transmit a Security+ 2.0 rolling-code frame. |
+
+> Note: `SxFskTx` and `SxTxPower`/`SxRxGain` (and the CC1101 `CcTxPower`/`CcRxGain`)
+> are the runtime power/TX controls added for co-located on-air testing -- reduce
+> TX power (or RX gain) so a nearby receiver is not desensitised.
 
 ## Decoders and fixtures (host-tested)
 `../decoders/` — Fineoffset WS69/WH65B/WS85/**WH51** (soil moisture, family 0x51) and OOK-PWM in pure C, tested with
