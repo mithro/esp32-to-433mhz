@@ -102,9 +102,10 @@ Verified per-board pin maps (ESP32-C3 GPIO numbers):
 
 **Capability parity (not identical, by hardware constraint):** both radios do
 Fine Offset FSK RX (WS69/WH65B/WS85/WH51) through the same decoder. The SX1278
-does **not** do OOK-PWM remote RX, Security+ 2.0, or TX — OOK-continuous RX needs
-the SX127x **DIO2/DATA** pin, which this RA-02 adapter does not route, and TX is
-not yet implemented for this radio. See `docs/esp32c3-cc1101-node.md` -> *Radio
+**does** do raw 2-FSK TX via `SxFskTx` (see the command table below). It does
+**not** do OOK-PWM remote RX, Security+ 2.0, or OOK TX — OOK-continuous RX needs
+the SX127x **DIO2/DATA** pin, which this RA-02 adapter does not route. See
+`docs/esp32c3-cc1101-node.md` -> *Radio
 capability matrix* for the full table (including live-hardware status per radio)
 and `src/cc1101_node/sx1278_radio.cpp` for the SX1278's staged roadmap
 (FSK-RX -> FSK-TX -> OOK-RX -> OOK-TX -> LoRa).
@@ -117,6 +118,9 @@ SX1278 / selection commands (over MQTT and the USB/web console, like the `Cc*` c
 | `SxStatus` | `SxStatus` | `SxStatus` | `{"SxStatus":{"Present":1,"VERSION":"0x12","Active":1}}` |
 | `SxReg` | `SxReg <addr 0x00-0x7F> [val]` (SX1278 must be the active radio) | `SxReg 0x42` | `{"SxReg":{"Addr":"0x42","Value":"0x12"}}` (value read back after any write) |
 | `SxReset` | `SxReset` | `SxReset` | `{"SxReset":{"Present":1,"VERSION":"0x12"}}` (pulses RST, then re-identifies) |
+| `SxFskTx` | `SxFskTx <hex>` — transmit a raw 2-FSK packet (SX1278 must be the active radio); used to cross-check the FSK weather decode against the Pluto/rpi5 receivers | `SxFskTx 0x51AABBCC` | `{"SxFskTx":{"Sent":1,"Bytes":4}}` |
+| `SxTxPower` | `SxTxPower [2..17]` dBm — SX1278 PA_BOOST output power (`0` = default +17 dBm). Persisted to `/cc1101.cfg`. | `SxTxPower 10` | `{"SxTxPower":{"dBm":10,"PaConfig":"0x88"}}` |
+| `SxRxGain` | `SxRxGain [1..6]` — SX1278 LNA gain (`1` = max G1 … `6` = min G6; `0` = AGC-auto default). Persisted. | `SxRxGain 1` | `{"SxRxGain":{"Lna":"0x20","Auto":0}}` |
 
 ## Command reference
 
@@ -129,9 +133,12 @@ command + argument) and the JSON the driver responds with.
 | `CcMode` | `CcMode [remotes\|weather]` | `CcMode weather` | `"weather"` (plain string; `auto` is accepted syntactically but replies `"auto not implemented (spec follow-on)"` and does not change mode — spec §5.3 follow-on) |
 | `CcPreset` | `CcPreset [name]` (debug: loads a preset and enters RX with it, overriding `CcMode` until the next `CcMode`/reinit) | `CcPreset fineoffset-fsk` | `"fineoffset-fsk"`; unknown name or no radio present → `"fineoffset-fsk\|ook-433\|ook-tx-100k\|ook-tx-4k"` |
 | `CcReg` | `CcReg <addr 0x00-0x3F> [val]` (hex or decimal); writing `addr` in `0x30-0x3D` issues a command **strobe** instead of a register write | `CcReg 0x02 0x0D` | `{"CcReg":{"Addr":"0x02","Value":"0x0D"}}` (`Value` is always read back after any write); no args / no radio → `"addr 0x00-0x3F [val]"` |
-| `CcStatus` | `CcStatus` | `CcStatus` | `{"CcStatus":{"Present":1,"PARTNUM":"0x00","VERSION":"0x14","MARCSTATE":"0x0D","Mode":"remotes","Preset":"ook-433","RSSI":-84,"Rx":1234,"Decoded":412,"Tx":3,"Reinit":0,"Overflow":0,"Repeats":57,"Raw":0,"Hass":0,"SecplusId":0,"Rolling":0}}` |
+| `CcStatus` | `CcStatus` | `CcStatus` | `{"CcStatus":{"Present":1,"PARTNUM":"0x00","VERSION":"0x14","MARCSTATE":"0x0D","Mode":"remotes","Preset":"ook-433","RSSI":-84,"Rx":1234,"Decoded":412,"Tx":3,"Reinit":0,"Overflow":0,"Repeats":57,"Raw":0,"Hass":0,"HassDisc":1,"SecplusId":0,"Rolling":0}}` |
 | `CcRaw` | `CcRaw <0\|1>` | `CcRaw 1` | `1` (plain number; then every captured OOK frame also publishes `tele/<topic>/CCRAW`, and every undecoded FSK packet too — see MQTT topics below) |
 | `CcHass` | `CcHass [0\|1]` — decoded-events topic layout: `0` (default) `rtl_433/nodes/<host>/events` (aggregator-fronted); `1` `rtl_433/<host>/events` (matches the HA add-on's `rtl_433/+/events` for direct autodiscovery). Persisted to `/cc1101.cfg`. | `CcHass 1` | `{"CcHass":1,"EventsTopic":"rtl_433/cc1101-welland-carport/events"}` — see [`docs/mqtt-home-assistant.md`](docs/mqtt-home-assistant.md) |
+| `CcHassDisc` | `CcHassDisc [0\|1]` — native Home Assistant MQTT **discovery**: publish `homeassistant/sensor/<model>-<id>/.../config` for each decoded sensor so HA auto-creates entities (`1` = on, default; `0` = off). Distinct from `CcHass` (which only sets the events-topic layout). Persisted to `/cc1101.cfg`. | `CcHassDisc 1` | `{"CcHassDisc":1}` — see [`docs/mqtt-home-assistant.md`](docs/mqtt-home-assistant.md) |
+| `CcTxPower` | `CcTxPower [byte]` — CC1101 OOK mark level `PATABLE[1]` (`0` = preset default; e.g. `0xC0` ≈ +10 dBm @433). Persisted to `/cc1101.cfg`. | `CcTxPower 0xC0` | `{"CcTxPower":"0xC0"}` |
+| `CcRxGain` | `CcRxGain [byte]` — CC1101 `AGCCTRL2` (0x1B) override (`0` = preset default; lower MAX_LNA/DVGA = less gain). Persisted. | `CcRxGain 0x03` | `{"CcRxGain":"0x03"}` |
 | `CcRfSend` | `CcRfSend {"Data":"0x..","Bits":8-32,"Protocol":1,"Pulse":100-2000,"Repeat":n}` (or a bare decimal/hex `Data` value using the defaults `Bits:24 Protocol:1 Pulse:350 Repeat:10`) — named `CcRfSend`, **not** `RfSend`: see note below | `CcRfSend {"Data":"0x00AABB","Bits":24,"Pulse":350,"Repeat":5}` | `"Done"` / `"Failed"` / `"no radio"` / `"rate limited"` / `"only Protocol 1, Bits 8..32, Pulse 100..2000"`; before transmitting it announces on `rtl_433/nodes/<host>/tx` (see below) |
 | `SecplusId` | `SecplusId [id]` (36-bit id, masked to `0xF0FFFFFFFF`) | `SecplusId 12345` | `{"SecplusId":12345}` |
 | `SecplusCounter` | `SecplusCounter [n]` (28-bit rolling counter, masked to `0x0FFFFFFF`) | `SecplusCounter` | `0` (plain number; normally left alone — `SecplusSend` increments and persists it itself) |
@@ -147,7 +154,8 @@ Notes:
 ## MQTT topics
 
 For the full per-field JSON schema of every device, the Home Assistant
-autodiscovery setup, and the (still-pending) live-broker validation procedure,
+autodiscovery setup, and the live-broker validation procedure (validated
+2026-09-09 on the real `ha.welland.mithis.com` broker — see the doc),
 see [`docs/mqtt-home-assistant.md`](docs/mqtt-home-assistant.md).
 
 | Direction | Topic | Example payload |

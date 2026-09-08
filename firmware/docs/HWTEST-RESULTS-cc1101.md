@@ -284,7 +284,7 @@ sessions.
 - **Still pending** (unchanged from `esp32c3-cc1101-node.md`'s bench runbook, out of scope for this
   session): a real remote/Merlin/WS85 capture (needs a human to press hardware remotes and/or a
   WS85 sensor in range), the R7 (RCSwitch 25-vs-24-bit) and R8 (WS85 frame length) rulings, a
-  register-dump comparison against `cc1101-fulldump.py`, an actual FSK TX carrier test seen on a
+  register-dump comparison against the `tools/cc1101.py` reference register set, an actual FSK TX carrier test seen on a
   second receiver, and the 48 h soak/OTA stage. This session's scope was the driver/command layer
   and real CC1101 register I/O/RX-state on hardware, which is now confirmed on two boards.
 
