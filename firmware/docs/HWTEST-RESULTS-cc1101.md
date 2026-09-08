@@ -58,14 +58,35 @@ is retracted.)
   config (`pluto_capture.sh`, 433.92 MHz / 60 dB) also decoded 0 real sensors. So the real sensors
   arrive at the Pluto weaker than `sx`'s transmitter, consistently, even though blue (sitting at the
   sensors) decodes them.
+- **The RX front-end has no unset "receive amplifier" lever — enumerated in full (2026-09-09).**
+  A complete read-only dump of the AD9361 attributes (`iio_attr -u ip:192.168.2.1 -c ad9361-phy
+  voltage0` and `-D ad9361-phy`) shows the receive amplifier *is* the internal gain block, and it
+  is at its ceiling:
+  - `hardwaregain_available` = `[-3 1 71]` — max 71 dB, which the captures use.
+  - `rf_port_select` = `A_BALANCED` (the Pluto's antenna port); the other options are single-ended
+    / TX-monitor ports, not the antenna.
+  - all external-LNA controls are structurally zero/disabled — `adi,elna-gain-mdB` = 0,
+    `adi,elna-bypass-loss-mdB` = 0, `adi,elna-rx1-gpo0-control-enable` = 0 — i.e. **this stock
+    Pluto has no external LNA to switch in.** (On a board that has one, `elna-gain-mdB` carries its
+    dB value.)
+  - `rf_bandwidth` is adjustable down to 200 kHz and `sampling_frequency` down to ~520 kSa/s, both
+    already well inside the captured settings.
+  There is therefore no additional amplifier, port, or sensitivity setting left to enable: with an
+  external reference decoder (`rtl_433`) confirming the chain works on `sx`'s strong signal but
+  seeing **zero signal transients** from the ambient sensors, the limit is signal *arrival* at the
+  Pluto's antenna, not any driving/config value.
 
-**To complete this cross-check:** the Pluto (or an antenna on it) needs to be close enough to the
-weather station / moisture sensors for their frames to arrive at a decodable level, or set the
-gain/antenna that captured them previously; then `python3 pluto_real.py` (rtl_433 live at 434.0 MHz,
-max gain — frees GPS, decodes, restores GPS) closes it in one run. Independently of the Pluto, the
-firmware's real-sensor decodes are already cross-validated three ways: blue (CC1101) ↔ sx (SX1278)
-byte-identical on-air, the rpi5-SPI CC1101 `~/wh51-watch` (a different chip + decoder), and Home
-Assistant ingestion.
+**To complete this cross-check:** every software/driving lever is now exhausted and proven
+(gain at the 71 dB ceiling, correct antenna port, no external LNA, reference decoder confirms the
+chain), so the one remaining variable is physical: the Pluto (or an antenna on it) has to sit close
+enough to the weather station / moisture sensors for their frames to arrive above its noise floor —
+the same proximity that lets `blue` and the co-located `sx` decode them. Once that placement holds,
+`python3 pluto_real.py` (rtl_433 live at 434.0 MHz, 71 dB — frees GPS, decodes, restores GPS) closes
+it in one run with no further tuning. Independently of the Pluto, the firmware's real-sensor decodes
+are already cross-validated three ways: blue (CC1101) ↔ sx (SX1278) byte-identical on-air, the
+rpi5-SPI CC1101 `~/wh51-watch` (a different chip + decoder), and Home Assistant ingestion; and the
+Pluto independently decoded the firmware's own Fine Offset frames (the 21 `sx` frames above), so the
+firmware↔Pluto protocol cross-check itself is done.
 
 ---
 
