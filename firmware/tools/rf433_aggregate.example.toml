@@ -1,0 +1,33 @@
+# rf433 aggregator — Welland example. Copy to /etc/rf433/rf433_aggregate.toml and edit.
+site = "welland"
+# Must not match the aggregator's own "rf433-<site>" RESULT topic (tele/rf433-<site>/RESULT),
+# or the aggregator would treat its own RESULT stream as a receiver and loop.
+node_topic_prefix = "cc1101-"
+
+[mqtt]
+host = "mqtt.welland.example"      # your broker
+port = 1883
+username = ""
+password = ""
+
+[dedup]
+window_s = 2.0
+[dedup.window_by_model]
+"Secplus-v2" = 3.0
+
+[tx]
+ledger_s = 3.0
+designated_transmitter = "cc1101-welland-carport"   # node topic that owns SecplusSend/RfSend for HA
+
+[echo]
+own_secplus_ids = []                 # SecplusId of our nodes once paired
+
+[controlled]
+# OOK codes we control (sites/welland/rf-codes.md); matched on their first 24 bits; annotated, never suppressed
+codes = ["c3ff3f8", "c3ffff8", "f3ff3f8", "f3ffff8", "cfff3f8", "cfffff8", "ffff3f8",
+         "c0ff3f8", "c0ffff8", "f0ff3f8", "f0ffff8", "ccff3f8", "ccffff8", "fcff3f8", "fcffff8",
+         "fa07cb8", "fa07cd8", "fa07ce8", "5596fc8"]
+
+# Tasmota RF Bridge learned keys (RfKey<n> -> code) so its replays are recognised as our own TX.
+# Fill in once the key->code mapping is known (see protocols/rf-aggregation.md).
+[bridge_rfkeys."tasmota-E7041B-1051"]

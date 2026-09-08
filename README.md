@@ -63,14 +63,16 @@ loads the net with enough capacitance that, through the chip's weak internal
 pull-up, a strap can rise too slowly for the mask ROM to read it high at
 reset; the ROM then latches BOOT (GPIO9) low and drops into USB download
 mode instead of running the firmware. This was measured on the bench on
-2026-09-06, and it is not fixable in software (the ROM samples the strap
-before any code runs). Position 4 (CSN/SCK/NSS) therefore takes **GPIO1**,
-not GPIO9; GPIO9 is left unconnected, where its internal pull-up floats it
-high -- the safest state, since nothing can pull an unconnected pin low.
-GPIO5 is the radio-type strap (below); a second 3V3 and the unused GPIOs
-(GPIO0, 2, 8 and the UART pair GPIO20/21) are brought out to a 1x7 header on
-the top edge, and the two straps that stay on that header (GPIO8, GPIO2)
-each have an optional do-not-populate pull-up-to-3V3 footprint. The
+2026-09-06 and later confirmed over JTAG (the GPIO_STRAP_REG latch reads the
+download pattern on the affected board while the live GPIO9 reads high), and
+it is not fixable in software (the ROM samples the strap before any code
+runs). Position 4 (CSN/SCK/NSS) therefore takes **GPIO1**, not GPIO9; GPIO9
+is left unconnected, where its internal pull-up floats it high -- the safest
+state, since nothing can pull an unconnected pin low. GPIO5 is the
+radio-type strap (below); a second 3V3 and the unused GPIOs (GPIO0, 2, 8 and
+the UART pair GPIO20/21) are brought out to a 1x7 header on the top edge, and
+the two straps that stay on that header (GPIO8, GPIO2) each have an optional
+do-not-populate pull-up-to-3V3 footprint. The
 SuperMini's pins go into 1.0 mm through-holes so it
 can be fitted with headers, and the pads are also extended past the
 SuperMini's edge so it can be soldered flat by its castellations; its USB-C
