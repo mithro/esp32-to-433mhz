@@ -21,6 +21,11 @@ static const cc_hass_field_t FIELDS[] = {
     {"battery_mV",    "Battery Voltage", "voltage",       "mV",    "measurement",      "{{ value|float }}"},
     {"battery_pct",   "Battery",         "battery",       "%",     "measurement",      "{{ value|float }}"},
     {"supercap_V",    "Supercapacitor",  "voltage",       "V",     "measurement",      "{{ value|float }}"},
+    // battery_ok is the ONLY battery signal WS69/WH65B emit (no mV/pct there), so expose it or a
+    // WS69 gets no battery entity at all. It is 0/1 on WS69 and 0.0-1.0 on WH51/WS85; leave it a
+    // plain numeric sensor (no device_class — the "battery" sensor class wants a %) that passes the
+    // raw value through, rather than a per-model normalisation the shaping layer can't know.
+    {"battery_ok",    "Battery OK",      NULL,            NULL,    NULL,               NULL},
 };
 
 const cc_hass_field_t *cc_hass_fields(size_t *count)

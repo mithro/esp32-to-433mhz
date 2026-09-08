@@ -193,13 +193,16 @@ static void CcWrapEvent(const char* decoder_json, int rssi, char* out, size_t le
  * homeassistant/sensor/.../config so HA creates the weather/moisture entities natively — no rtl_433
  * add-on/aggregator needed. Config is retained and emitted once per (model,id) per boot; state is
  * retained so HA restores the last value across restarts. Non-sensor decodes (no "model") no-op. */
-#define CC_HASS_SEEN_MAX 12
+#define CC_HASS_SEEN_MAX 16
 static char CcHassSeen[CC_HASS_SEEN_MAX][40];
-static uint8_t CcHassSeenN = 0;
+static uint8_t CcHassSeenN = 0, CcHassSeenRing = 0;
 static bool CcHassFirstSeen(const char* key) {           // true the first time a sensor appears this boot
   for (uint8_t i = 0; i < CcHassSeenN; i++) if (!strcmp(CcHassSeen[i], key)) return false;
-  if (CcHassSeenN < CC_HASS_SEEN_MAX) strlcpy(CcHassSeen[CcHassSeenN++], key, sizeof CcHassSeen[0]);
-  return true;                                           // table full: still publish (retained config is idempotent)
+  uint8_t slot;                                          // FIFO-evict the oldest when full, so a 17th sensor
+  if (CcHassSeenN < CC_HASS_SEEN_MAX) slot = CcHassSeenN++;        // still gets its config published once
+  else { slot = CcHassSeenRing; CcHassSeenRing = (CcHassSeenRing + 1) % CC_HASS_SEEN_MAX; }  // (retained,
+  strlcpy(CcHassSeen[slot], key, sizeof CcHassSeen[0]);           // idempotent) rather than re-publishing
+  return true;                                                    // its config on every frame forever.
 }
 static void CcPublishHassDiscovery(const char* dec) {
   // Gate on the live MQTT link: the radio decodes within ~1 s of boot, well before WiFi+MQTT are

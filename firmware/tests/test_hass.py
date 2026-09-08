@@ -92,6 +92,23 @@ def test_config_payload_omits_null_meta():
     assert cfg["unit_of_meas"] == "°"
 
 
+def test_config_payload_battery_ok_all_null_meta():
+    """battery_ok (WS69's only battery signal) has no device_class/unit/state_class/val_tpl —
+    the config must still be valid JSON with just name/uniq_id/stat_t/dev."""
+    L = lib()
+    buf = ctypes.create_string_buffer(JMAX)
+    f = L.cc_hass_field_lookup(b"battery_ok")
+    assert f, "battery_ok must be a known field"
+    L.cc_hass_config_payload(buf, JMAX, b"n", b"Fineoffset-WS69", b"174", f,
+                             b"rtl_433/nodes/n/devices/Fineoffset-WS69/174/battery_ok", None)
+    cfg = json.loads(buf.value.decode("utf-8"))
+    assert cfg["name"] == "Battery OK"
+    assert cfg["uniq_id"] == "Fineoffset-WS69-174-battery_ok"
+    for k in ("dev_cla", "unit_of_meas", "stat_cla", "val_tpl", "avty_t"):
+        assert k not in cfg
+    assert cfg["dev"]["ids"] == ["Fineoffset-WS69-174"]
+
+
 def test_extract_string_and_number_and_absent():
     L = lib()
     buf = ctypes.create_string_buffer(48)
