@@ -19,6 +19,7 @@
 #include "cc1101_node/cc1101_pulse.h"
 #include "cc1101_node/secplus2.h"
 #include "cc1101_node/cc1101_mqtt.h"
+#include "cc1101_node/cc1101_hass.h"
 #include "cc1101_node/decoders/decode_common.h"
 #include "cc1101_node/decoders/decode_fineoffset.h"
 #include "cc1101_node/decoders/decode_ookpwm.h"
@@ -41,7 +42,11 @@ struct CcConfig {
   // Power control (0 = use the preset default). cc_tx_pa -> CC1101 PATABLE[0];
   // cc_rx_agc -> CC1101 AGCCTRL2 (0x1B); sx_tx_pa -> SX1278 RegPaConfig; sx_rx_lna ->
   // SX1278 RegLna (nonzero also switches RX off AGC-auto). Carved from pad, no version bump.
-  uint8_t cc_tx_pa; uint8_t cc_rx_agc; uint8_t sx_tx_pa; uint8_t sx_rx_lna; uint8_t pad2[2];
+  uint8_t cc_tx_pa; uint8_t cc_rx_agc; uint8_t sx_tx_pa; uint8_t sx_rx_lna;
+  // hass_nodisc: HA MQTT Discovery publisher. 0 = ENABLED (default, incl. every existing
+  // /cc1101.cfg whose pad loaded as 0), nonzero = disabled. Inverted so on-by-default needs no
+  // version bump. Carved from pad2, so sizeof(CcConfig) is unchanged. See CmndCcHassDisc.
+  uint8_t hass_nodisc; uint8_t pad2[1];
 };
 static CcConfig CcCfg;
 
@@ -182,6 +187,52 @@ static bool CcRepeatSuppressed(const char* key, uint32_t now) {
 /* prepend time/receiver to a decoder JSON object: {"time":"…","receiver":"…",<decoder fields>} */
 static void CcWrapEvent(const char* decoder_json, int rssi, char* out, size_t len) {
   cc_wrap_event(out, len, GetDateAndTime(DT_LOCAL).c_str(), NetworkHostname(), rssi, decoder_json);
+}
+/* ---------- Home Assistant MQTT Discovery (byte-shaping in cc1101_node/cc1101_hass.c) ----------
+ * For each decoded sensor the node publishes retained per-field state to a device topic and a
+ * homeassistant/sensor/.../config so HA creates the weather/moisture entities natively — no rtl_433
+ * add-on/aggregator needed. Config is retained and emitted once per (model,id) per boot; state is
+ * retained so HA restores the last value across restarts. Non-sensor decodes (no "model") no-op. */
+#define CC_HASS_SEEN_MAX 12
+static char CcHassSeen[CC_HASS_SEEN_MAX][40];
+static uint8_t CcHassSeenN = 0;
+static bool CcHassFirstSeen(const char* key) {           // true the first time a sensor appears this boot
+  for (uint8_t i = 0; i < CcHassSeenN; i++) if (!strcmp(CcHassSeen[i], key)) return false;
+  if (CcHassSeenN < CC_HASS_SEEN_MAX) strlcpy(CcHassSeen[CcHassSeenN++], key, sizeof CcHassSeen[0]);
+  return true;                                           // table full: still publish (retained config is idempotent)
+}
+static void CcPublishHassDiscovery(const char* dec) {
+  // Gate on the live MQTT link: the radio decodes within ~1 s of boot, well before WiFi+MQTT are
+  // up, and the config is published once per (model,id) per boot. Without this guard that first
+  // config is dropped (broker not connected) yet the sensor is marked seen, so it never reappears.
+  if (CcCfg.hass_nodisc || !MqttIsConnected()) return;
+  char model[32], id[24];
+  if (cc_hass_extract(dec, "model", model, sizeof model) < 0) return;   // not a sensor decode
+  if (cc_hass_extract(dec, "id", id, sizeof id) < 0) return;
+  const char* node = NetworkHostname();
+  char lwt[TOPSZ]; GetTopic_P(lwt, TELE, TasmotaGlobal.mqtt_topic, PSTR(D_LWT));
+  char key[40]; snprintf(key, sizeof key, "%s-%s", model, id);
+  bool first = CcHassFirstSeen(key);
+  size_t nfields; const cc_hass_field_t* fields = cc_hass_fields(&nfields);
+  for (size_t i = 0; i < nfields; i++) {
+    char val[24];
+    if (cc_hass_extract(dec, fields[i].field, val, sizeof val) < 0) continue;   // field absent this frame
+    char stopic[128]; if (cc_hass_state_topic(stopic, sizeof stopic, node, model, id, fields[i].field) < 0) continue;
+    MqttPublishPayload(stopic, val, 0, true);                                   // retained per-field state
+    if (first) {
+      char ctopic[192], payload[512];
+      if (cc_hass_config_topic(ctopic, sizeof ctopic, model, id, fields[i].field) < 0) continue;
+      if (cc_hass_config_payload(payload, sizeof payload, node, model, id, &fields[i], stopic, lwt) < 0) continue;
+      MqttPublishPayload(ctopic, payload, 0, true);                             // retained discovery config
+    }
+  }
+}
+/* wrap + publish the rtl_433 event, then emit HA discovery for the same decode */
+static void CcEmitDecode(const char* dec, int rssi) {
+  char ev[RF_JSON_MAX + 96];
+  CcWrapEvent(dec, rssi, ev, sizeof ev);
+  CcPublishEvent(ev);
+  CcPublishHassDiscovery(dec);
 }
 
 /* ---------- OOK edge capture on GDO2 (ISR ring buffer; ruling R1: ISR instead of RMT) ---------- */
@@ -478,7 +529,7 @@ static void CcWeatherPoll(void) {
   Cc.rx++; Cc.last_rssi = rssi;
   if (rc == CC_WX_DECODED) {
     Cc.decoded++;
-    if (!CcRepeatSuppressed(dec, millis())) { char ev[RF_JSON_MAX + 96]; CcWrapEvent(dec, rssi, ev, sizeof ev); CcPublishEvent(ev); }
+    if (!CcRepeatSuppressed(dec, millis())) { CcEmitDecode(dec, rssi); }
   } else if (CcCfg.raw) {                                 // CC_WX_RAW: drained but undecodable — publish hex if raw mode on
     char rawmsg[128]; int l = snprintf_P(rawmsg, sizeof rawmsg, PSTR("{\"Packet\":\""));
     for (size_t i = 0; i < nbytes && l < (int)sizeof rawmsg - 8; i++) l += snprintf_P(rawmsg + l, sizeof rawmsg - l, PSTR("%02X"), raw[i]);
@@ -514,7 +565,7 @@ static void SxWeatherPoll(void) {                                 // FUNC_EVERY_
   Sx.rx++; Sx.last_rssi = rssi;
   if (rc == SX_WX_DECODED) {
     Sx.decoded++;
-    if (!CcRepeatSuppressed(dec, millis())) { char ev[RF_JSON_MAX + 96]; CcWrapEvent(dec, rssi, ev, sizeof ev); CcPublishEvent(ev); }
+    if (!CcRepeatSuppressed(dec, millis())) { CcEmitDecode(dec, rssi); }
   } else if (CcCfg.raw) {                                         // SX_WX_RAW: drained but undecodable — publish hex if raw mode on
     char rawmsg[128]; int l = snprintf_P(rawmsg, sizeof rawmsg, PSTR("{\"Packet\":\""));
     for (size_t i = 0; i < nbytes && l < (int)sizeof rawmsg - 8; i++) l += snprintf_P(rawmsg + l, sizeof rawmsg - l, PSTR("%02X"), raw[i]);
@@ -564,8 +615,12 @@ void CmndCcRxGain(void) {    // CcRxGain [byte] -- CC1101 AGCCTRL2 0x1B (0=prese
   if (XdrvMailbox.data_len) { CcCfg.cc_rx_agc = (uint8_t)strtoul(XdrvMailbox.data, nullptr, 0); CcCfgSave(); if (Cc.present) CcEnterMode(); }
   Response_P(PSTR("{\"CcRxGain\":\"0x%02X\"}"), CcCfg.cc_rx_agc);
 }
-const char kCcCommands[] PROGMEM = "Cc|Mode|Preset|Reg|Status|Raw|Hass|TxPower|RxGain";
-void (* const CcCommand[])(void) PROGMEM = { &CmndCcMode, &CmndCcPreset, &CmndCcReg, &CmndCcStatus, &CmndCcRaw, &CmndCcHass, &CmndCcTxPower, &CmndCcRxGain };
+void CmndCcHassDisc(void) {  // CcHassDisc 0|1 -- publish homeassistant/sensor/.../config for decoded sensors (1=on, default)
+  if (XdrvMailbox.data_len) { CcCfg.hass_nodisc = (XdrvMailbox.payload != 0) ? 0 : 1; CcCfgSave(); }
+  Response_P(PSTR("{\"CcHassDisc\":%d}"), CcCfg.hass_nodisc ? 0 : 1);
+}
+const char kCcCommands[] PROGMEM = "Cc|Mode|Preset|Reg|Status|Raw|Hass|TxPower|RxGain|HassDisc";
+void (* const CcCommand[])(void) PROGMEM = { &CmndCcMode, &CmndCcPreset, &CmndCcReg, &CmndCcStatus, &CmndCcRaw, &CmndCcHass, &CmndCcTxPower, &CmndCcRxGain, &CmndCcHassDisc };
 // Un-prefixed command table: named CcRfSend, not RfSend — xdrv_17_rcswitch.ino (USE_RC_SWITCH,
 // which IS compiled into this tasmota32c3 build) already defines CmndRfSend/"RfSend", so the
 // bare Tasmota name collides at link time. Renamed to avoid the redefinition.
@@ -600,10 +655,10 @@ void CmndCcReg(void) {             // CcReg <addr> [value]  (hex or decimal); ad
   Response_P(PSTR("{\"CcReg\":{\"Addr\":\"0x%02X\",\"Value\":\"0x%02X\"}}"), (unsigned)addr, v);
 }
 void CmndCcStatus(void) {
-  Response_P(PSTR("{\"CcStatus\":{\"Present\":%d,\"PARTNUM\":\"0x%02X\",\"VERSION\":\"0x%02X\",\"MARCSTATE\":\"0x%02X\",\"Mode\":\"%s\",\"Preset\":\"%s\",\"RSSI\":%d,\"Rx\":%u,\"Decoded\":%u,\"Tx\":%u,\"Reinit\":%u,\"Overflow\":%u,\"Repeats\":%u,\"Raw\":%d,\"Hass\":%d,\"SecplusId\":%llu,\"Rolling\":%u}}"),
+  Response_P(PSTR("{\"CcStatus\":{\"Present\":%d,\"PARTNUM\":\"0x%02X\",\"VERSION\":\"0x%02X\",\"MARCSTATE\":\"0x%02X\",\"Mode\":\"%s\",\"Preset\":\"%s\",\"RSSI\":%d,\"Rx\":%u,\"Decoded\":%u,\"Tx\":%u,\"Reinit\":%u,\"Overflow\":%u,\"Repeats\":%u,\"Raw\":%d,\"Hass\":%d,\"HassDisc\":%d,\"SecplusId\":%llu,\"Rolling\":%u}}"),
              Cc.present, Cc.partnum, Cc.version, Cc.present ? Cc.radio->marcstate() : 0,
              CcCfg.mode == CC_MODE_WEATHER ? "weather" : "remotes", cc_preset_name(Cc.preset),
-             Cc.present ? Cc.radio->rssi_dbm() : 0, Cc.rx, Cc.decoded, Cc.tx, Cc.reinit, Cc.overflow, Cc.repeats, CcCfg.raw, CcCfg.hass,
+             Cc.present ? Cc.radio->rssi_dbm() : 0, Cc.rx, Cc.decoded, Cc.tx, Cc.reinit, Cc.overflow, Cc.repeats, CcCfg.raw, CcCfg.hass, CcCfg.hass_nodisc ? 0 : 1,
              (unsigned long long)CcCfg.secplus_id, (unsigned)CcCfg.rolling);
 }
 void CmndCcRaw(void) {
