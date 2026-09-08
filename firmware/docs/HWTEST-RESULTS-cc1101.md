@@ -274,9 +274,85 @@ hardware**: WS69 and WH51 received and decoded byte-exact against the LilyGo and
 loggers (moisture / ad_raw / battery all matching). The SX1278 uses fixed-length FSK RX and did not
 exhibit the CC1101 bandwidth issue (its crystal offset is within its passband).
 
-## Remaining
-- **green** (`4F:D8`): flashed with the 325 kHz firmware; awaiting a VDD power cycle to boot from
-  flash (the post-flash USB-serial-JTAG download state clears only on VDD removal — GPIO9 measured
-  healthy/high, not a strap fault).
-- **blue**: fix proven via runtime override; reflash to the baked-in image pending a power cycle.
-- Pluto SDR cross-check; full Home Assistant MQTT publish/subscribe round-trip.
+## Remaining (updated 2026-09-08 — see next section)
+- **blue**: DONE — baked-in 325 kHz image validated from a cold boot (Decoded=11).
+- **Home Assistant MQTT publish/subscribe round-trip**: DONE — isolated broker, both directions.
+- **green** (`4F:D8`): characterised as a board-level power-on boot-strap trait (byte-identical
+  firmware to blue; blue boots and green does not on the same VDD cycle; eFuses default). Not a
+  firmware defect — details in the next section.
+- **Pluto SDR**: reception confirmed by correlation; byte-level software demod still open (not
+  required for firmware correctness).
+
+# MQTT round-trip, cross-receiver check, and green boot characterisation (2026-09-08)
+
+Follows the 2026-09-06 RX-bandwidth fix. Blue was reflashed with the baked-in 325 kHz
+image and validated from a cold boot; the isolated Home Assistant MQTT round-trip, an
+inter-receiver cross-check, and a definitive characterisation of the green board's boot
+behaviour were completed. All work is on real hardware on `rpi5-433mhz`.
+
+## Blue: baked-in fix confirmed from cold boot
+
+After `sudo reboot` of `rpi5-433mhz`, blue (`E8:3D:C1:8C:3E:B8`) came up `boot:0xd
+(SPI_FAST_FLASH_BOOT)` on the baked-in image and decoded live over 120 s: `Decoded=11`
+(WS69 `id174` 9.6 °C / 95 %RH; WH51 `0f5d66`/`0f5d7f` 38 %; RSSI -63..-77). The runtime
+override is now a shipped default, not a manual poke.
+
+## Isolated Home Assistant MQTT round-trip (criterion e)
+
+To exercise MQTT without touching the production broker, `rpi5-433mhz`'s `wlan0` was turned
+into a NAT hotspot (`cc1101-test`, 2.4 GHz, `ipv4.method=shared`, gateway `10.42.0.1`) and a
+local `mosquitto 2.0.21` broker was run on it (same broker software as the HA add-on). Blue
+joined at `10.42.0.99` and was pointed at `10.42.0.1:1883` with `SetOption19 1` (HA
+discovery). Captured with `mosquitto_sub -v -t '#'`:
+
+**Publish** (device -> broker):
+- `rtl_433/nodes/cc1101-node-8C3EB8-7864/events` — decoded sensor JSON (WS69 & WH51),
+  matching the existing rtl_433 -> HA topic convention.
+- `tasmota/discovery/E83DC18C3EB8/config` and `.../sensors` — native Tasmota HA
+  autodiscovery.
+- `tele/cc1101-node_8C3EB8/SENSOR` (with the `CC1101` status block), `STATE`, retained
+  `LWT = Online`, `INFO1..3`.
+
+**Receive** (broker -> device):
+- `cmnd/cc1101-node_8C3EB8/CcStatus` (driver command) -> `stat/cc1101-node_8C3EB8/RESULT`
+  with the full `CcStatus` JSON.
+- `cmnd/cc1101-node_8C3EB8/Status` -> `stat/cc1101-node_8C3EB8/STATUS`.
+
+This proves the firmware publishes the exact message shapes HA consumes and acts on commands
+delivered over MQTT. The real `ha.welland.mithis.com:1883` broker was confirmed reachable
+(TCP open) from the boards' NAT path; production rollout (device on `ansells-iot`, per-device
+`tas-<node_id>` credential via `gdoc2netcfg tasmota configure` + `register-broker`) is the
+operational step documented in `mqtt-home-assistant.md`.
+
+## Inter-receiver cross-check (criterion b)
+
+Blue (CC1101) and the SX1278 (RA-02) node were captured simultaneously over 90 s. Both
+independently decoded the same weather station with identical values — WS69 `id174` at
+18.9 °C then 19.0 °C on both radios — confirming two different RF front-ends agree through the
+shared decoder. The SX1278 additionally decoded four distinct WH51 moisture probes
+(`0f5c54` 36 %, `0f5d66` 37 %, `0f5d7f` 35 %, `0f4b37` 24 %), demonstrating multi-sensor
+reception. Pluto SDR reception of the same WH51 transmissions was previously confirmed by
+correlation (SNR 34-39 dB); a byte-level software demod from Pluto IQ remains an open DSP
+item and is not required for firmware correctness.
+
+## Green board: boot characterisation (hardware, not firmware)
+
+Green (`E8:3D:C1:8C:4F:D8`, D-SUN CC1101) does not run its application after a clean power-on;
+it lands in ROM download (`boot:0x5`). This was established to be a board-level trait, **not**
+a firmware defect, by direct evidence:
+
+- Green's flash is **byte-identical** to blue's working image: `esptool verify_flash 0x0
+  tasmota32c3-cc1101-bwfix.factory.bin` -> `verify OK (digest matched)`.
+- On one true VDD power cycle (RP1 GPIO42 VBUS cut, 8 s), on the same USB hub, **blue's app
+  runs and associates to the AP at t+0 s while green never associates in 45 s.** Same
+  firmware, same power event, opposite result.
+- Green's eFuses are all default (`DIS_FORCE_DOWNLOAD`, `DIS_DOWNLOAD_MODE`,
+  `DIS_USB_SERIAL_JTAG_DOWNLOAD_MODE` all `False`) — nothing forces download.
+- GPIO9 reads high in the ROM stub; a controlled DTR-held/RTS-pulsed app-boot reset still
+  lands in download.
+
+The ROM samples the GPIO9 (BOOT) strap before any firmware runs, so firmware cannot influence
+this; the symptom is consistent with a slow-rising BOOT line on that unit. The firmware
+already routes its position-4 signal off GPIO9 (commit `3dca9ff`), and the overlay guardrails
+deliberately forbid the eFuse burns (disable-ROM-download) that would mask it at the cost of
+USB recoverability. The CC1101 path is fully proven on blue, which runs the identical image.
