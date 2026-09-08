@@ -37,7 +37,11 @@ struct CcConfig {
   // hass: HA events-topic layout (CC_HASS_AGG/CC_HASS_DIRECT). Carved out of the trailing
   // reserved padding so sizeof(CcConfig) is unchanged and existing /cc1101.cfg files
   // (whose pad was zeroed at save) load unchanged with hass = 0 = CC_HASS_AGG — no version bump.
-  double secplus_freq[3]; uint8_t secplus_nfreq; uint8_t hass; uint8_t pad2[6];
+  double secplus_freq[3]; uint8_t secplus_nfreq; uint8_t hass;
+  // Power control (0 = use the preset default). cc_tx_pa -> CC1101 PATABLE[0];
+  // cc_rx_agc -> CC1101 AGCCTRL2 (0x1B); sx_tx_pa -> SX1278 RegPaConfig; sx_rx_lna ->
+  // SX1278 RegLna (nonzero also switches RX off AGC-auto). Carved from pad, no version bump.
+  uint8_t cc_tx_pa; uint8_t cc_rx_agc; uint8_t sx_tx_pa; uint8_t sx_rx_lna; uint8_t pad2[2];
 };
 static CcConfig CcCfg;
 
@@ -285,6 +289,7 @@ static bool CcTxPulses(const uint32_t* us, size_t n, int repeats, uint32_t gap_m
   size_t nbits = pulses_to_chips(us, n, 10, chips, sizeof chips);
   bool was_capturing = CcCapturing; CcCaptureStop();
   bool ok = Cc.radio->load_preset(CC_PRESET_OOK_TX_100K);
+  if (ok && CcCfg.cc_tx_pa) { uint8_t pa = CcCfg.cc_tx_pa; Cc.radio->write_patable(&pa, 1); }  // TX power override
   for (int r = 0; ok && r < repeats; r++) { ok = Cc.radio->tx_bits(chips, nbits, 2000); if (gap_ms) delay(gap_ms); }
   if (!ok) AddLog(LOG_LEVEL_ERROR, PSTR(CC_LOGPFX "tx: %s"), Cc.radio->last_error());
   CcEnterMode(); if (was_capturing) CcCaptureStart();
@@ -371,6 +376,7 @@ void CmndSecplusSend(void) {
   bool ok = true;
   for (int leg = 0; ok && leg < CcCfg.secplus_nfreq; leg++) {
     ok = Cc.radio->load_preset(CC_PRESET_OOK_TX_4K);
+    if (ok && CcCfg.cc_tx_pa) { uint8_t pa = CcCfg.cc_tx_pa; Cc.radio->write_patable(&pa, 1); }
     if (ok) { Cc.radio->set_freq(CcCfg.secplus_freq[leg] * 1e6); ok = Cc.radio->tx_bits(packed, nbits, 3000); }
   }
   CcEnterMode(); if (was_capturing) CcCaptureStart();
@@ -446,6 +452,7 @@ static void CcRadioBringUp(void) {
 }
 static bool CcLoadPresetAndRx(int preset) {
   if (!Cc.radio->load_preset(preset)) return false;
+  if (CcCfg.cc_rx_agc) Cc.radio->write_reg(0x1B, CcCfg.cc_rx_agc);  // AGCCTRL2 RX-gain override
   Cc.preset = preset;
   return Cc.radio->enter_rx();
 }
@@ -487,6 +494,10 @@ static void CcWeatherPoll(void) {
 static bool SxConfigureWeatherRx(void) {
   if (!Sx.present || !Sx.radio) { Sx.weather_rx = false; return false; }
   Sx.radio->configure_fineoffset_fsk();
+  if (CcCfg.sx_rx_lna) {                       // manual RX gain: set LNA + drop AGC-auto
+    Sx.radio->write_reg(SX_REG_RXCONFIG, 0x06);
+    Sx.radio->write_reg(SX_REG_LNA, CcCfg.sx_rx_lna);
+  }
   Sx.radio->enter_rx();
   Sx.weather_rx = true;
   AddLog(LOG_LEVEL_INFO, PSTR(CC_LOGPFX "SX1278 FSK weather RX: 433.92 MHz 17.241 kbps sync 0x2DD4, fixed len %d"), (int)SX_FSK_RX_LEN);
@@ -541,8 +552,16 @@ static void CcHealth50ms(void) {
 }
 
 /* ---------- commands ---------- */
-const char kCcCommands[] PROGMEM = "Cc|Mode|Preset|Reg|Status|Raw|Hass";
-void (* const CcCommand[])(void) PROGMEM = { &CmndCcMode, &CmndCcPreset, &CmndCcReg, &CmndCcStatus, &CmndCcRaw, &CmndCcHass };
+void CmndCcTxPower(void) {   // CcTxPower [byte] -- CC1101 PATABLE[0] (0=preset default; e.g. 0xC0 ~ +10 dBm @433)
+  if (XdrvMailbox.data_len) { CcCfg.cc_tx_pa = (uint8_t)strtoul(XdrvMailbox.data, nullptr, 0); CcCfgSave(); }
+  Response_P(PSTR("{\"CcTxPower\":\"0x%02X\"}"), CcCfg.cc_tx_pa);
+}
+void CmndCcRxGain(void) {    // CcRxGain [byte] -- CC1101 AGCCTRL2 0x1B (0=preset default; lower MAX_LNA/DVGA = less gain)
+  if (XdrvMailbox.data_len) { CcCfg.cc_rx_agc = (uint8_t)strtoul(XdrvMailbox.data, nullptr, 0); CcCfgSave(); if (Cc.present) CcEnterMode(); }
+  Response_P(PSTR("{\"CcRxGain\":\"0x%02X\"}"), CcCfg.cc_rx_agc);
+}
+const char kCcCommands[] PROGMEM = "Cc|Mode|Preset|Reg|Status|Raw|Hass|TxPower|RxGain";
+void (* const CcCommand[])(void) PROGMEM = { &CmndCcMode, &CmndCcPreset, &CmndCcReg, &CmndCcStatus, &CmndCcRaw, &CmndCcHass, &CmndCcTxPower, &CmndCcRxGain };
 // Un-prefixed command table: named CcRfSend, not RfSend — xdrv_17_rcswitch.ino (USE_RC_SWITCH,
 // which IS compiled into this tasmota32c3 build) already defines CmndRfSend/"RfSend", so the
 // bare Tasmota name collides at link time. Renamed to avoid the redefinition.
@@ -640,14 +659,34 @@ void CmndSxFskTx(void) {          // SxFskTx <hex> -- transmit a 2-FSK packet (S
   }
   if (!n) { ResponseCmndChar_P(PSTR("<hex payload>")); return; }
   bool was_rx = Sx.weather_rx;               // pause the weather receiver across the transmit
-  Sx.radio->configure_fsk_tx((uint8_t)n);
+  Sx.radio->configure_fsk_tx((uint8_t)n, CcCfg.sx_tx_pa ? CcCfg.sx_tx_pa : 0x8F);
   bool ok = Sx.radio->transmit_fsk(buf, n, 200);
   if (ok) Sx.tx++;
   if (was_rx) SxConfigureWeatherRx();        // re-arm FSK RX (it also restores the RX preset)
   Response_P(PSTR("{\"SxFskTx\":{\"Sent\":%d,\"Bytes\":%u}}"), ok, (unsigned)n);
 }
-const char kSxCommands[] PROGMEM = "Sx|Status|Reg|Reset|FskTx";
-void (* const SxCommand[])(void) PROGMEM = { &CmndSxStatus, &CmndSxReg, &CmndSxReset, &CmndSxFskTx };
+void CmndSxTxPower(void) {   // SxTxPower [2..17] dBm -- SX1278 PA_BOOST OutputPower (0=default +17)
+  if (XdrvMailbox.data_len) {
+    int dbm = atoi(XdrvMailbox.data);
+    if (dbm <= 0) CcCfg.sx_tx_pa = 0;                       // 0 -> default 0x8F (+17 dBm)
+    else { if (dbm < 2) dbm = 2; if (dbm > 17) dbm = 17; CcCfg.sx_tx_pa = 0x80 | (uint8_t)(dbm - 2); }
+    CcCfgSave();
+  }
+  uint8_t pa = CcCfg.sx_tx_pa ? CcCfg.sx_tx_pa : 0x8F;
+  Response_P(PSTR("{\"SxTxPower\":{\"dBm\":%d,\"PaConfig\":\"0x%02X\"}}"), 2 + (pa & 0x0F), pa);
+}
+void CmndSxRxGain(void) {    // SxRxGain [1..6] -- SX1278 LNA gain (1=max G1..6=min G6; 0=AGC-auto default)
+  if (XdrvMailbox.data_len) {
+    int g = atoi(XdrvMailbox.data);
+    if (g < 1 || g > 6) CcCfg.sx_rx_lna = 0;               // 0 -> AGC-auto (RXCONFIG 0x0E, LNA G1)
+    else CcCfg.sx_rx_lna = (uint8_t)(g << 5);
+    CcCfgSave();
+    if (Sx.present && CcActiveRadio == RADIO_SX1278 && CcCfg.mode == CC_MODE_WEATHER) SxConfigureWeatherRx();
+  }
+  Response_P(PSTR("{\"SxRxGain\":{\"Lna\":\"0x%02X\",\"Auto\":%d}}"), CcCfg.sx_rx_lna, CcCfg.sx_rx_lna ? 0 : 1);
+}
+const char kSxCommands[] PROGMEM = "Sx|Status|Reg|Reset|FskTx|TxPower|RxGain";
+void (* const SxCommand[])(void) PROGMEM = { &CmndSxStatus, &CmndSxReg, &CmndSxReset, &CmndSxFskTx, &CmndSxTxPower, &CmndSxRxGain };
 const char kRadioCommands[] PROGMEM = "|Radio";
 void (* const RadioCommand[])(void) PROGMEM = { &CmndCcRadioSel };
 

@@ -64,6 +64,12 @@ def test_fsk_tx_preset_and_fifo_framing():
     assert any(log[i:i + len(frame)] == frame for i in range(len(log))), log
 
 
+def test_fsk_tx_power_is_configurable():
+    # SxTxPower drives RegPaConfig: 0x8F=+17 dBm (default), 0x82=+4 dBm (low, for co-located tests).
+    assert host("transmit", "510f5c5401")["pa_config"] == 0x8F          # default
+    assert host("transmit", "510f5c5401", "0x82")["pa_config"] == 0x82  # low-power override
+
+
 def test_fsk_tx_modem_matches_rx_preset():
     # The TX preset must use the same bitrate/fdev/carrier/sync as the RX preset so a peer node's
     # configure_fineoffset_fsk() receiver can decode what we transmit (on-air compatibility).

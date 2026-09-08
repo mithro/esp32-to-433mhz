@@ -101,7 +101,9 @@ class SX1278Radio {
   // ---- Fine Offset 2-FSK TRANSMIT path (same modulation as the RX preset) ----
   // The RA-02 adapter routes only DIO0 (no DIO2 continuous-mode DATA line), so the SX1278
   // cannot do OOK-continuous TX/RX; FSK *packet* TX uses the FIFO and needs no extra wire.
-  void configure_fsk_tx(uint8_t payload_len);  // 2-FSK fixed-length packet TX preset (PA_BOOST)
+  // 2-FSK fixed-length packet TX preset. pa_config is written verbatim to RegPaConfig (0x09):
+  // 0x80|OutputPower selects PA_BOOST and Pout = 17-(15-OutputPower) dBm (0x8F=+17, 0x80=+2).
+  void configure_fsk_tx(uint8_t payload_len, uint8_t pa_config = 0x8F);
   void write_fifo(const uint8_t* d, size_t n); // burst-write n bytes into RegFifo (0x00)
   void enter_tx();                             // RegOpMode -> FSK TX
   bool packet_sent();                          // RegIrqFlags2 PacketSent bit set?

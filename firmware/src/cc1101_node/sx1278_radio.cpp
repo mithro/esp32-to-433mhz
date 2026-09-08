@@ -147,7 +147,7 @@ int SX1278Radio::rssi_dbm() {
  * works on the wiring as built.
  * ================================================================================= */
 
-void SX1278Radio::configure_fsk_tx(uint8_t payload_len) {
+void SX1278Radio::configure_fsk_tx(uint8_t payload_len, uint8_t pa_config) {
   // LongRangeMode (RegOpMode bit7) can only change in Sleep: force FSK sleep, then standby.
   write_reg(SX_REG_OPMODE, SX_OPMODE_FSK_SLEEP);
   write_reg(SX_REG_OPMODE, SX_OPMODE_FSK_STDBY);
@@ -162,9 +162,9 @@ void SX1278Radio::configure_fsk_tx(uint8_t payload_len) {
   }
   set_frequency(433920000.0);
 
-  // PA: RA-02 wires the antenna to PA_BOOST (RegPaConfig bit7=1). OutputPower=0x0F -> +17 dBm
-  // (Pout = 17 - (15 - OutputPower)). MaxPower bits are don't-care with PA_BOOST selected.
-  write_reg(SX_REG_PA_CONFIG, 0x8F);
+  // PA: RA-02 wires the antenna to PA_BOOST (RegPaConfig bit7=1). Caller supplies the power byte
+  // (default 0x8F = +17 dBm); Pout = 17 - (15 - OutputPower). MaxPower bits don't-care on PA_BOOST.
+  write_reg(SX_REG_PA_CONFIG, pa_config);
   write_reg(SX_REG_PA_RAMP, 0x09);                 // 40 us PA ramp, no Gaussian shaping
 
   // 5-byte 0xAA preamble gives the peer's preamble detector (2-byte, tolerance 10) time to lock.

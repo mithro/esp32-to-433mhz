@@ -99,8 +99,9 @@ int main(int argc, char** argv) {
     // fake clock only advances on delay_ms, which the TX path never calls). Report the key TX
     // registers and the full SPI log so the test can assert the FIFO-write framing + opmode order.
     std::vector<uint8_t> payload = argc > 2 ? from_hex(argv[2]) : from_hex("510f5c5401");
+    uint8_t pacfg = argc > 3 ? (uint8_t)strtoul(argv[3], nullptr, 0) : 0x8F;
     bus.regs[0x3F] = SX_IRQ2_PACKET_SENT;
-    r.configure_fsk_tx((uint8_t)payload.size());
+    r.configure_fsk_tx((uint8_t)payload.size(), pacfg);
     bool ok = r.transmit_fsk(payload.data(), payload.size(), 100);
     printf("{\"ok\":%d,\"opmode\":%d,\"pa_config\":%d,\"pa_ramp\":%d,\"fifothresh\":%d,"
            "\"packetconfig1\":%d,\"packetconfig2\":%d,\"payloadlength\":%d,\"preamble_lsb\":%d,"
