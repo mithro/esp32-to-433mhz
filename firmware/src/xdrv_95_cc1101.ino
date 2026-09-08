@@ -39,7 +39,7 @@ struct CcConfig {
   // reserved padding so sizeof(CcConfig) is unchanged and existing /cc1101.cfg files
   // (whose pad was zeroed at save) load unchanged with hass = 0 = CC_HASS_AGG — no version bump.
   double secplus_freq[3]; uint8_t secplus_nfreq; uint8_t hass;
-  // Power control (0 = use the preset default). cc_tx_pa -> CC1101 PATABLE[0];
+  // Power control (0 = use the preset default). cc_tx_pa -> CC1101 PATABLE[1] (the OOK mark level);
   // cc_rx_agc -> CC1101 AGCCTRL2 (0x1B); sx_tx_pa -> SX1278 RegPaConfig; sx_rx_lna ->
   // SX1278 RegLna (nonzero also switches RX off AGC-auto). Carved from pad, no version bump.
   uint8_t cc_tx_pa; uint8_t cc_rx_agc; uint8_t sx_tx_pa; uint8_t sx_rx_lna;
@@ -466,6 +466,8 @@ static bool CcProbeCc1101(int8_t sck, int8_t miso, int8_t mosi, int8_t cs, int8_
   return true;
 }
 static void CcCc1101BringUp(void) {
+  if (Sx.present && Sx.radio) Sx.radio->standby();     // release the SX1278 (shared SPI + CS/NSS) before re-probing
+  Sx.weather_rx = false; Sx.present = false;
   Cc.present = false;
   // Probe the legacy Tasmota template map first (if commissioned), then the verified board maps.
   if (PinUsed(GPIO_SPI_CS)) {
@@ -483,6 +485,8 @@ static void CcCc1101BringUp(void) {
   CcEnterMode();
 }
 static void CcSx1278BringUp(void) {
+  CcCaptureStop();                                     // stop any CC1101 OOK edge ISR before its GDO pins are repurposed
+  Cc.present = false;                                  // and stop telemetry/status/reg SPI from reaching the wrong chip
   Sx.present = false;
   SPI.end();
   SPI.begin(SX_MAP_RA02.sck, SX_MAP_RA02.miso, SX_MAP_RA02.mosi, -1);
@@ -754,6 +758,11 @@ void (* const RadioCommand[])(void) PROGMEM = { &CmndCcRadioSel };
 
 /* ---------- tele/SENSOR + web ---------- */
 static void CcShowJson(void) {
+  if (CcActiveRadio == RADIO_SX1278) {          // SX node: report the SX counters so they reach HA via SENSOR
+    ResponseAppend_P(PSTR(",\"SX1278\":{\"Mode\":\"%s\",\"RSSI\":%d,\"Rx\":%u,\"Decoded\":%u,\"Tx\":%u}"),
+                     Sx.weather_rx ? "weather" : "idle", Sx.present ? Sx.last_rssi : 0, Sx.rx, Sx.decoded, Sx.tx);
+    return;
+  }
   ResponseAppend_P(PSTR(",\"CC1101\":{\"Mode\":\"%s\",\"Preset\":\"%s\",\"RSSI\":%d,\"Rx\":%u,\"Decoded\":%u,\"Tx\":%u,\"Reinit\":%u,\"SecplusId\":%llu,\"Rolling\":%u}"),
                    CcCfg.mode == CC_MODE_WEATHER ? "weather" : "remotes", cc_preset_name(Cc.preset),
                    Cc.present ? Cc.radio->rssi_dbm() : 0, Cc.rx, Cc.decoded, Cc.tx, Cc.reinit,
