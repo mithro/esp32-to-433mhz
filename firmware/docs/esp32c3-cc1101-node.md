@@ -19,7 +19,9 @@ JSON + `RfReceived` to MQTT (and the same over its native-USB console).
 > *foundation* (detect / register-I/O / radio selection), the CC1101 OOK + FSK
 > weather + decoder functionality, and the **SX1278 (RA-02) Fine Offset FSK
 > receive path** (weather parity with the CC1101 — see the section below). The
-> SX1278 FSK/OOK **transmit** and OOK/LoRa RX are still future work (OOK-continuous
+> SX1278 FSK **transmit** is now implemented (host-tested + radio-level confirmed;
+> on-air reception not yet confirmed, see below). SX1278 OOK TX and OOK/LoRa RX are
+> still future work (OOK-continuous
 > RX also needs a DIO2 wire this adapter does not route); `sx1278_radio.cpp`
 > currently implements only the Fine Offset FSK-RX path.
 
@@ -235,6 +237,30 @@ standby.
 Host-tested end to end by `../tests/test_sx1278_weather_rx.py`, which drives the
 identical `sx_weather_drain()` through a scripted FIFO for WH51/WS69/WS85 and
 asserts the config registers above against the datasheet math.
+
+
+## SX1278 (RA-02) Fine Offset FSK transmit
+
+`SxFskTx <hex>` transmits the payload as a fixed-length 2-FSK packet through the SX1278 (which
+must be the active radio, `Radio sx1278`). The TX preset (`configure_fsk_tx()`) uses the
+**same** carrier / bit-rate / deviation / sync as the RX preset (433.92 MHz, 17.241 kbps,
+~50 kHz fdev, 0xAA preamble + 0x2DD4 sync), so a peer running the CC1101 `FINEOFFSET_FSK`
+preset -- or another SX1278 in weather RX -- is on-air compatible. The command pauses weather
+RX, loads the FIFO, keys the transmitter (PA_BOOST, +17 dBm), waits for the `PacketSent` IRQ
+(with a timeout), then re-arms RX; `SxStatus` reports a `Tx` counter.
+
+**OOK TX is not provided:** like OOK RX, arbitrary OOK-PWM transmit needs the SX127x
+continuous-mode DATA line (DIO2), which the RA-02 socket does not route (`SX_MAP_RA02` wires
+only DIO0). FSK *packet* TX drives the FIFO over SPI and works on the wiring as built.
+
+**Validation state (2026-09-08):** host-tested (SPI framing, FIFO burst-write order, and TX
+modem params asserted equal to the RX preset -- `../tests/test_sx1278_fake_bus.py`) and
+confirmed at the radio level on hardware (`SxFskTx 510F5C54107F28F8D0FFFFFF4BD7` ->
+`{"Sent":1,"Bytes":14}`, i.e. `PacketSent` fires). On-air *reception* of the transmit is **not
+yet confirmed**: a co-located CC1101 (cm away) did not decode the burst and a distant Pluto SDR
+capture was inconclusive -- consistent with receiver desensitisation from the strong nearby
+transmitter. A power-attenuated or physically-separated RF test is the outstanding step to
+confirm radiated output.
 
 
 ## Why these choices (so they aren't relitigated)
