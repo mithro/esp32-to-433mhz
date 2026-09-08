@@ -254,13 +254,15 @@ continuous-mode DATA line (DIO2), which the RA-02 socket does not route (`SX_MAP
 only DIO0). FSK *packet* TX drives the FIFO over SPI and works on the wiring as built.
 
 **Validation state (2026-09-08):** host-tested (SPI framing, FIFO burst-write order, and TX
-modem params asserted equal to the RX preset -- `../tests/test_sx1278_fake_bus.py`) and
-confirmed at the radio level on hardware (`SxFskTx 510F5C54107F28F8D0FFFFFF4BD7` ->
-`{"Sent":1,"Bytes":14}`, i.e. `PacketSent` fires). On-air *reception* of the transmit is **not
-yet confirmed**: a co-located CC1101 (cm away) did not decode the burst and a distant Pluto SDR
-capture was inconclusive -- consistent with receiver desensitisation from the strong nearby
-transmitter. A power-attenuated or physically-separated RF test is the outstanding step to
-confirm radiated output.
+modem params asserted equal to the RX preset -- `../tests/test_sx1278_fake_bus.py`) **and
+confirmed on-air.** The transmit was received and decoded by an INDEPENDENT receiver -- the
+rpi5-SPI CC1101 (`~/wh51-watch/cc1101_watch.py`, a different chip and a different decoder
+codebase than this firmware): a 15-frame burst of the WH51 fixture at **+2 dBm** (`SxTxPower 2`)
+produced 15/15 decodes of id `0f5c54` at RSSI -41 dBm (vs the real sensor's -73..-88 dBm; a
+rapid cluster impossible for the ~70 s-interval real sensor). At the default +17 dBm the
+co-located receiver was desensitised and decoded nothing -- the runtime `SxTxPower` control
+(and `CcTxPower`/`SxRxGain`/`CcRxGain`) exists precisely for co-located on-air tests. This is
+both an on-air TX confirmation and an independent-oracle cross-check of the node's output.
 
 
 ## Why these choices (so they aren't relitigated)
