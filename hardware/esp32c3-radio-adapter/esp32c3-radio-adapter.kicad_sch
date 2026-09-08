@@ -1455,7 +1455,7 @@
 			)
 		)
 	)
-	(global_label "CSN_NSS"
+	(global_label "GPIO9"
 		(shape bidirectional)
 		(at 71.12 104.14 180)
 		(fields_autoplaced yes)
@@ -1763,7 +1763,7 @@
 			)
 		)
 	)
-	(global_label "GPIO1"
+	(global_label "CSN_NSS"
 		(shape bidirectional)
 		(at 96.52 109.22 180)
 		(fields_autoplaced yes)
@@ -2222,7 +2222,7 @@
 			)
 		)
 	)
-	(global_label "GPIO1"
+	(global_label "+3V3"
 		(shape bidirectional)
 		(at 147.32 127 180)
 		(fields_autoplaced yes)
@@ -2539,6 +2539,234 @@
 		)
 	)
 	(symbol
+		(lib_id "Device:R")
+		(at 228.6 127 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "e8961359-f4e3-544b-a8d4-53100a5b1bb8")
+		(property "Reference" "R2"
+			(at 231.14 114.3 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "4k7"
+			(at 231.14 139.7 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "Adapter:R_0805_HeaderPullup"
+			(at 228.6 127 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 228.6 127 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Optional pull-up: GPIO8 boot strap to 3V3 (DNP unless needed)"
+			(at 228.6 127 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "7a672aa4-ab1d-55e4-b84e-e8921ed8f007")
+		)
+		(pin "2"
+			(uuid "7f4c8708-0dbb-56e4-8761-04cce658d8b8")
+		)
+		(instances
+			(project "esp32c3-radio-adapter"
+				(path "/b71943b6-a88f-5429-bfd6-fb1a52f93b27"
+					(reference "R2")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(global_label "+3V3"
+		(shape bidirectional)
+		(at 228.6 123.19 90)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "ba85e347-9a54-50da-82ad-9a82a092577e")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 228.6 123.19 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "GPIO8"
+		(shape bidirectional)
+		(at 228.6 130.81 270)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right)
+		)
+		(uuid "cfb96aa5-0dd6-5cdd-8f92-4f667b342316")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 228.6 130.81 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+				(hide yes)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:R")
+		(at 241.3 127 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "bf54d702-5743-54d5-916b-9c8a1ce321b5")
+		(property "Reference" "R3"
+			(at 243.84 114.3 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "4k7"
+			(at 243.84 139.7 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "Adapter:R_0805_HeaderPullup"
+			(at 241.3 127 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 241.3 127 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Optional pull-up: GPIO2 boot strap to 3V3 (DNP unless needed)"
+			(at 241.3 127 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "cec8a7fc-2553-580b-9077-2fbabf6d52b2")
+		)
+		(pin "2"
+			(uuid "0074587b-9952-555c-b778-d51b64aba85b")
+		)
+		(instances
+			(project "esp32c3-radio-adapter"
+				(path "/b71943b6-a88f-5429-bfd6-fb1a52f93b27"
+					(reference "R3")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(global_label "GPIO2"
+		(shape bidirectional)
+		(at 241.3 123.19 90)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "e915a8a0-fbb7-5f53-b87a-c5d694eab4f0")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 241.3 123.19 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "+3V3"
+		(shape bidirectional)
+		(at 241.3 130.81 270)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right)
+		)
+		(uuid "be17eccc-cdd0-55bf-99b9-0c041b182187")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 241.3 130.81 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+				(hide yes)
+			)
+		)
+	)
+	(symbol
 		(lib_id "Mechanical:MountingHole")
 		(at 152.4 101.6 0)
 		(unit 1)
@@ -2798,7 +3026,7 @@
 			)
 		)
 	)
-	(text "ESP32-C3 SuperMini (J1 = GPIO row, J2 = power row; through-hole or castellated) driving a CC1101 E07-M1101D board or an SX1278 Ra-02 breakout in socket J3.\nSocket positions 3..8 = GPIO10, 9, 3, 4, 7, 6 (blue E07: GDO0 CSN SCK MOSI MISO GDO2; green D-Sun: MOSI SCK MISO GDO2 GDO0 CSN; Ra-02: RST NSS SCK MOSI MISO DIO0).\nJ4: 3V3 and the unused GPIOs.  JP1 (jumper) or R1 (0R): radio-type strap on GPIO5 (RADIO_ID) to GND, open = CC1101, fitted = Ra-02.\nH1-H4: M2 mounting holes.  All tracks on B.Cu; F.Cu carries only a GND pour."
+	(text "ESP32-C3 SuperMini (J1 = GPIO row, J2 = power row; through-hole or castellated) driving a CC1101 E07-M1101D board or an SX1278 Ra-02 breakout in socket J3.\nSocket positions 3..8 = GPIO10, 1, 3, 4, 7, 6 (blue E07: GDO0 CSN SCK MOSI MISO GDO2; green D-Sun: MOSI SCK MISO GDO2 GDO0 CSN; Ra-02: RST NSS SCK MOSI MISO DIO0).  GPIO9 (a boot strap) is NOT used: CSN/SCK/NSS moved to GPIO1 so no radio pin loads a strap.\nJ4: a 2nd 3V3, the unused GPIOs, and optional pull-ups (R2/R3) on the GPIO8/GPIO2 straps.  JP1 (jumper) or R1 (0R): radio-type strap on GPIO5 (RADIO_ID) to GND, open = CC1101, fitted = Ra-02.\nH1-H4: M2 mounting holes.  All tracks on B.Cu; F.Cu carries only a GND pour."
 		(exclude_from_sim no)
 		(at 60 90 0)
 		(effects
