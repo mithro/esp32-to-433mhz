@@ -8,18 +8,20 @@ bench captures of the remotes/Merlin are still pending a human at the bench.
 
 A small WiFi/USB 433 MHz transceiver: an **ESP32-C3 SuperMini** driving a
 **D-SUN CC1101** SPI module (or an Ebyte E07-M1101D, or an SX1278 RA-02), running
-Tasmota with a custom CC1101/SX1278 driver. Receives the Fineoffset weather
-stations (FSK), the OOK-PWM remotes and the Merlin garage remote, transmits OOK
-(`CcRfSend`) and Security+ 2.0, and publishes rtl_433-shaped JSON + `RfReceived`
-to MQTT (and the same over its native-USB console).
+Tasmota with a custom CC1101/SX1278 driver. It receives the Fineoffset weather
+stations (FSK) — now confirmed decoding live on both a CC1101 node and the
+SX1278 — and, **implemented in firmware and host-tested but not yet verified
+on air**, receives the OOK-PWM remotes and the Merlin garage remote and
+transmits OOK (`CcRfSend`) and Security+ 2.0. It publishes rtl_433-shaped
+JSON + `RfReceived` to MQTT (and the same over its native-USB console).
 
 > **Scope note.** The consolidated firmware in `firmware/` builds the radio
 > *foundation* (detect / register-I/O / radio selection), the CC1101 OOK + FSK
 > weather + decoder functionality, and the **SX1278 (RA-02) Fine Offset FSK
 > receive path** (weather parity with the CC1101 — see the section below). The
 > SX1278 FSK/OOK **transmit** and OOK/LoRa RX are still future work (OOK-continuous
-> RX also needs a DIO2 wire this adapter does not route) — see the staged roadmap
-> in `firmware/src/cc1101_node/sx1278_radio.cpp`.
+> RX also needs a DIO2 wire this adapter does not route); `sx1278_radio.cpp`
+> currently implements only the Fine Offset FSK-RX path.
 
 The board carrier/adapter (KiCad) and the full design spec live elsewhere: the
 KiCad adapter is this repo's top-level [`README.md`](../../README.md) and
@@ -38,29 +40,32 @@ constraint rather than by an unclosed code gap:
 
 | Capability | CC1101 (blue E07 / green D-SUN) | SX1278 (Ra-02) |
 |---|---|---|
-| Fine Offset FSK RX (WS69/WH65B, WS85, WH51) | Yes | Yes — same `fineoffset_decode()` decoder as the CC1101 path |
+| Fine Offset FSK RX (WS69/WH65B, WH51) | Yes | Yes — same `fineoffset_decode()` decoder as the CC1101 path |
+| Fine Offset FSK RX (WS85, >=28 B frame) | **Not over-air** — the frame exceeds the CC1101's 25-byte fixed packet, so the WS85 branch is unreachable on this RX path (decoder host-tested only) | Yes — 30-byte packet fits WS85 |
 | OOK-PWM remote RX | Yes | **No** — OOK-continuous RX needs the SX127x **DIO2/DATA** pin, which this RA-02 adapter does not route |
 | Security+ 2.0 (rolling-code garage remote) | Yes — built on the OOK-PWM RX path | **No** — depends on OOK-PWM RX, which this radio does not have on this adapter |
 | OOK / Security+ 2.0 TX | Yes — template-driven pins, one firmware binary (`CcRfSend`, `SecplusSend`) | **No** — TX is not implemented for this radio yet |
 | Register I/O, reset, radio selection | Yes | Yes |
 
-**Live-hardware status as of 2026-09-05** (host-tested/build-verified is not the
+**Live-hardware status (updated 2026-09-06)** (host-tested/build-verified is not the
 same claim as confirmed decoding on real silicon — kept separate here):
 - CC1101 blue/green: the OOK-PWM edge-capture path is live-verified on hardware
   (see [`HWTEST-RESULTS-cc1101.md`](HWTEST-RESULTS-cc1101.md)). Fine Offset FSK RX
-  (WS69/WH51) is host-tested and builds, but has **not yet been observed decoding
-  live on CC1101 hardware** in this project — see `WAVE-A1-REPORT.md` /
-  `WAVE-A1FIX-REPORT.md`; the two USB nodes used for that attempt are currently
-  wedged off USB pending a power-cycle, so re-validation is pending a human at the
-  bench.
+  (WS69/WH51) is now **confirmed decoding live on CC1101 hardware** on blue,
+  after the 2026-09-06 RX-bandwidth fix (MDMCFG4 `0xC9` -> `0x59`, 101 kHz ->
+  325 kHz — the narrow filter could not cover the module crystal's frequency
+  offset). The earlier `Decoded=0` runs in `WAVE-A1-REPORT.md` /
+  `WAVE-A1FIX-REPORT.md` predate that fix; blue's live decode is recorded in
+  [`HWTEST-RESULTS-cc1101.md`](HWTEST-RESULTS-cc1101.md).
 - SX1278 (Ra-02): Fine Offset FSK RX is both host-tested and **confirmed decoding
   live on hardware** (WS69 id 174, WH51 id 0f5d66, cross-checked against the rpi5
   reference) — see `WAVE-A2-REPORT.md`.
 - OOK/Security+ 2.0 TX is host-tested and build-verified but has not yet been
   exercised end-to-end against a real receiver.
 
-See [`sx1278_radio.cpp`](../src/cc1101_node/sx1278_radio.cpp) for the SX1278's
-staged roadmap (FSK-RX -> FSK-TX -> OOK-RX -> OOK-TX -> LoRa).
+[`sx1278_radio.cpp`](../src/cc1101_node/sx1278_radio.cpp) currently implements the
+SX1278's Fine Offset FSK-RX path only; FSK/OOK TX, OOK-RX and LoRa are future work
+(see the capability notes above).
 
 ## Wiring
 
@@ -137,20 +142,23 @@ OOK-PWM codes is documented in the project repo's `protocols/ook-pwm-remotes.md`
 ## Fine Offset FSK RX configuration and packet-length handling
 
 The `fineoffset-fsk` preset (`../src/cc1101_node/cc1101_presets.c`) programs the
-CC1101 exactly like the bench-proven reference `cc1101_watch.py`
-(`configure_fineoffset_fsk_rx`), computed from the datasheet formulas — every
-register was read back from a live node (`CcReg`) and matches the reference:
+CC1101 like the bench-proven reference `cc1101_watch.py`
+(`configure_fineoffset_fsk_rx`), computed from the datasheet formulas, with one
+deliberate deviation: the RX bandwidth is widened from the reference's 101 kHz to
+**325 kHz** (MDMCFG4 `0xC9` -> `0x59`) so the filter covers the module crystal's
+frequency offset (2026-09-06 fix; see `cc1101_presets.c`). Every other register
+was read back from a live node (`CcReg`) and matches the reference:
 
 | Purpose | Register(s) | Value |
 |---|---|---|
 | Carrier 433.92 MHz | FREQ2/1/0 (0x0D/0E/0F) | `10 B0 71` |
-| Bit rate 17.24 kbps | MDMCFG4/3 (0x10/0x11) | `C9 5C` |
+| Bit rate 17.24 kbps | MDMCFG4/3 (0x10/0x11) | `59 5C` |
 | 2-FSK, 16/16 sync, no Manchester | MDMCFG2 (0x12) | `02` |
 | 24-byte preamble | MDMCFG1 (0x13) | `72` |
 | Deviation 50 kHz | DEVIATN (0x15) | `50` |
 | Sync word 0x2DD4 | SYNC1/0 (0x04/0x05) | `2D D4` |
 | Fixed length, APPEND_STATUS, no CRC autoflush | PKTCTRL0/1 (0x08/0x07) | `00` / `04` |
-| Channel BW 101 kHz | (in MDMCFG4) | — |
+| Channel BW 325 kHz | (in MDMCFG4) | — |
 
 **Packet length — receiving both WS69 (25 B) and WH51 (14 B).** The CC1101 runs a
 fixed-length packet (`CC_FSK_PKTLEN = 25`, sized to the WS69/WH65B frame, whose
@@ -246,8 +254,8 @@ asserts the config registers above against the datasheet math.
 | 2026-08-20 | WS69 id 174 25-byte frames on Pi CC1101 (`cc1101_ws69_rx.py --packet-len 25`) | `24 AE 5D 82 13 52 05 01 07 24 00 00 00 00 00 5A A1 01 FF FF FF 01 6B 87 33` twice at 16 s, RSSI -85.5/-87.0 dBm; both CRCs valid; decodes 13.1 C 82 % 349 deg 464.3 mm |
 | 2026-08-22 | async-OOK capture path: GDO2->GPIO24 (measured with `cc1101_find_gdo_pins.py`); no-remote baseline — `MARCSTATE=0x0D`, `edges=48 trains(>=16 pulses)=0` over 10 s — path live end-to-end. Remote captures vs the codes doc, and rtl_433 cross-check: **PENDING — needs a human at the Welland bench** |
 | 2026-09-05 | Tasmota firmware on real CC1101 (blue E07 + green D-SUN), native-USB console: PARTNUM 0x00 / VERSION 0x14, register I/O, radio selection, OOK edge-capture live; SX1278 RA-02 RegVersion 0x12 detect + register-I/O + selection | See [`HWTEST-RESULTS-cc1101.md`](HWTEST-RESULTS-cc1101.md) |
-| 2026-09-05 | WH51 decoder: real frame `51 0F 5C 54 10 7F 28 F8 D0 FF FF FF 4B D7` (id 0f5c54) captured by the rpi5 reference logger; host test asserts moisture 40, battery 1600 mV, ad_raw 208, battery_ok 1.0 vs rtl_433 -> **108 host tests pass** | `pytest firmware/tests` |
-| 2026-09-05 | WH51 live on a node CC1101: **NOT decoded.** blue (E07) + green (D-SUN) in `weather` mode received strong 433.92 FSK traffic (RSSI down to -26 dBm) and completed packets (`Rx` climbing), but never a WH51 frame (`Decoded=0`); registers directly comparable to the proven reference read back identical, PKTLEN 25->17 tried, sync relaxed 16/16->15/16 (`Rx` 376 in 90 s, still `Decoded=0`). The reference CC1101/LilyGo on rpi5 heard the same WH51 sensors at -74..-82 dBm throughout. Cause not isolated in this run — see `WAVE-A1-REPORT.md` for the debug trail and `WAVE-A1FIX-REPORT.md` for a packet-framing config bug found afterward (fixed-length mode vs. infinite-length mode); whether that explains this result is unproven on this hardware, since PKTLEN=17 was also tried here and still did not decode. | reference `cc1101.hits.jsonl` vs node console |
+| 2026-09-05 | WH51 decoder: real frame `51 0F 5C 54 10 7F 28 F8 D0 FF FF FF 4B D7` (id 0f5c54) captured by the rpi5 reference logger; host test asserts moisture 40, battery 1600 mV, ad_raw 208, battery_ok 1.0 vs rtl_433 -> **108 host tests pass** (as of this 2026-09-05 entry; the suite is now 135 tests) | `pytest firmware/tests` |
+| 2026-09-05 | WH51 live on a node CC1101: **NOT decoded.** blue (E07) + green (D-SUN) in `weather` mode received strong 433.92 FSK traffic (RSSI down to -26 dBm) and completed packets (`Rx` climbing), but never a WH51 frame (`Decoded=0`); registers directly comparable to the proven reference read back identical, PKTLEN 25->17 tried, sync relaxed 16/16->15/16 (`Rx` 376 in 90 s, still `Decoded=0`). The reference CC1101/LilyGo on rpi5 heard the same WH51 sensors at -74..-82 dBm throughout. Cause not isolated in this run — see `WAVE-A1-REPORT.md` for the debug trail and `WAVE-A1FIX-REPORT.md` for a packet-framing config bug found afterward (fixed-length mode vs. infinite-length mode); whether that explains this result is unproven on this hardware, since PKTLEN=17 was also tried here and still did not decode. **Superseded (2026-09-06):** the cause was RX bandwidth — MDMCFG4 `0xC9` (101 kHz) is too narrow for the module crystal's frequency offset; widening it to `0x59` (325 kHz) made blue decode WS69+WH51 live (recorded in the on-hardware results log). | reference `cc1101.hits.jsonl` vs node console |
 | 2026-09-05 | **SX1278 (RA-02) FSK weather RX — LIVE, decoded.** Node MAC 44:1B:F6:2E:B3:80 (`/dev/radio-sx1278-ra02`) flashed with this build, `Radio sx1278` + `CcMode weather`: `SxStatus` -> `Present 1, VERSION 0x12, WeatherRx 1`; console `RSL: events` lines decoded **WS69 id=174** (humidity 79, `mic:CRC`) repeatedly at RSSI -89..-93 dBm and **WH51 id=0f5d66** (moisture 38, `mic:CRC`), i.e. both families through the single fixed-length FSK config. Cross-checked against the rpi5 reference (`~/wh51-watch`) for the same window: reference heard WS69 family 0x24 id 0xAE(174) humidity 0x4F(79) and WH51 id 0f5c54 valid at -82 dBm. Float fields render as `*float*` on-target (shared-decoder `%f` under newlib-nano, affects the CC1101 path identically — not radio-specific; integer fields + CRC MIC correct). | node console vs `cc1101.hits.jsonl`/`lilygo.jsonl` |
 | 2026-08-22 | Merlin remote: rtl_433 -R 164 / 178 / -A | **PENDING — needs a human to press the remote**; procedure in the project repo's `protocols/secplus-v2.md` |
 | 2026-09-05 | **FIX-A: SX1278 (RA-02) re-capture with the `rf_ftoa` float fix (`4c85365`), valid floats confirmed + 3-way cross-check.** Single reflash from HEAD `cd95b48` (`firmware/dist/tasmota32c3-cc1101.factory.bin`, sha256 `9c933635b5...`), `esptool write_flash 0x0`, hash-verified; commissioned `Radio sx1278` (weather RX already persisted from the WAVE A2 session). 10-minute passive console capture over a persistent `dtr=False,rts=False` connection, 2026-09-05T12:53:39-13:03:39 UTC. `events` JSON now carries real numeric floats end to end, e.g. `{"model":"Fineoffset-WS69","id":174,"battery_ok":1,"temperature_C":13.0,"humidity":84,"wind_dir_deg":8,"wind_avg_m_s":0.4,"wind_max_m_s":0.5,"rain_mm":517.7,"uv":0,"uvi":0,"light_lux":0.0,"mic":"CRC"}` and `{"model":"Fineoffset-WH51","id":"0f5c54","battery_ok":1.0,"battery_mV":1600,"moisture":40,"boost":0,"ad_raw":208,"mic":"CRC"}` - **no `*float*` anywhere in the 10-minute capture** (previously reported bug from WAVE A2 is fixed). **Cross-check:** (1) WH51 **target id `0f5c54`** (previously below the CC1101-node SNR budget) decoded by the node at 13:03:36.354 UTC matches, byte-for-byte on the 14-byte payload (`51 0F 5C 54 10 7F 28 F8 D0 FF FF FF 4B D7`), the rpi5 reference CC1101 logger (`cc1101.hits.jsonl`, ts 13:03:36.048) **and** the LilyGo SX1276 logger (`lilygo.hits.jsonl`, ts 13:03:36.053) - moisture 40, battery 1600 mV, ad_raw 208 on all three receivers. (2) WS69 id=174 events at 12:53:59.446/12:54:31.279 UTC match the LilyGo raw frames (`24 AE 08 ...`/`24 AE 0B ...`) byte-for-byte on the shared payload, decoding to identical temperature_C 13.0, humidity 84, wind_dir_deg 8, wind_avg_m_s 0.4, wind_max_m_s 0.5, rain_mm 517.7. (3) Pluto SDR (`rpi-sdr-pluto`, `rtl_433 -d driver=plutosdr`): its pre-existing continuous logger (running unattended since 2026-09-02) had already stopped producing new decodes before this session started (last flush recorded, per its own drifting internal clock, `"time":"2026-09-05T13:44:32"`, `rain_mm:517.144` = 2 tip-counts / 0.5 mm behind the node/reference's `517.7`, i.e. genuinely stale, not futuristic) - it continues to independently confirm the same on-air WS69 id=174 (same battery_ok, same rain-counter epoch) but not from inside this session's exact 10-minute window. Two restarts (its own auto-restart wrapper) reconnected to the Pluto cleanly (no USB claim errors) but did not resume live decoding within this session's time budget - an infra/logging-tool staleness issue on a *pre-existing, unattended* capture tool, not a fault in the node/firmware under test or in the Pluto radio itself. **Node stayed healthy** throughout (single flash, no further reflash); one console reconnect for a post-capture `SxStatus` check reset the RAM counters only (config/mode persisted) - the same known reconnect-resets-C3 bench-harness gotcha already documented above. Full report: `FIX-A-REPORT.md` (repo root). | node console (`a2recap-node-console.log`) vs `cc1101.hits.jsonl`/`lilygo.hits.jsonl`/pluto `rtl433.jsonl` |
