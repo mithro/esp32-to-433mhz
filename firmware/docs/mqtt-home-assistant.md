@@ -5,15 +5,15 @@ Assistant turns that into entities, and how to receive commands back over MQTT.
 This is the reference for goal criterion (e) — *"correctly publishing and
 receiving messages with the Home Assistant MQTT setup"*.
 
-> **Status (2026-09-05).** Code + host tests are done and green
-> (`firmware/tests/test_mqtt_shape.py`, part of the 128-test suite). The
-> **live** publish/subscribe against the real broker at
-> `ha.welland.mithis.com:1883` is **UNVERIFIED** — it is blocked on the WiFi
-> SSID/pass and a Mosquitto username/password, which were not available when
-> this was written. The exact live procedure is in
-> [Live validation (pending credentials)](#live-validation-pending-credentials);
-> run it once the credentials exist and record the result in
-> [`HWTEST-RESULTS-cc1101.md`](HWTEST-RESULTS-cc1101.md).
+> **Status (updated 2026-09-08).** Code + host tests are done and green
+> (`firmware/tests/test_mqtt_shape.py`, part of the 135-test suite). The full
+> publish/receive path — including rtl_433 -> Home Assistant **sensor** entity
+> creation (`homeassistant/sensor/.../config`) for both topologies — is
+> **verified in isolation** against a local Mosquitto broker on a NAT hotspot
+> (see [Live validation](#live-validation)). What remains is the **production
+> rollout**: connecting to the real broker at `ha.welland.mithis.com:1883`,
+> which needs the WiFi SSID/pass and a per-device Mosquitto credential. Record
+> the real-broker result in [`HWTEST-RESULTS-cc1101.md`](HWTEST-RESULTS-cc1101.md).
 
 ## Architecture
 
@@ -285,12 +285,31 @@ Confirm the broker connection: `tele/<topic>/LWT` should read `Online`
 
 **Isolated round-trip: DONE (2026-09-08).** The full publish/receive round-trip was
 validated against a local `mosquitto 2.0.21` broker (the same broker software as the HA
-add-on) on an isolated NAT hotspot, to avoid touching production. Both directions passed —
-`rtl_433/nodes/<host>/events`, Tasmota HA autodiscovery (`tasmota/discovery/<mac>/config`),
-`tele/SENSOR`/`STATE`/`LWT`, and `cmnd/<topic>/CcStatus` -> `stat/<topic>/RESULT`. Full log
-and message captures are in [`HWTEST-RESULTS-cc1101.md`](HWTEST-RESULTS-cc1101.md)
-("MQTT round-trip" section). The real `ha.welland.mithis.com:1883` broker was confirmed
-reachable from the boards' network path.
+add-on) on an isolated NAT hotspot, to avoid touching production. Publish, receive and —
+critically — the rtl_433 -> Home Assistant **sensor** entity creation all passed.
+
+The **criterion-(e) sensor entities** are created only by the rtl_433 add-on
+(`rtl_433_mqtt_hass.py`) consuming `rtl_433/+/events` and publishing
+`homeassistant/.../config` — **not** by Tasmota's native device discovery. Tasmota's own
+`tasmota/discovery/<mac>/config` (`SetOption19`) surfaces the *Tasmota device itself* in
+HA and is a separate system: it is not the weather/moisture sensor integration criterion
+(e) is about, so it is not evidence for (e).
+
+Full **topology-A** path validated: blue (`CcHass 0`) -> `rtl_433/nodes/<host>/events` ->
+the project aggregator (`rf433_aggregate.py`, `site=test`) -> `rtl_433/test/events` -> the
+real rtl_433 `rtl_433_mqtt_hass.py` add-on -> **22 `homeassistant/sensor/.../config`
+entity configs** were created: WS69 id 174 (temperature, humidity, wind dir/speed/gust,
+rain, UV, UV-index, lux, battery, rssi) and WH51 0f5d7f (moisture, battery, mV, rssi).
+**Topology B** was also validated: a state-changing command over MQTT,
+`cmnd/<topic>/CcHass 1`, returned `stat/<topic>/RESULT {"CcHass":1,"EventsTopic":"rtl_433/<host>/events"}` and events then flowed on the direct three-level topic that
+`rtl_433/+/events` matches. The `tele/SENSOR`/`STATE`/`LWT` publishes and a
+`cmnd/<topic>/CcStatus` -> `stat/<topic>/RESULT` round-trip were confirmed too.
+
+Honest caveat: this all ran against a **local** `mosquitto` on the isolated hotspot,
+**not** the literal `ha.welland.mithis.com:1883` instance (that broker was only confirmed
+reachable from the boards' network path). Connecting to the real broker remains the
+production-rollout step below. Full log and message captures are in [`HWTEST-RESULTS-cc1101.md`](HWTEST-RESULTS-cc1101.md)
+("MQTT round-trip" section).
 
 **Production rollout** (connecting to the real HA broker) still needs, per site:
 
