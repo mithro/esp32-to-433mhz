@@ -145,7 +145,7 @@ struct SxState {
   ArduinoSpiBus bus; ArduinoResetLine rst; SX1278Radio* radio = nullptr;
   bool present = false; uint8_t version = 0; int rst_pin = -1;
   bool weather_rx = false;                              // FSK RX preset programmed + RX entered
-  uint32_t rx = 0, decoded = 0; int last_rssi = -128;   // weather RX counters
+  uint32_t rx = 0, decoded = 0, tx = 0; int last_rssi = -128;   // weather RX counters
 };
 static SxState Sx;
 static uint8_t CcActiveRadio = RADIO_CC1101;            // which engine bring-up selected
@@ -595,10 +595,10 @@ void CmndCcHass(void) {  // CcHass 0|1 — 0: rtl_433/nodes/<host>/events (aggre
 
 /* ---------- SX1278 + radio-selection commands ---------- */
 void CmndSxStatus(void) {
-  Response_P(PSTR("{\"SxStatus\":{\"Present\":%d,\"VERSION\":\"0x%02X\",\"Active\":%d,\"Mode\":\"%s\",\"WeatherRx\":%d,\"RSSI\":%d,\"Rx\":%u,\"Decoded\":%u}}"),
+  Response_P(PSTR("{\"SxStatus\":{\"Present\":%d,\"VERSION\":\"0x%02X\",\"Active\":%d,\"Mode\":\"%s\",\"WeatherRx\":%d,\"RSSI\":%d,\"Rx\":%u,\"Decoded\":%u,\"Tx\":%u}}"),
              Sx.present, Sx.version, CcActiveRadio == RADIO_SX1278,
              CcCfg.mode == CC_MODE_WEATHER ? "weather" : "remotes", Sx.weather_rx,
-             (Sx.present && Sx.weather_rx) ? Sx.radio->rssi_dbm() : 0, Sx.rx, Sx.decoded);
+             (Sx.present && Sx.weather_rx) ? Sx.radio->rssi_dbm() : 0, Sx.rx, Sx.decoded, Sx.tx);
 }
 void CmndSxReg(void) {             // SxReg <addr 0x00-0x7F> [val]; SX127x address byte bit7 = write
   if (!Sx.radio || CcActiveRadio != RADIO_SX1278 || !XdrvMailbox.data_len) { ResponseCmndChar_P(PSTR("addr 0x00-0x7F [val] (SX1278 must be the active radio)")); return; }
@@ -629,8 +629,25 @@ void CmndCcRadioSel(void) {             // Radio [auto|cc1101|sx1278] — persis
   const char* act = CcActiveRadio == RADIO_SX1278 ? "sx1278" : "cc1101";
   Response_P(PSTR("{\"Radio\":{\"Config\":\"%s\",\"Active\":\"%s\"}}"), cfg, act);
 }
-const char kSxCommands[] PROGMEM = "Sx|Status|Reg|Reset";
-void (* const SxCommand[])(void) PROGMEM = { &CmndSxStatus, &CmndSxReg, &CmndSxReset };
+void CmndSxFskTx(void) {          // SxFskTx <hex> -- transmit a 2-FSK packet (SX1278 must be the active radio)
+  if (!Sx.radio || CcActiveRadio != RADIO_SX1278 || !Sx.present || !XdrvMailbox.data_len) {
+    ResponseCmndChar_P(PSTR("<hex payload> (SX1278 must be the active radio)")); return;
+  }
+  uint8_t buf[64]; size_t n = 0;
+  for (char* p = XdrvMailbox.data; p[0] && p[1] && n < sizeof buf; p += 2) {
+    auto nib = [](char c) -> int { c |= 0x20; return (c <= '9') ? (c - '0') : (c - 'a' + 10); };
+    buf[n++] = (uint8_t)((nib(p[0]) << 4) | nib(p[1]));
+  }
+  if (!n) { ResponseCmndChar_P(PSTR("<hex payload>")); return; }
+  bool was_rx = Sx.weather_rx;               // pause the weather receiver across the transmit
+  Sx.radio->configure_fsk_tx((uint8_t)n);
+  bool ok = Sx.radio->transmit_fsk(buf, n, 200);
+  if (ok) Sx.tx++;
+  if (was_rx) SxConfigureWeatherRx();        // re-arm FSK RX (it also restores the RX preset)
+  Response_P(PSTR("{\"SxFskTx\":{\"Sent\":%d,\"Bytes\":%u}}"), ok, (unsigned)n);
+}
+const char kSxCommands[] PROGMEM = "Sx|Status|Reg|Reset|FskTx";
+void (* const SxCommand[])(void) PROGMEM = { &CmndSxStatus, &CmndSxReg, &CmndSxReset, &CmndSxFskTx };
 const char kRadioCommands[] PROGMEM = "|Radio";
 void (* const RadioCommand[])(void) PROGMEM = { &CmndCcRadioSel };
 
