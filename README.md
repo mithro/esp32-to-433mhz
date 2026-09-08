@@ -57,6 +57,15 @@ Read as per-board maps: blue E07 MOSI 4, SCK 3, CSN 9, MISO 7, GDO0 10,
 GDO2 6; green D-Sun MOSI 10, SCK 9, CSN 6, MISO 3, GDO0 7, GDO2 4; Ra-02
 MOSI 4, SCK 3, NSS 9, MISO 7, RST 10, DIO0 6.
 
+> **Firmware note.** Position 4 is a socket *input* on every board, so this
+> PCB routes it to the strapping pin GPIO9. GPIO9 is an ESP32-C3 boot
+> strapping pin, though, and the shipped Tasmota driver
+> (`firmware/src/xdrv_95_cc1101.ino`) was rewired to read the position-4
+> signal (blue CSN, green SCK, Ra-02 NSS) on **GPIO1** instead. The
+> fabricated adapter above still wires position 4 to GPIO9, so it predates
+> that change and needs position 4 rewired to GPIO1 to match the current
+> firmware pin maps (see `firmware/docs/HWTEST-RESULTS-cc1101.md`).
+
 The rule behind the assignment: no socket position that is a radio
 *output* on any of the three boards may be an ESP32-C3 boot strapping pin
 (GPIO2, GPIO8, GPIO9), because a radio driving one of those at reset could
