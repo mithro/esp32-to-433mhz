@@ -47,7 +47,9 @@ from build_3d import box, cyl, save  # noqa: E402
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 STL_OUT = ROOT / "hardware" / "case"
-CASE = cq.Color(0.86, 0.86, 0.82)
+# Two shades of the same light filament, so the seam and which half a feature
+# belongs to read in the renders: the top half a touch darker and warmer.
+CASE_BOTTOM, CASE_TOP = cq.Color(0.86, 0.86, 0.82), cq.Color(0.76, 0.73, 0.67)
 
 # --- the things the case has to clear (board frame, z from the board's top) ---
 W, H = ga.CC_W, ga.CC_H  # 29 x 38
@@ -243,8 +245,8 @@ def main() -> None:
     bottom, top = build_bottom(), build_top()
     check(bottom, top)
     h1 = HOLES[0]
-    save("esp32c3-radio-adapter-case-bottom", [("case_bottom", bottom, CASE)], *h1)
-    save("esp32c3-radio-adapter-case-top", [("case_top", top, CASE)], *h1)
+    save("esp32c3-radio-adapter-case-bottom", [("case_bottom", bottom, CASE_BOTTOM)], *h1)
+    save("esp32c3-radio-adapter-case-top", [("case_top", top, CASE_TOP)], *h1)
     args.stl.mkdir(parents=True, exist_ok=True)
     # Print orientation: each half open side up (the top half turned over).
     for name, shape in (("bottom", bottom), ("top", top.rotate((0, 0, 0), (1, 0, 0), 180))):
