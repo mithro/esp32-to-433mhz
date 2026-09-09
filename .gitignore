@@ -24,3 +24,6 @@ __pycache__/
 
 # Manufacturing packages built by scripts/export_manufacturing.py / CI
 dist/
+
+# Git worktrees for parallel work (superpowers:using-git-worktrees)
+.worktrees/
