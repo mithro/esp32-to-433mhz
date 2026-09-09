@@ -225,11 +225,25 @@ pinouts, with the DIO2 land marked on both faces:
 
 A two-part case that fits the adapter with either radio is in
 `hardware/case/` as STL files (also attached to every
-[release](https://github.com/mithro/esp32-to-433mhz/releases/latest)):
+[release](https://github.com/mithro/esp32-to-433mhz/releases/latest)).
+Closed, with the E07-M1101D inside; the antenna end is the front, the
+USB-C end the back, and the last picture has the Ra-02 breakout's pigtail
+bulkhead in the antenna hole instead:
 
-| E07-M1101D in the case | Ra-02 breakout in the case |
-| --- | --- |
-| ![Adapter with the E07-M1101D in the printed case, lid lifted](docs/images/esp32c3-radio-adapter-assembly-e07-case-iso.png) | ![Adapter with the Ra-02 breakout and pigtail in the printed case, lid lifted](docs/images/esp32c3-radio-adapter-assembly-ra02-case-iso.png) |
+| Isometric | Top | Bottom | Front |
+| --- | --- | --- | --- |
+| ![Closed case with the E07-M1101D, isometric](docs/images/esp32c3-radio-adapter-assembly-e07-case-closed-iso.png) | ![Closed case, top](docs/images/esp32c3-radio-adapter-assembly-e07-case-closed-top.png) | ![Closed case, bottom](docs/images/esp32c3-radio-adapter-assembly-e07-case-closed-bottom.png) | ![Closed case, front: the E07-M1101D's SMA jack through the antenna hole](docs/images/esp32c3-radio-adapter-assembly-e07-case-closed-front.png) |
+| **Back** | **Left** | **Right** | **With the Ra-02 breakout** |
+| ![Closed case, back: the pry notch on the seam](docs/images/esp32c3-radio-adapter-assembly-e07-case-closed-back.png) | ![Closed case, left: the USB-C window](docs/images/esp32c3-radio-adapter-assembly-e07-case-closed-left.png) | ![Closed case, right](docs/images/esp32c3-radio-adapter-assembly-e07-case-closed-right.png) | ![Closed case with the Ra-02 breakout, isometric: the pigtail bulkhead and nut in the antenna hole](docs/images/esp32c3-radio-adapter-assembly-ra02-case-closed-iso.png) |
+
+Open, the bottom half with the Ra-02 breakout and its pigtail pressed
+onto the pegs (the last picture has the E07-M1101D instead):
+
+| Isometric | Top | Bottom | Front |
+| --- | --- | --- | --- |
+| ![Bottom half of the case with the Ra-02 breakout and pigtail, isometric](docs/images/esp32c3-radio-adapter-assembly-ra02-case-open-iso.png) | ![Bottom half with the Ra-02 breakout, top: the board on the pegs, the pigtail stowed beside the breakout](docs/images/esp32c3-radio-adapter-assembly-ra02-case-open-top.png) | ![Bottom half, bottom](docs/images/esp32c3-radio-adapter-assembly-ra02-case-open-bottom.png) | ![Bottom half with the Ra-02 breakout, front](docs/images/esp32c3-radio-adapter-assembly-ra02-case-open-front.png) |
+| **Back** | **Left** | **Right** | **With the E07-M1101D** |
+| ![Bottom half with the Ra-02 breakout, back: the SuperMini's USB-C](docs/images/esp32c3-radio-adapter-assembly-ra02-case-open-back.png) | ![Bottom half with the Ra-02 breakout, left](docs/images/esp32c3-radio-adapter-assembly-ra02-case-open-left.png) | ![Bottom half with the Ra-02 breakout, right](docs/images/esp32c3-radio-adapter-assembly-ra02-case-open-right.png) | ![Bottom half of the case with the E07-M1101D, isometric](docs/images/esp32c3-radio-adapter-assembly-e07-case-open-iso.png) |
 
 * Two halves that snap together: `esp32c3-radio-adapter-case-bottom.stl`
   and `esp32c3-radio-adapter-case-top.stl`, each printed open side up. No

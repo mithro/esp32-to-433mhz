@@ -66,13 +66,36 @@ the drawn one, so leave room to stow the excess beside the breakout.
 `scripts/build_case.py` builds exactly that case with CadQuery, from the
 generator's constants and the table above: `hardware/case/*.stl` for
 printing and `hardware/3d/esp32c3-radio-adapter-case-{bottom,top}.step` as
-KiCad models (origin at mounting hole H1), which the `radio-e07-case` and
-`radio-ra02-case` variants of `scripts/render_assemblies.py` put on the
-board with the top half lifted 16 mm:
+KiCad models (origin at mounting hole H1), which the `radio-*-case-*`
+variants of `scripts/render_assemblies.py` put on the board:
+`-case-closed` with both halves snapped together, `-case-open` with the
+bottom half only, and `-case-exploded` with the top half lifted 16 mm.
+Closed and open render from every side.  Exploded, and the open top
+views, with either radio:
 
 | E07-M1101D | Ra-02 breakout and pigtail |
 | --- | --- |
-| ![E07-M1101D in the case](images/esp32c3-radio-adapter-assembly-e07-case-iso.png) | ![Ra-02 in the case](images/esp32c3-radio-adapter-assembly-ra02-case-iso.png) |
+| ![E07-M1101D in the case, top half lifted](images/esp32c3-radio-adapter-assembly-e07-case-exploded-iso.png) | ![Ra-02 in the case, top half lifted](images/esp32c3-radio-adapter-assembly-ra02-case-exploded-iso.png) |
+| ![E07-M1101D in the bottom half, from above](images/esp32c3-radio-adapter-assembly-e07-case-open-top.png) | ![Ra-02 in the bottom half, from above](images/esp32c3-radio-adapter-assembly-ra02-case-open-top.png) |
+
+The README's [Printing a case](../README.md#printing-a-case) has the six
+sides of the closed case with the E07-M1101D and of the open one with the
+Ra-02; here are the other two.  Closed with the Ra-02 breakout (the front
+is the antenna end):
+
+| Top | Bottom | Front |
+| --- | --- | --- |
+| ![Closed case with the Ra-02 breakout, top](images/esp32c3-radio-adapter-assembly-ra02-case-closed-top.png) | ![Closed case with the Ra-02 breakout, bottom](images/esp32c3-radio-adapter-assembly-ra02-case-closed-bottom.png) | ![Closed case with the Ra-02 breakout, front: the pigtail bulkhead and nut in the antenna hole](images/esp32c3-radio-adapter-assembly-ra02-case-closed-front.png) |
+| **Back** | **Left** | **Right** |
+| ![Closed case with the Ra-02 breakout, back](images/esp32c3-radio-adapter-assembly-ra02-case-closed-back.png) | ![Closed case with the Ra-02 breakout, left: the USB-C window](images/esp32c3-radio-adapter-assembly-ra02-case-closed-left.png) | ![Closed case with the Ra-02 breakout, right](images/esp32c3-radio-adapter-assembly-ra02-case-closed-right.png) |
+
+Open with the E07-M1101D:
+
+| Front | Back | Bottom |
+| --- | --- | --- |
+| ![Bottom half with the E07-M1101D, front: the SMA jack](images/esp32c3-radio-adapter-assembly-e07-case-open-front.png) | ![Bottom half with the E07-M1101D, back: the SuperMini's USB-C](images/esp32c3-radio-adapter-assembly-e07-case-open-back.png) | ![Bottom half with the E07-M1101D, bottom](images/esp32c3-radio-adapter-assembly-e07-case-open-bottom.png) |
+| **Left** | **Right** | |
+| ![Bottom half with the E07-M1101D, left](images/esp32c3-radio-adapter-assembly-e07-case-open-left.png) | ![Bottom half with the E07-M1101D, right](images/esp32c3-radio-adapter-assembly-e07-case-open-right.png) | |
 
 Dimensions, in the adapter's frame (x right, y down from the board's
 top-left corner, z up from its top surface):
