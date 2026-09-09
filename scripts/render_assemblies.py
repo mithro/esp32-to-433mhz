@@ -105,6 +105,8 @@ def main() -> None:
         args.export.mkdir(parents=True, exist_ok=True)
     for variant in args.variants:
         if variant == "parts":
+            if args.no_render:  # the reference boards have nothing to export
+                continue
             for pcb in sorted((ROOT / "hardware" / "parts").glob("*/*.kicad_pcb")):
                 png = IMAGES / f"{pcb.stem}-model-iso.png"
                 run([cli, "pcb", "render", "--output", str(png), "--width", "1200", "--height", "1000", "--quality", "high",
