@@ -8,7 +8,7 @@
 Every number on the sheets comes from scripts/case_dims.py, the constants
 scripts/build_case.py builds the solids from, so the drawings cannot drift
 from the model.  The sheets are sized in millimetres (scale 2:1 for the
-views, 6:1 and 10:1 for the details), so a print at 100 % can be laid on a
+views, 5:1 and 10:1 for the details), so a print at 100 % can be laid on a
 part.  Written to docs/images/case-*.svg:
 
   case-bottom-plan.svg      bottom half from above: cavity, walls, standoffs
@@ -161,7 +161,6 @@ class View:
     def __init__(self, sh: Sheet, ox: float, oy: float, scale: float, flip_u: bool = False, flip_v: bool = False):
         self.sh, self.ox, self.oy, self.k = sh, ox, oy, scale
         self.su, self.sv = (-1 if flip_u else 1), (-1 if flip_v else 1)
-        self._clip = 0
 
     def X(self, u: float) -> float:
         return self.ox + self.su * self.k * u
@@ -203,7 +202,6 @@ class View:
         are laid out on the sheet, so adjoining polygons of one part hatch
         seamlessly; use another angle for the mating part."""
         sp = [self.P(u, v) for u, v in pts]
-        self._clip += 1
         cid = f"c{len(self.sh.defs)}"
         self.sh.defs.append(f'<clipPath id="{cid}"><polygon points="{" ".join(f"{x:.2f},{y:.2f}" for x, y in sp)}"/></clipPath>')
         xs, ys = [p[0] for p in sp], [p[1] for p in sp]
