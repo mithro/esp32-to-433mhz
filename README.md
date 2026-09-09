@@ -224,8 +224,13 @@ pinouts, with the DIO2 land marked on both faces:
 ## Printing a case
 
 A two-part case that fits the adapter with either radio is in
-`hardware/case/` as STL files (also attached to every
-[release](https://github.com/mithro/esp32-to-433mhz/releases/latest)):
+`hardware/case/` as STL files. Every
+[release](https://github.com/mithro/esp32-to-433mhz/releases/latest)
+carries them as `esp32c3-radio-adapter-case-<version>.zip` (the two STL
+files in print orientation, the two STEP models of the case, and a
+README.txt with the parts' sizes, home FDM print settings and how to order
+them from JLCPCB's 3D-printing service) and, for dropping straight into a
+slicer, the two `.stl` files loose:
 
 | E07-M1101D in the case | Ra-02 breakout in the case |
 | --- | --- |
@@ -243,6 +248,10 @@ A two-part case that fits the adapter with either radio is in
   clamped in it by its nut, with the spare cable stowed beside the breakout.
 * Four snap tabs on the bottom half click into grooves in the top half's
   skirt; a notch at the seam on the USB end takes a fingernail to open it.
+* Print in PLA or PETG, 0.2 mm layers, 3 perimeters, no supports. The peg
+  fit depends on the printer's calibration; the tabs are 0.8 mm thick, so
+  at a printing service pick a tough material (MJF nylon rather than
+  standard resin). The package's README.txt has the details.
 
 The case is generated from the same dimensions as the boards by
 `scripts/build_case.py`; see [3D models and case design](docs/3d-models.md#the-printed-case).

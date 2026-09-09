@@ -65,14 +65,22 @@ the drawn one, so leave room to stow the excess beside the breakout.
 
 `scripts/build_case.py` builds exactly that case with CadQuery, from the
 generator's constants and the table above: `hardware/case/*.stl` for
-printing and `hardware/3d/esp32c3-radio-adapter-case-{bottom,top}.step` as
-KiCad models (origin at mounting hole H1), which the `radio-e07-case` and
-`radio-ra02-case` variants of `scripts/render_assemblies.py` put on the
-board with the top half lifted 16 mm:
+printing (each half in print orientation, open side up) and
+`hardware/3d/esp32c3-radio-adapter-case-{bottom,top}.step` as KiCad models
+(origin at mounting hole H1, both halves in their assembled position),
+which the `radio-e07-case` and `radio-ra02-case` variants of
+`scripts/render_assemblies.py` put on the board with the top half lifted
+16 mm:
 
 | E07-M1101D | Ra-02 breakout and pigtail |
 | --- | --- |
 | ![E07-M1101D in the case](images/esp32c3-radio-adapter-assembly-e07-case-iso.png) | ![Ra-02 in the case](images/esp32c3-radio-adapter-assembly-ra02-case-iso.png) |
+
+Every release carries all four files, zipped with a README.txt of print
+settings and ordering notes as `esp32c3-radio-adapter-case-<git describe>.zip`
+(built by `scripts/export_case.py` from the committed files, see
+[Development](development.md#ci-and-manufacturing-packages)), plus the two
+STL files loose.
 
 Dimensions, in the adapter's frame (x right, y down from the board's
 top-left corner, z up from its top surface):
