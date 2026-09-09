@@ -221,6 +221,30 @@ pinouts, with the DIO2 land marked on both faces:
 
 ![Header pinouts of the radio boards, front and back](docs/images/pinout-radio-boards.svg)
 
+## Printing a case
+
+A two-part case that fits the adapter with either radio is in
+`hardware/case/` as STL files (also attached to every
+[release](https://github.com/mithro/esp32-to-433mhz/releases/latest)):
+
+| E07-M1101D in the case | Ra-02 breakout in the case |
+| --- | --- |
+| ![Adapter with the E07-M1101D in the printed case, lid lifted](docs/images/esp32c3-radio-adapter-assembly-e07-case-iso.png) | ![Adapter with the Ra-02 breakout and pigtail in the printed case, lid lifted](docs/images/esp32c3-radio-adapter-assembly-ra02-case-iso.png) |
+
+* `esp32c3-radio-adapter-case-base.stl`, printed as it comes (open side up),
+  and `esp32c3-radio-adapter-case-lid.stl`, printed top face down. No
+  supports; 2 mm walls; 35.8&nbsp;x&nbsp;66.5&nbsp;x&nbsp;20.6 mm outside.
+* The board screws to four standoffs with M2&nbsp;x&nbsp;6 self-tapping
+  screws. The USB-C plug goes through the window in the left wall.
+* One 6.6 mm hole in the far wall serves both radios: the E07-M1101D's SMA
+  jack pokes through it, and the Ra-02's U.FL-to-SMA pigtail bulkhead is
+  clamped in it by its nut, with the spare cable stowed beside the breakout.
+* The lid drops into a rebate and sits flush with the rim; a notch in the
+  rim at the USB end lifts it out.
+
+The case is generated from the same dimensions as the boards by
+`scripts/build_case.py`; see [3D models and case design](docs/3d-models.md#the-printed-case).
+
 ## Further reading
 
 * [Design notes](docs/design-notes.md): why the GPIOs are what they are,
@@ -230,7 +254,7 @@ pinouts, with the DIO2 land marked on both faces:
   the SuperMini and the radio boards (outline, header, castellations,
   mounting holes), with dimensions and sources, under `hardware/parts/`.
 * [3D models and case design](docs/3d-models.md): STEP/GLB assemblies on
-  every release and the dimensions a case needs.
+  every release, the dimensions a case needs, and the printed case.
 * [SX1278 castellated module adapter](docs/sx1278-module-adapter.md): a
   second, two-layer carrier for the solder-down 16-pin SX1278 module,
   `hardware/esp32c3-sx1278-adapter`.

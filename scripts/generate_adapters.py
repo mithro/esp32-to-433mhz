@@ -465,12 +465,14 @@ class Carrier:
     def add(self, ref: str, fp: Footprint, at: tuple[float, float], sym: SymbolRef, value: str, nets: dict[str, str], sch_at: tuple[float, float], descr: str, models: list[Model] | None = None) -> None:
         self.d.parts.append(Part(ref, fp, (self.X(at[0]), self.Y(at[1])), sym, value, nets, sch_at, descr, models or []))
 
-    def holes(self) -> None:
+    def holes(self, h1_models: list[Model] | None = None) -> None:
+        """Four M2 corner holes; H1 (top left) can carry models drawn in the
+        board's frame with their origin at that hole, e.g. the printed case."""
         fp = mounting_hole_fp()
         sym = SymbolRef("Mechanical.kicad_sym", "Mechanical", "MountingHole")
         corners = [(CC_HOLE_IN, CC_HOLE_IN), (self.W - CC_HOLE_IN, CC_HOLE_IN), (CC_HOLE_IN, self.H - CC_HOLE_IN), (self.W - CC_HOLE_IN, self.H - CC_HOLE_IN)]
         for i, (hx, hy) in enumerate(corners, 1):
-            self.add(f"H{i}", fp, (hx, hy), sym, "MountingHole", {}, (152.4 + (i - 1) * 12.7, 101.6), "M2 mounting hole")
+            self.add(f"H{i}", fp, (hx, hy), sym, "MountingHole", {}, (152.4 + (i - 1) * 12.7, 101.6), "M2 mounting hole", models=h1_models if i == 1 else None)
 
     def track(self, net: str, width: float, pts: list[tuple[float, float]], layer: str = "B.Cu") -> None:
         self.d.tracks.append(Track(net, layer, width, [(self.X(x), self.Y(y)) for x, y in pts]))
@@ -665,7 +667,7 @@ RA02_W, RA02_H, RA02_ROW_IN = 17.5, 22.5, 1.3  # Ra-02 breakout outline for the 
 E07_W, E07_H, E07_ROW_IN = 15.0, 30.0, 1.6
 
 
-def build_radio(radio: str = "e07") -> Design:
+def build_radio(radio: str = "e07", case: bool = False) -> Design:
     """SuperMini + one 2x4 socket that takes either the E07-M1101D (CC1101)
     board or the SX1278 Ra-02 breakout.  The SuperMini's right column becomes
     the top row (5V at the left) and its left column the bottom row (GPIO5 at
@@ -728,7 +730,9 @@ def build_radio(radio: str = "e07") -> Design:
     c.add("J5", pin_header_fp(2), (J5_X, J5_Y), CONN2, "DIO2/DATA", {"1": "GPIO21", "2": "GPIO20"}, (152.4, 152.4),
           "Fly-wire header beside the socket: pin 2 (GPIO20) is the SX1278's DIO2/DATA raw-bitstream pin, pin 1 (GPIO21) a spare",
           models=[Model("pin-header-1x02.step", (0, 0, 0), (0, 0, -90))])  # the model's pins step along +y, so turn it to lie along +x
-    c.holes()
+    # The printed case (scripts/build_case.py) hangs off H1 in the renders:
+    # the base in place and the lid lifted clear so the inside stays visible.
+    c.holes([Model("esp32c3-radio-adapter-case-base.step"), Model("esp32c3-radio-adapter-case-lid.step", (0, 0, 16.0))] if case else None)
 
     g = lambda a, b: gap(px(a), px(b))  # noqa: E731  gap between two SuperMini pins
     L1, L2, L3, L4 = LANES

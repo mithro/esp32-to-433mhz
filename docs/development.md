@@ -34,6 +34,7 @@ uv run scripts/render_boards.py      # docs/images/*.png (bare boards)
 uv run scripts/draw_pinouts.py       # docs/images/pinout-radio-boards.svg
 uv run scripts/draw_wiring.py        # docs/images/wiring-*.svg
 uv run scripts/build_3d.py           # hardware/3d/*.step (CadQuery; fetched by uv)
+uv run scripts/build_case.py         # hardware/case/*.stl and the case's STEP models (CadQuery)
 uv run scripts/render_assemblies.py  # docs/images/*-assembly-*.png, *-model-iso.png
 ```
 

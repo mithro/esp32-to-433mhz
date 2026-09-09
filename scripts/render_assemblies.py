@@ -11,6 +11,8 @@ in the socket adapter; the Ra-02 variant is generated here):
 
   radio-e07    socket adapter + SuperMini + E07-M1101D (CC1101, SMA jack)
   radio-ra02   socket adapter + SuperMini + Ra-02 breakout + U.FL-to-SMA pigtail, JP1 jumper fitted
+  radio-e07-case, radio-ra02-case
+               the same in the printed case (scripts/build_case.py), lid lifted clear
   sx1278       SX1278 module adapter + SuperMini + module + SMA jack
 
 For each it writes docs/images/<adapter>-assembly-<variant>-{iso,top,side}.png
@@ -43,6 +45,8 @@ IMAGES = ROOT / "docs" / "images"
 VARIANTS = {  # name -> (adapter project, builder, file suffix)
     "radio-e07": ("esp32c3-radio-adapter", lambda: ga.build_radio("e07"), "e07"),
     "radio-ra02": ("esp32c3-radio-adapter", lambda: ga.build_radio("ra02"), "ra02"),
+    "radio-e07-case": ("esp32c3-radio-adapter", lambda: ga.build_radio("e07", case=True), "e07-case"),
+    "radio-ra02-case": ("esp32c3-radio-adapter", lambda: ga.build_radio("ra02", case=True), "ra02-case"),
     "sx1278": ("esp32c3-sx1278-adapter", ga.build_sx1278, "module"),
 }
 # kicad-cli's argument parser takes a leading '-' in the rotation as an option,
@@ -54,6 +58,12 @@ VIEWS = {  # name -> (extra kicad-cli render args, width, height)
     "iso": (["--perspective", "--rotate", "'-55,0,28'", "--zoom", "0.5", "--pivot", "'0,-1.5,0'"], 1800, 1300),
     "top": (["--side", "top", "--zoom", "0.55", "--pivot", "'0,-1.5,0'"], 1400, 1800),
     "side": (["--side", "left", "--zoom", "0.8", "--pivot", "'0,-1.5,0'"], 2400, 700),
+}
+# The case variants are taller (the lid floats above the base), so they zoom out and pivot a little higher.
+CASE_VIEWS = {
+    "iso": (["--perspective", "--rotate", "'-55,0,28'", "--zoom", "0.42", "--pivot", "'0,-1.5,0.6'"], 1800, 1500),
+    "top": (["--side", "top", "--zoom", "0.55", "--pivot", "'0,-1.5,0'"], 1400, 1800),
+    "side": (["--side", "left", "--zoom", "0.7", "--pivot", "'0,-1.5,0.6'"], 2400, 900),
 }
 
 
@@ -112,7 +122,7 @@ def main() -> None:
             pcb = out / f"{adapter}.kicad_pcb"
             define = ["--define-var", "GIT_DESCRIBE=assembly"]
             if not args.no_render:
-                for view, (extra, w, h) in VIEWS.items():
+                for view, (extra, w, h) in (CASE_VIEWS if variant.endswith("-case") else VIEWS).items():
                     png = IMAGES / f"{adapter}-assembly-{suffix}-{view}.png"
                     run([cli, "pcb", "render", "--output", str(png), "--width", str(w), "--height", str(h),
                          "--quality", "high", "--background", "transparent", *define, *extra, str(pcb)])

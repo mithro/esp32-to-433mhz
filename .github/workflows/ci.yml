@@ -59,6 +59,10 @@ jobs:
       - name: Export the 3D assemblies (STEP and GLB)
         run: python3 scripts/render_assemblies.py --no-render --export dist
 
+      - name: Add the printable case
+        # Built by scripts/build_case.py (CadQuery) and committed like the STEP models.
+        run: cp hardware/case/*.stl dist/ && (cd dist && sha256sum *.stl >> SHA256SUMS)
+
       - uses: actions/upload-artifact@v4
         with:
           name: manufacturing-packages-${{ steps.describe.outputs.describe }}
@@ -91,7 +95,7 @@ jobs:
             gh release view "$TAG" --repo "$GITHUB_REPOSITORY" --json assets --jq '.assets[].name' \
               | xargs -r -n1 gh release delete-asset "$TAG" --repo "$GITHUB_REPOSITORY" --yes
             gh release edit "$TAG" --repo "$GITHUB_REPOSITORY" --title "$DESCRIBE" --notes-file dist/RELEASE_NOTES.md --latest
-            gh release upload "$TAG" --repo "$GITHUB_REPOSITORY" dist/*.zip dist/*.step dist/*.glb dist/SHA256SUMS
+            gh release upload "$TAG" --repo "$GITHUB_REPOSITORY" dist/*.zip dist/*.step dist/*.glb dist/*.stl dist/SHA256SUMS
           else
-            gh release create "$TAG" --repo "$GITHUB_REPOSITORY" --title "$DESCRIBE" --notes-file dist/RELEASE_NOTES.md --latest dist/*.zip dist/*.step dist/*.glb dist/SHA256SUMS
+            gh release create "$TAG" --repo "$GITHUB_REPOSITORY" --title "$DESCRIBE" --notes-file dist/RELEASE_NOTES.md --latest dist/*.zip dist/*.step dist/*.glb dist/*.stl dist/SHA256SUMS
           fi

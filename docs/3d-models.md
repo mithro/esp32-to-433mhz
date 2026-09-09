@@ -61,6 +61,39 @@ y = 61.5 to 64 suits both radios: the E07's jack passes through it, the
 bulkhead is clamped in it by its nut. A real pigtail's cable is longer than
 the drawn one, so leave room to stow the excess beside the breakout.
 
+## The printed case
+
+`scripts/build_case.py` builds exactly that case with CadQuery, from the
+generator's constants and the table above: `hardware/case/*.stl` for
+printing and `hardware/3d/esp32c3-radio-adapter-case-{base,lid}.step` as
+KiCad models (origin at mounting hole H1), which the `radio-e07-case` and
+`radio-ra02-case` variants of `scripts/render_assemblies.py` put on the
+board with the lid lifted 16 mm:
+
+| E07-M1101D | Ra-02 breakout and pigtail |
+| --- | --- |
+| ![E07-M1101D in the case](images/esp32c3-radio-adapter-assembly-e07-case-iso.png) | ![Ra-02 in the case](images/esp32c3-radio-adapter-assembly-ra02-case-iso.png) |
+
+Dimensions, in the adapter's frame (x right, y down from the board's
+top-left corner, z up from its top surface):
+
+| Feature | Value |
+| --- | --- |
+| Cavity | x -2.3 to 29.5, y -0.5 to 61.5, z -7.0 to 9.6 (the USB-C face, the pin tips under the board and the J4/J5 pins with 0.3 to 1.1 mm to spare) |
+| Walls, floor, lid | 2.0 mm; the antenna wall 2.5 mm, y 61.5 to 64.0 |
+| Outside | 35.8&nbsp;x&nbsp;66.5&nbsp;x&nbsp;20.6 mm, vertical corners R2 |
+| Standoffs | 4.0 mm diameter under the four M2 holes, floor to the board's underside (5.4 mm), 1.8 mm holes 4.5 mm deep for M2&nbsp;x&nbsp;6 self-tapping screws. 4 mm rather than 5 so the bottom-left one clears JP1's pin 2. |
+| USB-C window | left wall, 13&nbsp;x&nbsp;7.5 mm centred on the receptacle (y 14.6, z 5.1): room for a plug's overmoulding, so it seats fully |
+| Antenna hole | 6.6 mm at x 12.67, z 3.3, with a 7.4 mm square pocket 0.6 mm deep on the inside for the E07 jack's body, which reaches 0.4 mm into the wall |
+| Lid | drops into a 1 mm rebate (the outer half of the wall runs 2 mm higher than the inner half), 0.15 mm clearance, flush with the rim; a 10&nbsp;x&nbsp;1.2 mm notch in the rim at the y = 0 end lifts it |
+
+The script's constants are the numbers above, and before it writes
+anything it intersects the base and the lid with a solid for every part
+they have to house (the boards, the pins under the adapter, the back-side
+resistors, the USB-C receptacle and a plug's overmoulding, both radios'
+antenna connectors and the pigtail's nut) and stops if any intersection is
+not empty.
+
 The SX1278 module adapter assembly (`esp32c3-sx1278-adapter-assembly-module`)
 is 24&nbsp;x&nbsp;58 mm with the SuperMini at the top, the module soldered flat
 (3.2 mm tall) and the optional SMA jack on the bottom edge at x = 17:
