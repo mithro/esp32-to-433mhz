@@ -858,7 +858,7 @@ def check() -> int:
         out = [bb(hit.newObject([s]))[axis] for s in hit.solids().vals()]
         return sorted(out)
 
-    def rod(shape, axis, u, w, lo=-30.0, hi=80.0, t=0.1):
+    def rod(shape, axis, u, w, lo=-30.0, hi=80.0, t=0.05):
         """A thin rod along `axis` through the point with the other two coordinates (u, w) in x, y, z order."""
         if axis == "x":
             return spans(shape, axis, lo, u - t, hi, u + t, w - t, w + t)
@@ -883,7 +883,7 @@ def check() -> int:
     row("top: highest z (outside top face)", d.OUT_Z1, t["z"][1])
     row("closed: overall height", d.OUT_Z1 - d.OUT_Z0, t["z"][1] - b["z"][0])
     row("bottom: height of the wall to the seam", d.PART_Z - d.OUT_Z0, rod(bottom, "z", -3.9, 40.0)[0][1] - d.OUT_Z0)
-    s = rod(top, "x", 40.0, 5.0)  # through both long walls at y = 40, z = 5
+    s = rod(top, "x", 40.0, 7.5)  # through both long walls at y = 40, above the rebate
     row("top: wall thickness", d.WALL, s[0][1] - s[0][0])
     row("top: cavity width", d.CAV_X1 - d.CAV_X0, gap(s))
     s = rod(bottom, "y", 12.0, -4.0)  # through the end walls under the seam
@@ -904,13 +904,13 @@ def check() -> int:
     row("peg: tip height (H3, flush)", 0.0, rod(bottom, "z", *d.FLUSH_PEG)[0][1])
     s = spans(bottom, "x", hx - 3, hy - 0.05, hx + 3, hy + 0.05, -1.0, -0.9)
     row("peg: diameter", d.PEG_D, s[0][1] - s[0][0])
-    s = spans(bottom, "x", hx - 3, hy - 0.05, hx + 3, hy + 0.05, d.PEG_Z1 - 0.05, d.PEG_Z1 + 0.05)
-    row("peg: tip diameter after the chamfer", d.PEG_D - 2 * d.PEG_CHAMFER, s[0][1] - s[0][0], tol=0.1)
+    s = spans(bottom, "x", hx - 3, hy - 0.05, hx + 3, hy + 0.05, d.PEG_Z1 - 0.25, d.PEG_Z1 - 0.15)  # in the chamfer, 0.25 below the tip
+    row("peg: diameter 0.25 below the tip (chamfer 0.40 x 45)", d.PEG_D - 2 * (d.PEG_CHAMFER - 0.25), s[0][1] - s[0][0])
     s = rod(top, "z", hx + 1.75, hy)
     row("boss: face above the PCB (H1)", d.BOSS_Z0, s[0][0])
     row("boss: length", d.BOSS_Z1 - d.BOSS_Z0, d.CAV_Z1 - s[0][0])
     row("boss: bore depth (H1)", d.BOSS_BORE_DEPTH, rod(top, "z", hx, hy)[0][0] - d.BOSS_Z0)
-    s = spans(top, "x", hx - 3, hy - 0.05, hx + 3, hy + 0.05, 5.0, 5.1)
+    s = spans(top, "x", hx - 3, hy - 0.05, hx + 3, hy + 0.05, 1.0, 1.1)  # through the bored part of the boss
     row("boss: diameter", d.BOSS_D, s[-1][1] - s[0][0])
     row("boss: bore diameter", d.BOSS_BORE_D, gap(s))
     sbx, sby, sbd, _ = d.BOSS_AT[2]
@@ -941,30 +941,33 @@ def check() -> int:
     s = rod(bottom, "x", d.TAB_Y[0], d.PART_Z + d.BUMP_Z)
     row("tab: outer face at the bump (lip face - bump R)", d.LIP_X0 - d.BUMP_R, s[0][0])
     row("tab: thickness at the bump", d.LIP_T + d.BUMP_R, s[0][1] - s[0][0])
-    s = rod(bottom, "y", -2.7, 0.5)
-    tabs = [(a, b_) for a, b_ in s if abs((b_ - a) - d.TAB_W) < 0.05]
-    row("tab: width (first tab)", d.TAB_W, tabs[0][1] - tabs[0][0])
-    row("tab: centre y (first)", d.TAB_Y[0], (tabs[0][0] + tabs[0][1]) / 2)
-    row("tab: centre y (second)", d.TAB_Y[1], (tabs[1][0] + tabs[1][1]) / 2)
-    i = s.index(tabs[0])
+    s = rod(bottom, "y", -2.7, 3.0)  # above the lip: only the tabs
+    row("tab: count on the left wall", len(d.TAB_Y), len(s))
+    row("tab: width (first tab)", d.TAB_W, s[0][1] - s[0][0])
+    row("tab: centre y (first)", d.TAB_Y[0], (s[0][0] + s[0][1]) / 2)
+    row("tab: centre y (second)", d.TAB_Y[1], (s[1][0] + s[1][1]) / 2)
+    s = rod(bottom, "y", -2.7, 0.5)  # through the lip: the slots either side of the first tab
+    i = next(i for i, (a, b_) in enumerate(s) if abs((a + b_) / 2 - d.TAB_Y[0]) < 0.1)
     row("slot: width before the first tab", d.SLOT, gap(s, i - 1))
     row("slot: width after the first tab", d.SLOT, gap(s, i))
     s = rod(top, "x", 41.0, 3.0)
     row("skirt: thickness", d.SKIRT_T, s[0][1] - s[0][0])
     row("skirt: inner face x (rebate)", d.CAV_X0 - d.REBATE, s[0][1])
     row("rebate: height above the seam", d.SKIRT_H, rod(top, "z", -2.8, 41.0)[0][0] - d.PART_Z)
-    s = rod(top, "x", d.TAB_Y[0], d.PART_Z + d.BUMP_Z)
+    s = rod(top, "x", d.TAB_Y[0], d.PART_Z + d.BUMP_Z, t=0.01)
     row("groove: bottom x (skirt face - groove R)", d.CAV_X0 - d.REBATE - d.GROOVE_R, s[0][1])
-    s = rod(top, "y", -3.9, d.PART_Z + d.BUMP_Z)
-    grooves = [(a, b_) for a, b_ in s]
-    row("groove: length", d.TAB_W + 2 * d.GROOVE_Y_OVER, gap(grooves, 0))
-    row("groove: centre y (first)", d.TAB_Y[0], (grooves[0][1] + grooves[1][0]) / 2)
+    s = rod(top, "y", d.CAV_X0 - d.REBATE - 0.25, d.PART_Z + d.BUMP_Z)  # just inside the skirt face: the grooves and the window
+    gaps = [(s[i][1], s[i + 1][0]) for i in range(len(s) - 1)]
+    g = next(g for g in gaps if abs((g[0] + g[1]) / 2 - d.TAB_Y[0]) < 0.1)
+    row("groove: length", d.TAB_W + 2 * d.GROOVE_Y_OVER, g[1] - g[0])
+    row("groove: centre y (first)", d.TAB_Y[0], (g[0] + g[1]) / 2)
+    row("groove: centre y (second)", d.TAB_Y[1], next((a + b_) / 2 for a, b_ in gaps if abs((a + b_) / 2 - d.TAB_Y[1]) < 0.1))
     s = rod(top, "z", d.W / 2, -2.0)
     row("pry notch: depth above the seam", d.NOTCH_DEPTH, s[0][0] - d.PART_Z)
     s = rod(top, "x", -2.0, 0.0)
     row("pry notch: width", d.NOTCH_W, gap(s))
-    s = rod(bottom, "x", d.OUT_Y0 + 0.2, -5.0)  # 0.2 in from the near face, the R2 corner has pulled the wall in
-    row("corner: R2 (x where the wall starts, 0.2 in from the end face)", d.OUT_X0 + d.CORNER_R - math.sqrt(d.CORNER_R**2 - (d.CORNER_R - 0.2) ** 2), s[0][0])
+    s = spans(bottom, "x", -10, d.OUT_Y0 + 0.2, 0, d.OUT_Y0 + 0.3, -5.05, -4.95)  # 0.2 to 0.3 in from the end face, where the R2 corner pulls the wall in
+    row("corner: R2 (wall face x, 0.3 in from the end face)", d.OUT_X0 + d.CORNER_R - math.sqrt(d.CORNER_R**2 - (d.CORNER_R - 0.3) ** 2), s[0][0])
 
     bad = 0
     print(f"{'dimension':58s} {'expected':>9s} {'measured':>9s} {'diff':>7s}")
