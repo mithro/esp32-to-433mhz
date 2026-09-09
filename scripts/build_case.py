@@ -51,56 +51,16 @@ STL_OUT = ROOT / "hardware" / "case"
 # belongs to read in the renders: the top half a touch darker and warmer.
 CASE_BOTTOM, CASE_TOP = cq.Color(0.86, 0.86, 0.82), cq.Color(0.76, 0.73, 0.67)
 
-# --- the things the case has to clear (board frame, z from the board's top) ---
-W, H = ga.CC_W, ga.CC_H  # 29 x 38
-HOLE_IN, HOLE_D = ga.CC_HOLE_IN, ga.CC_HOLE_D  # M2 holes 2.4 in from each corner
-HOLES = [(HOLE_IN, HOLE_IN), (W - HOLE_IN, HOLE_IN), (HOLE_IN, H - HOLE_IN), (W - HOLE_IN, H - HOLE_IN)]
-BOARD_T = 1.6
-USB_X0, USB_Y0, USB_Y1, USB_Z0, USB_Z1 = -2.0, 10.1, 19.1, 3.5, 6.7  # the SuperMini's USB-C receptacle
-PIN_TIPS = -6.0  # the module headers' pins under the board (J4/JP1/J5 reach -3.0)
-HIGHEST = 8.5  # J4/J5 pins and a jumper on JP1
-SOCKET_MID_X = (ga.CC_S1[0] + ga.CC_S1[0] - 3 * ga.SM_PITCH) / 2  # 12.67: the antenna axis, both radios
-ANT_Z = ga.HEADER_BODY + 0.8  # 3.3: the plugged-in radio board's mid-plane
-E07_JACK_Y1 = ga.SOCKET_Y - ga.E07_ROW_IN + ga.E07_H + 3.0  # 61.9: the far face of the E07's square SMA body
-ANT_WALL_Y0 = 61.5  # inner face of the antenna wall: the pigtail's flange seats here (see build_3d.build_pigtail)
-
-# --- case geometry ---
-WALL, FLOOR, TOP_T = 2.2, 2.0, 2.0
-CLEAR = 0.3  # cavity to the parts it wraps
-CAV_X0, CAV_X1 = USB_X0 - CLEAR, W + 0.5  # the USB-C receptacle's face is the leftmost thing
-CAV_Y0, CAV_Y1 = -0.5, ANT_WALL_Y0
-CAV_Z0, CAV_Z1 = PIN_TIPS - 1.0, HIGHEST + 1.1  # -7.0 .. 9.6
-OUT_X0, OUT_X1 = CAV_X0 - WALL, CAV_X1 + WALL
-OUT_Y0, OUT_Y1 = CAV_Y0 - WALL, CAV_Y1 + 2.5  # the antenna wall is 2.5 thick: an SMA nut's worth
-OUT_Z0, OUT_Z1 = CAV_Z0 - FLOOR, CAV_Z1 + TOP_T  # -9.0 .. 11.6
-PART_Z = -0.5  # the parting line: just under the board's top, so the USB-C window and antenna hole are whole in the top half
-STANDOFF_D = 4.0  # 4 mm keeps clear of JP1's pin beside the bottom-left hole
-PEG_D, PEG_H, PEG_CHAMFER = 2.15, BOARD_T + 0.4, 0.4  # a light press fit in the 2.2 mm holes (FDM pegs print a touch oversize)
-# Bosses from the ceiling hold the board down on the pegs, bored to clear the
-# peg tips.  The bottom-left corner is crowded (a jumper cap on JP1, the Ra-02
-# breakout's overhang), so there the peg is flush with the board and a small
-# solid boss presses beside the hole, into the corner.
-BOSS_D, BOSS_BORE_D, BOSS_GAP = 4.4, 2.6, 0.2
-BOSS_AT = [(HOLE_IN, HOLE_IN, BOSS_D, True), (W - HOLE_IN, HOLE_IN, BOSS_D, True), (2.2, H - 1.4, 3.0, False), (W - HOLE_IN, H - HOLE_IN, BOSS_D, True)]  # x, y, diameter, bored
-FLUSH_PEG = HOLES[2]
-# Snap fit.  The bottom half's lip (the inner LIP_T of the wall) rises LIP_H
-# above the parting line into a rebate in the top half's skirt, FIT clear.
-# On each long wall two tabs, TAB_W wide and TAB_H tall, are cut free of the
-# lip by SLOT-wide slots so each is a cantilever LIP_T thick; a half-round
-# bump of radius BUMP_R across its outer face near the tip clicks into a
-# groove of radius GROOVE_R in the skirt.  The bump stands BUMP_R - FIT proud
-# of the skirt's face, so that is what the tab deflects: about 1% strain over
-# the tab's height, gentle enough for PLA.
-LIP_T, LIP_H, FIT = 0.8, 1.5, 0.15
-TAB_W, TAB_H, SLOT = 8.0, 6.0, 1.0
-BUMP_R, GROOVE_R, BUMP_Z = 0.35, 0.42, 5.3  # bump/groove centre height above the parting line
-SKIRT_H = TAB_H + 0.3  # the rebate reaches this far above the parting line
-TAB_Y = (32.0, 50.0)  # tab centres along the long walls: clear of the USB-C window and the corners
-USB_WIN_W, USB_WIN_H = 13.0, 7.5  # a USB-C plug's overmoulding, so the plug can seat fully
-ANT_HOLE_D = 6.6  # SMA barrel 6.35
-E07_POCKET, E07_POCKET_DEPTH = 7.4, E07_JACK_Y1 - ANT_WALL_Y0 + 0.2  # 0.6: the jack body reaches 0.4 into the wall
-NOTCH_W, NOTCH_DEPTH = 10.0, 1.2  # pry notch in the top half's skirt, on the near (J4) end
-CORNER_R = 2.0
+# Every dimension is a named constant in case_dims.py (pure Python), shared
+# with draw_case.py so the drawings cannot drift from the model.
+from case_dims import (  # noqa: E402
+    ANT_HOLE_D, ANT_WALL_Y0, ANT_Z, BOARD_T, BOSS_AT, BOSS_BORE_D, BOSS_GAP, BUMP_R, BUMP_Z,
+    CAV_X0, CAV_X1, CAV_Y0, CAV_Y1, CAV_Z0, CAV_Z1, CORNER_R, E07_JACK_Y1, E07_POCKET,
+    E07_POCKET_DEPTH, FIT, FLUSH_PEG, GROOVE_R, H, HIGHEST, HOLE_D, HOLES, LIP_H, LIP_T,
+    NOTCH_DEPTH, NOTCH_W, OUT_X0, OUT_X1, OUT_Y0, OUT_Y1, OUT_Z0, OUT_Z1, PART_Z, PEG_CHAMFER,
+    PEG_D, PEG_H, PIN_TIPS, SKIRT_H, SLOT, SOCKET_MID_X, STANDOFF_D, TAB_H, TAB_W, TAB_Y,
+    USB_WIN_H, USB_WIN_W, USB_X0, USB_Y0, USB_Y1, USB_Z0, USB_Z1, W,
+)
 
 
 def rounded_box(x0: float, y0: float, x1: float, y1: float, z0: float, z1: float, r: float) -> cq.Workplane:
