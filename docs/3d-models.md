@@ -62,7 +62,7 @@ bulkhead is clamped in it by its nut. A real pigtail's cable is longer than
 the drawn one, so leave room to stow the excess beside the breakout.
 
 The SX1278 module adapter assembly (`esp32c3-sx1278-adapter-assembly-module`)
-is 24 x 58 mm with the SuperMini at the top, the module soldered flat
+is 24&nbsp;x&nbsp;58 mm with the SuperMini at the top, the module soldered flat
 (3.2 mm tall) and the optional SMA jack on the bottom edge at x = 17:
 
 ![SX1278 module adapter with the SuperMini, module and SMA jack](images/esp32c3-sx1278-adapter-assembly-module-iso.png)

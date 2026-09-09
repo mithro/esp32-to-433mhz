@@ -35,10 +35,10 @@ Its manufacturing packages are built alongside the pin-header adapter's.
 | --- | --- | --- |
 | ![3D render of the top side](images/esp32c3-sx1278-adapter-3d-top.png) | ![3D render of the bottom side](images/esp32c3-sx1278-adapter-3d-bottom.png) | ![2D layout plot](images/esp32c3-sx1278-adapter-layout.png) |
 
-`hardware/esp32c3-sx1278-adapter`, 24 x 58 mm. The SuperMini sits at the top
+`hardware/esp32c3-sx1278-adapter`, 24&nbsp;x&nbsp;58 mm. The SuperMini sits at the top
 with its USB-C pointing off the top edge. The
 [SX1278 module](component-boards.md#sx1278-lora-module-castellated) is soldered onto SMD land pads that
-reproduce its castellations (1.0 x 3.0 mm pads extending 1.5 mm outside the
+reproduce its castellations (1.0&nbsp;x&nbsp;3.0 mm pads extending 1.5 mm outside the
 module edge), rotated so its 12-pad row faces the SuperMini and its ANT pad
 faces the bottom edge. The antenna trace runs to a 1.0 mm hole for a spring
 antenna wire (J3) and on to pads for an optional edge-mount SMA jack on the

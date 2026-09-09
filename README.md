@@ -1,7 +1,7 @@
 # esp32-to-433mhz
 
 A small carrier board that turns an **ESP32-C3 SuperMini** and a cheap
-**433 MHz radio board** into one 29 x 38 mm unit. It takes any of three
+**433 MHz radio board** into one 29&nbsp;x&nbsp;38 mm unit. It takes any of three
 common 2x4-header radios in the same socket:
 
 * the blue **Ebyte E07-M1101D** (CC1101, SMA jack),
@@ -38,14 +38,14 @@ terms below are the names the listings use. Prices are a few dollars each.
 
 | Part | What to search for | How to recognise it |
 | --- | --- | --- |
-| ESP32-C3 SuperMini | "ESP32-C3 SuperMini" | 18 x 22.5 mm, USB-C, 8 castellated pins per side, ceramic antenna at the far end from the USB-C. Usually ships with two 1x8 pin headers. |
+| ESP32-C3 SuperMini | "ESP32-C3 SuperMini" | 18&nbsp;x&nbsp;22.5 mm, USB-C, 8 castellated pins per side, ceramic antenna at the far end from the USB-C. Usually ships with two 1x8 pin headers. |
 | **One** radio board, from the three below | | |
 
 | Radio board | What to search for | How to recognise it | Antenna |
 | --- | --- | --- | --- |
-| Ebyte E07-M1101D-SMA (CC1101) | "E07-M1101D", "TENSTAR CC1101 433MHz wireless module" | Blue, 15 x 30 mm, 2x4 header at one end, SMA jack at the other, PCB marked "E07-M1101D V2.0" | 433 MHz SMA antenna (often included) |
-| D-Sun CC1101 | "CC1101 433MHz module" (green) | Green, 14.4 x 30 mm, silk "433MHz D-Sun CC1101", 2x4 header, SMA jack | 433 MHz SMA antenna |
-| SX1278 Ra-02 breakout | "SX1278 LoRa 433MHz Ra-02 module" | Blue 17.5 x 22.5 mm carrier with the Ai-Thinker Ra-02 can on top, 2x4 header underneath, silk "SX1278 LoRa 433MHz v4.0" | U.FL (IPEX) to SMA pigtail plus a 433 MHz SMA antenna |
+| Ebyte E07-M1101D-SMA (CC1101) | "E07-M1101D", "TENSTAR CC1101 433MHz wireless module" | Blue, 15&nbsp;x&nbsp;30 mm, 2x4 header at one end, SMA jack at the other, PCB marked "E07-M1101D V2.0" | 433 MHz SMA antenna (often included) |
+| D-Sun CC1101 | "CC1101 433MHz module" (green) | Green, 14.4&nbsp;x&nbsp;30 mm, silk "433MHz D-Sun CC1101", 2x4 header, SMA jack | 433 MHz SMA antenna |
+| SX1278 Ra-02 breakout | "SX1278 LoRa 433MHz Ra-02 module" | Blue 17.5&nbsp;x&nbsp;22.5 mm carrier with the Ai-Thinker Ra-02 can on top, 2x4 header underneath, silk "SX1278 LoRa 433MHz v4.0" | U.FL (IPEX) to SMA pigtail plus a 433 MHz SMA antenna |
 
 Get a 433 MHz antenna, not the 868/915 MHz one many listings bundle with
 the same radio.
@@ -79,7 +79,7 @@ A strip of 40-pin "breakaway" male header covers J1, J2, J4, J5 and JP1.
 
 | Option | Value |
 | --- | --- |
-| Size | 29.0 x 38.0 mm |
+| Size | 29.0&nbsp;x&nbsp;38.0 mm |
 | Layers | 2 |
 | Thickness | 1.6 mm FR-4 |
 | Copper | 1 oz |

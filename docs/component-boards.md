@@ -22,7 +22,7 @@ at the top.
 
 | Feature | Value |
 | --- | --- |
-| Board outline | 18.00 x 22.52, square corners |
+| Board outline | 18.00&nbsp;x&nbsp;22.52, square corners |
 | Pin pitch | 2.54 |
 | Pins per side | 8 (16 total) |
 | Distance between the two pin rows | 15.24 |
@@ -54,10 +54,10 @@ Sources:
 
 * [GrabCAD "ESP32C3 SuperMini" STEP model by Ulf Hille](https://grabcad.com/library/esp32c3-supermini-1),
   redistributed in [mrtnvgr/KiCad_ESP32-C3-SuperMini](https://github.com/mrtnvgr/KiCad_ESP32-C3-SuperMini):
-  board body 18.00 x 22.52, pin rows at +/-7.62, first pin 1.74 from the USB-C edge, 1.6 mm pad copper.
+  board body 18.00&nbsp;x&nbsp;22.52, pin rows at +/-7.62, first pin 1.74 from the USB-C edge, 1.6 mm pad copper.
 * [mischianti.org ESP32-C3 Super Mini dimension drawing](https://mischianti.org/esp32-c3-super-mini-high-resolution-pinout-datasheet-and-specs/):
   18.00 mm width, 15.24 mm row spacing, 22.50 mm length, pin order.
-* [components101 ESP32-C3 Super Mini](https://components101.com/development-boards/esp32c3-mini-development-board-datasheet-pinout): 22.52 x 18.0 mm.
+* [components101 ESP32-C3 Super Mini](https://components101.com/development-boards/esp32c3-mini-development-board-datasheet-pinout): 22.52&nbsp;x&nbsp;18.0 mm.
 * Photographs of production boards for the keyhole castellated pad shape.
 
 The hole diameter (1.0 mm) is the standard drill for 2.54 mm headers and
@@ -81,8 +81,8 @@ the top and the SMA jack at the bottom.
 
 | Feature | Value |
 | --- | --- |
-| Board outline | 15.0 x 30.0 |
-| Header | 2 x 4, 2.54 pitch, 1.50 pads (pin 1 square), 0.90 holes |
+| Board outline | 15.0&nbsp;x&nbsp;30.0 |
+| Header | 2&nbsp;x&nbsp;4, 2.54 pitch, 1.50 pads (pin 1 square), 0.90 holes |
 | Header position | outer row 1.60 from the header edge, columns 3.70 from the long edges |
 | Header numbering | outer row 7 5 3 1 left to right, inner row 8 6 4 2 |
 | Mounting holes | 3.00 plated, 4.20 pad, 2.70 from each long edge, 10.0 from the SMA edge |
@@ -106,11 +106,11 @@ Sources:
 
 * [Ebyte E07 series user manual v1.00](https://ia802806.us.archive.org/26/items/ebytecdebytedl0719/557_E07_Usermanual_EN_v1.00.pdf),
   section 2.2 "E07 (M1101D-TH) / E07 (M1101D-SMA)": mechanical drawing
-  (15.0 x 30.0, header 1.60 / 3.70 / 2.54, holes 2.70 / 10.0) and pin table.
+  (15.0&nbsp;x&nbsp;30.0, header 1.60 / 3.70 / 2.54, holes 2.70 / 10.0) and pin table.
 * [Ebyte E07-M1101D-TH user manual v1.20](https://www.rcscomponents.kiev.ua/datasheets/e07-m1101d-th_usermanual_en_v1_20.pdf),
   section 3 "Size and pin definition": pad sizes (1.50 pad / 0.90 hole,
   4.20 ring / 3.00 hole).
-* Seller listing (15 x 28 mm, pin table). The 28 mm figure is Ebyte's value
+* Seller listing (15&nbsp;x&nbsp;28 mm, pin table). The 28 mm figure is Ebyte's value
   for the spring-antenna variant; the SMA variant and the drawing say 30 mm.
 * The SMA jack's leg spacing (5.5 mm) was measured from the user's photos;
   the pad lengths are approximate.
@@ -124,18 +124,18 @@ Sources:
 `hardware/parts/cc1101-dsun`: the green CC1101 board marked "433MHz D-Sun
 CC1101" (EasyEDA lists the same board as "RF1101SE V3.1"): a 2x4 header at
 one end, an edge-mount SMA jack at the other and two small holes beside the
-jack. Its back-side silk is a 4 x 2 legend of the pin names next to the
+jack. Its back-side silk is a 4&nbsp;x&nbsp;2 legend of the pin names next to the
 header, which is what you wire from.
 
 All values in millimetres, viewed from the component side with the header at
 the top and the SMA jack at the bottom. They were measured from photos of
-the board beside the E07-M1101D (whose 15 x 30 gives the scale), so allow
+the board beside the E07-M1101D (whose 15&nbsp;x&nbsp;30 gives the scale), so allow
 about +/- 0.3 mm; the thickness is assumed.
 
 | Feature | Value |
 | --- | --- |
-| Board outline | 14.4 x 30.0 |
-| Header | 2 x 4, 2.54 pitch, 1.50 pads (pin 1 square), 0.90 holes |
+| Board outline | 14.4&nbsp;x&nbsp;30.0 |
+| Header | 2&nbsp;x&nbsp;4, 2.54 pitch, 1.50 pads (pin 1 square), 0.90 holes |
 | Header position | outer row 2.1 from the header edge; columns 2.9 to 10.5 from the left long edge (0.5 left of centre) |
 | Header numbering | as the E07: outer row 7 5 3 1 left to right, inner row 8 6 4 2 |
 | Mounting holes | 1.8, not plated, 1.7 from each long edge, 2.5 from the SMA edge |
@@ -161,17 +161,17 @@ back carries the original's legend grid.
 | ![3D render of the top side](images/sx1278-ra02-breakout-3d-top.png) | ![3D render of the bottom side](images/sx1278-ra02-breakout-3d-bottom.png) | ![2D layout plot](images/sx1278-ra02-breakout-layout.png) |
 
 `hardware/parts/sx1278-ra02-breakout`: the blue "SX1278 LoRa 433MHz v4.0"
-breakout, an Ai-Thinker Ra-02 LoRa module (IPEX antenna) on a 17.5 x 22.5 mm
+breakout, an Ai-Thinker Ra-02 LoRa module (IPEX antenna) on a 17.5&nbsp;x&nbsp;22.5 mm
 carrier with a 2x4 2.54 mm male header on its back. Drawn as seen from the
 Ra-02 side with the header edge at the top, the way it sits on the
 adapter.
 
 | Feature | Value | Source |
 | --- | --- | --- |
-| Outline | 17.5 x 22.5 mm | photos, scaled by the header pitch (+/- 0.3 mm) |
+| Outline | 17.5&nbsp;x&nbsp;22.5 mm | photos, scaled by the header pitch (+/- 0.3 mm) |
 | Header | 2x4, outer row 1.3 mm from the header edge, columns centred | photos |
 | Header pinout | outer row MISO, SCK, RST, GND; inner row DIO0, MOSI, NSS, 3V3 (left to right) | back-side silk in the photos |
-| Ra-02 module | 17 x 16 x 3.2 mm, 16 castellations at 2.0 mm on the 17 mm edges, first 1.5 mm from the end | Ai-Thinker Ra-02 Specifications V1.0, section 3 |
+| Ra-02 module | 17&nbsp;x&nbsp;16&nbsp;x&nbsp;3.2 mm, 16 castellations at 2.0 mm on the 17 mm edges, first 1.5 mm from the end | Ai-Thinker Ra-02 Specifications V1.0, section 3 |
 | Ra-02 pins | 1-8 GND, GND, 3.3V, RESET, DIO0, DIO1, DIO2, DIO3 up the right edge from the IPEX corner; 9-16 GND, DIO4, DIO5, SCK, MISO, MOSI, NSS, GND down the left edge | Ra-02 Specifications V1.0, section 4 |
 | IPEX | 1.5 / 1.0 mm from the pin-1 corner (bottom-right here) | Ra-02 Specifications V1.0, section 3 |
 
@@ -184,7 +184,7 @@ fixed the module's orientation). Both sides carry a GND pour. The back silk
 carries the header's pin numbers and name grid and the Ra-02's pin numbers
 beside each land; the header names also appear on both sides beside each
 column. The breakout's two decoupling capacitors are not modelled, and the
-module lands are drawn 1.4 x 1.2 mm.
+module lands are drawn 1.4&nbsp;x&nbsp;1.2 mm.
 
 ## SX1278 LoRa module (castellated)
 
@@ -229,7 +229,7 @@ Approximate positions of the SX1278 and its crystal are drawn on `F.Fab`.
 Sources and accuracy:
 
 * Seller PDF for the "SX1278 LoRa 433MHz Wireless Module (PXL1276-D01)":
-  module size 17 mm x 16.5 mm.
+  module size 17module size 17 mm x 16.5 mm.nbsp;mmmodule size 17 mm x 16.5 mm.nbsp;xmodule size 17 mm x 16.5 mm.nbsp;16.5module size 17 mm x 16.5 mm.nbsp;mm.
 * Seller pinout photo (top-down with dimension lines) for the pin names in
   physical order: GND DIO1 DIO2 DIO3 VCC MISO MOSI SCK NSS DIO0 REST GND
   along the row, DIO4 and DIO5 at the adjacent corner, ANT and GND at the
