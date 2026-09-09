@@ -33,14 +33,21 @@ uv run scripts/verify_boards.py      # ERC + DRC with schematic parity, all boar
 uv run scripts/render_boards.py      # docs/images/*.png (bare boards)
 uv run scripts/draw_pinouts.py       # docs/images/pinout-radio-boards.svg
 uv run scripts/draw_wiring.py        # docs/images/wiring-*.svg
+uv run scripts/draw_case.py          # docs/images/case-*.svg, the case's mechanical drawings
 uv run scripts/build_3d.py           # hardware/3d/*.step (CadQuery; fetched by uv)
 uv run scripts/build_case.py         # hardware/case/*.stl and the case's STEP models (CadQuery)
+uv run scripts/draw_case.py --check  # measures the drawings' dimensions on the case solids (CadQuery)
 uv run scripts/render_assemblies.py  # docs/images/*-assembly-*.png, *-model-iso.png
 uv run scripts/export_case.py        # dist/esp32c3-radio-adapter-case-<rev>.zip from the committed case files
 ```
 
 ERC reports only "global label not connected anywhere else" warnings (each
 pin carries a single global label); DRC reports no violations on any board.
+
+The case's dimensions are the constants in `scripts/case_dims.py` (plain
+Python), shared by `build_case.py` and `draw_case.py`; `draw_case.py
+--check` re-runs itself under uv with CadQuery, rebuilds both halves and
+probes 63 of the dimensions the sheets quote, failing on any mismatch.
 
 ## CI and manufacturing packages
 
