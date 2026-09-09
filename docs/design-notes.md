@@ -37,8 +37,10 @@ reset; the ROM then latches BOOT (GPIO9) low and drops into USB download
 mode instead of running the firmware. This was measured on the bench on
 2026-09-06, and it is not fixable in software (the ROM samples the strap
 before any code runs). Position 4 (CSN/SCK/NSS) therefore takes **GPIO1**,
-not GPIO9; GPIO9 is left unconnected, where its internal pull-up floats it
-high -- the safest state, since nothing can pull an unconnected pin low.
+not GPIO9; GPIO9 carries nothing but R4, an optional do-not-populate
+pull-up to 3V3, so by default its internal pull-up floats it high -- the
+safest state, since nothing can pull an unconnected pin low -- and R4 can
+hold it there harder if ever wanted.
 GPIO5 is the radio-type strap (below); a second 3V3 and the unused GPIOs
 (GPIO0, 2, 8 and the UART pair GPIO20/21) are brought out to a 1x7 header on
 the top edge, and the two straps that stay on that header (GPIO8, GPIO2)
@@ -101,7 +103,11 @@ Positions 4, 5 and 6 are fed from the power row: SCK (GPIO3) and MOSI
 (GPIO4) come down between the SuperMini rows into positions 5 and 6, and
 CSN (GPIO1) crosses over between the rows and drops into position 4 from
 the left -- the corridor GPIO9 used to occupy. GPIO8 climbs between the
-drops to the header. GND and 3V3 leave the power row
+drops to the header. GPIO9's pad is boxed in by SCK and CSN, so its
+pull-up R4 sits between the rows in GPIO9's column: SCK steps one gap
+left as soon as it leaves its pad, and 3V3 comes down from J4 pin 3
+through the power row's gap between GPIO3 and GPIO2 into R4's top pad;
+R4's other pad drops into GPIO9. GND and 3V3 leave the power row
 upward, run along the top edge above the expansion header and down the
 strip right of the SuperMini into the socket's right column, GND
 continuing under the socket to the strap. The layout plot shows the
@@ -111,16 +117,17 @@ back-copper tracks in blue.
 
 J4 is a 1x7 2.54 mm header on the top edge, centred between the mounting
 holes, carrying 3V3 and every GPIO the radio does not use in the order 3V3,
-GPIO8, GPIO2, 3V3, GPIO0, GPIO21, GPIO20 (pin 1, square, at the left; the
+GPIO8, 3V3, GPIO2, GPIO0, GPIO21, GPIO20 (pin 1, square, at the left; the
 silk names them the way the SuperMini does, with the spare UART marked
-"21TX" and "20RX"). The second 3V3 sits where GPIO1 used to, now that GPIO1
-drives the socket. GPIO2 and 0 rise straight from the power row, GPIO8
+"21TX" and "20RX"). Each boot strap on the header has a 3V3 pin on its
+left for its pull-up, and the second 3V3 also feeds R4 (GPIO9's pull-up,
+above). GPIO2 and 0 rise straight from the power row, GPIO8
 climbs from the GPIO row between the rows, and GPIO21 and GPIO20 leave the
 GPIO row's right end and come up the strip right of the SuperMini, the
 same strip GND and 3V3 come down. 5V is not on the header: its pad sits
 under the top-left mounting hole and cannot be reached on one layer. GPIO2
 and GPIO8 are boot strapping pins, so R2 and R3 -- optional do-not-populate
-0805s that bridge each to the adjacent 3V3 pin -- can pull them high at
+0805s that bridge each to the 3V3 pin on its left -- can pull them high at
 reset if whatever is hung on those two would otherwise hold them low.
 
 ## The DIO2 fly-wire header

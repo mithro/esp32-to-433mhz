@@ -60,7 +60,7 @@ the same radio.
 | J5 | 1x2 male pin header, 2.54 mm | 1 | DIO2 fly-wire header. Only needed for raw OOK on the SX1278. |
 | JP1 | 1x2 male pin header + jumper cap, 2.54 mm | 1 | Radio-type strap. Jumper fitted for the Ra-02, open for a CC1101. |
 | R1 | 0805 0 ohm resistor | 0 or 1 | Permanent alternative to the JP1 jumper (Ra-02 only). |
-| R2, R3 | 0805 4.7 kOhm resistors | 0 | Do-not-populate pull-ups for GPIO8 / GPIO2 on J4. Only if you hang something on those pins that holds them low at boot. |
+| R2, R3, R4 | 0805 4.7 kOhm resistors | 0 | Do-not-populate pull-ups on the boot straps: GPIO8 and GPIO2 (on J4) and GPIO9 (unused). Only if something you add holds one of them low at boot. |
 | | M2 screws or standoffs | 4 | The corner holes are 2.2 mm. |
 | | Thin insulated wire, 30 to 50 mm | 1 | The DIO2 fly wire (Ra-02 only): a strand of wire-wrap or enamelled wire. |
 
