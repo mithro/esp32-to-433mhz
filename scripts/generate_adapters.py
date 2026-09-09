@@ -658,7 +658,7 @@ def build_radio(radio: str = "e07") -> Design:
     c.add("R3", hp, ((ex(3) + ex(4)) / 2, EXP_Y), RES, "4k7", {"1": "GPIO2", "2": "+3V3"}, (241.3, 127.0), "Optional pull-up: GPIO2 boot strap to 3V3 (DNP unless needed)")
     c.add("J5", pin_header_fp(2), (J5_X, J5_Y), CONN2, "DIO2/DATA", {"1": "GPIO21", "2": "GPIO20"}, (152.4, 152.4),
           "Fly-wire header beside the socket: pin 2 (GPIO20) is the SX1278's DIO2/DATA raw-bitstream pin, pin 1 (GPIO21) a spare",
-          models=[Model("pin-header-1x02.step", (0, 0, 0), (0, 0, 90))])  # the model's pins step along +y; KiCad applies the negated angle
+          models=[Model("pin-header-1x02.step", (0, 0, 0), (0, 0, -90))])  # the model's pins step along +y, so turn it to lie along +x
     c.holes()
 
     g = lambda a, b: gap(px(a), px(b))  # noqa: E731  gap between two SuperMini pins
