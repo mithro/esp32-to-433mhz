@@ -667,7 +667,15 @@ RA02_W, RA02_H, RA02_ROW_IN = 17.5, 22.5, 1.3  # Ra-02 breakout outline for the 
 E07_W, E07_H, E07_ROW_IN = 15.0, 30.0, 1.6
 
 
-def build_radio(radio: str = "e07", case: bool = False) -> Design:
+CASE_MODELS = {  # build_radio(case=...) -> the printed case's halves on H1 (scripts/build_case.py)
+    None: [],
+    "open": [Model("esp32c3-radio-adapter-case-bottom.step")],
+    "closed": [Model("esp32c3-radio-adapter-case-bottom.step"), Model("esp32c3-radio-adapter-case-top.step")],
+    "exploded": [Model("esp32c3-radio-adapter-case-bottom.step"), Model("esp32c3-radio-adapter-case-top.step", (0, 0, 16.0))],
+}
+
+
+def build_radio(radio: str = "e07", case: str | None = None) -> Design:
     """SuperMini + one 2x4 socket that takes either the E07-M1101D (CC1101)
     board or the SX1278 Ra-02 breakout.  The SuperMini's right column becomes
     the top row (5V at the left) and its left column the bottom row (GPIO5 at
@@ -689,7 +697,14 @@ def build_radio(radio: str = "e07", case: bool = False) -> Design:
     rise straight into the header; GPIO21/20 reach it up the same strip,
     GPIO21 by way of the lane above J5 and GPIO20 through J5's pin 2 pad.
     GPIO5 drops to the strap.  GPIO9's pull-up R4 sits between the rows in
-    its column, fed with 3V3 from J4 pin 3 down through the power row."""
+    its column, fed with 3V3 from J4 pin 3 down through the power row.
+
+    `radio` picks the board in the socket for the 3D view ("e07", "ra02" or
+    "none"); `case` adds the printed case's halves on H1: "open" (the bottom
+    half only), "closed" (both halves snapped together) or "exploded" (the
+    top half lifted 16 mm clear).  The committed board has no case."""
+    if case not in CASE_MODELS:
+        raise ValueError(f"case must be one of {sorted(k for k in CASE_MODELS if k)} or None, not {case!r}")
     c = Carrier(
         project="esp32c3-radio-adapter",
         title="ESP32-C3 SuperMini to CC1101 (E07-M1101D, D-Sun) or SX1278 Ra-02 breakout adapter",
@@ -730,10 +745,8 @@ def build_radio(radio: str = "e07", case: bool = False) -> Design:
     c.add("J5", pin_header_fp(2), (J5_X, J5_Y), CONN2, "DIO2/DATA", {"1": "GPIO21", "2": "GPIO20"}, (152.4, 152.4),
           "Fly-wire header beside the socket: pin 2 (GPIO20) is the SX1278's DIO2/DATA raw-bitstream pin, pin 1 (GPIO21) a spare",
           models=[Model("pin-header-1x02.step", (0, 0, 0), (0, 0, -90))])  # the model's pins step along +y, so turn it to lie along +x
-    # The printed case (scripts/build_case.py) hangs off H1 in the renders:
-    # the bottom half in place and the top half lifted clear so the inside
-    # stays visible.
-    c.holes([Model("esp32c3-radio-adapter-case-bottom.step"), Model("esp32c3-radio-adapter-case-top.step", (0, 0, 16.0))] if case else None)
+    # The printed case (scripts/build_case.py) hangs off H1 in the renders.
+    c.holes(CASE_MODELS[case])
 
     g = lambda a, b: gap(px(a), px(b))  # noqa: E731  gap between two SuperMini pins
     L1, L2, L3, L4 = LANES
