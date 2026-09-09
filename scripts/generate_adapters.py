@@ -500,18 +500,49 @@ class Carrier:
         for suffix, layer in zip("fb", layers):
             self.d.graphics.append(fn(f"{key}:{suffix}", *(self.X(v) if i % 2 == 0 else self.Y(v) for i, v in enumerate(coords)), layer, width, **kw))
 
+    def row_pad_boxes(self, row_y: float, outboard: int) -> list[tuple[float, float, float, float]]:
+        """Bounding boxes of one SuperMini keyhole row's pads (see supermini_castellated_row_fp)."""
+        cy = row_y + outboard * CAST_OFF
+        return [(self.px(i) - SM_PAD / 2, cy - CAST_LEN / 2, self.px(i) + SM_PAD / 2, cy + CAST_LEN / 2) for i in range(1, 9)]
+
+    def silk_gapped(self, key: str, p0: tuple[float, float], p1: tuple[float, float], blocks: list[tuple[float, float, float, float]],
+                    clear: float = 0.2, width: float = 0.12, min_len: float = 0.4) -> None:
+        """An axis-aligned line on both silk layers, broken wherever it would
+        cross one of `blocks` (x0 y0 x1 y1, grown by `clear`); pieces shorter
+        than min_len are dropped rather than printed as specks."""
+        (ax, ay), (bx, by) = p0, p1
+        horiz = ay == by
+        lo, hi = sorted((ax, bx) if horiz else (ay, by))
+        here = ay if horiz else ax
+        cuts = sorted((c0 - clear, c1 + clear) for x0, y0, x1, y1 in blocks
+                      for (a, b), (c0, c1) in [(((y0, y1), (x0, x1)) if horiz else ((x0, x1), (y0, y1)))]
+                      if a - clear <= here <= b + clear)
+        at, segs = lo, []
+        for c0, c1 in cuts:
+            if c0 > at:
+                segs.append((at, min(c0, hi)))
+            at = max(at, c1)
+        if at < hi:
+            segs.append((at, hi))
+        for i, (s0, s1) in enumerate(segs):
+            if s1 - s0 >= min_len:
+                self.both(gr_line, f"{key}{i}", (s0, ay, s1, by) if horiz else (ax, s0, bx, s1), width)
+
     def supermini_silk(self) -> None:
         px, TOP, BOT = self.px, CC_TOP_Y, CC_BOT_Y
-        # Body: full outline on the fab layers; on silk only the right end (the
-        # long edges would cross the keyhole pads).
+        # Body: full outline on the fab layers, and on silk too -- it is the
+        # SuperMini's mechanical envelope, so nothing else may go inside it.
+        # The long edges run through the keyhole pads, so they are printed as
+        # the pieces that fit in the gaps between pins.
         x0, y0, x1, y1 = px(1) - 1.74, TOP - SM_EDGE, self.sm_right, BOT + SM_EDGE
         self.both(gr_line, "sm_top", (0.0, y0, x1, y0), 0.1, layers=("F.Fab", "B.Fab"))
         self.both(gr_line, "sm_bot", (0.0, y1, x1, y1), 0.1, layers=("F.Fab", "B.Fab"))
         self.both(gr_line, "sm_right", (x1, y0, x1, y1), 0.1, layers=("F.Fab", "B.Fab"))
         self.both(gr_rect, "sm_usb", (0.2, (y0 + y1) / 2 - 4.5, x0 + 5.85, (y0 + y1) / 2 + 4.5), 0.1, layers=("F.Fab", "B.Fab"), stype="dash")
         self.both(gr_line, "sm_silk_right", (x1, y0, x1, y1), 0.12)
-        self.both(gr_line, "sm_silk_tr", (px(8) + 1.05, y0, x1, y0), 0.12)
-        self.both(gr_line, "sm_silk_br", (px(8) + 1.05, y1, x1, y1), 0.12)
+        rows = self.row_pad_boxes(TOP, -1) + self.row_pad_boxes(BOT, +1)
+        self.silk_gapped("sm_silk_top", (0.0, y0), (x1, y0), rows)
+        self.silk_gapped("sm_silk_bot", (0.0, y1), (x1, y1), rows)
         self.silk("sm_title", "ESP32-C3 SuperMini", (x0 + x1) / 2, (y0 + y1) / 2, 0.7)
         self.silk("sm_usb", "USB-C", x0 + 2.2, (y0 + y1) / 2 + 1.2, 0.6)
         # ESP32 pin names (as printed on the SuperMini) outside each row, beyond
@@ -720,6 +751,14 @@ def build_radio(radio: str = "e07") -> Design:
     mx = gap(sx(7), sx(1))
     c.both(gr_rect, "e07_outline", (mx - E07_W / 2, SY0 - E07_ROW_IN, mx + E07_W / 2, CC_H - 0.3), 0.1, layers=("F.Fab", "B.Fab"), stype="dash")
     c.both(gr_rect, "ra02_outline", (mx - RA02_W / 2, SY0 - RA02_ROW_IN, mx + RA02_W / 2, CC_H - 0.5), 0.1, layers=("F.Fab", "B.Fab"), stype="dash")
+    # The same envelope on silk, so the printed board shows how far a plugged-in
+    # board reaches: as wide as the Ra-02 breakout and as high as the E07's edge,
+    # i.e. the worst case of the three.  Its top edge breaks around the socket
+    # box and its left edge around R1's pads (the Ra-02 overhangs both).
+    ko_x0, ko_x1, ko_y, ko_end = mx - RA02_W / 2, mx + RA02_W / 2, SY0 - E07_ROW_IN, CC_H - 0.5
+    c.silk_gapped("ko_top", (ko_x0, ko_y), (ko_x1, ko_y), [(sx(7) - 1.3, SY0 - 1.3, sx(1) + 1.3, SY1 + 1.3)], clear=0.5)
+    c.silk_gapped("ko_left", (ko_x0, ko_y), (ko_x0, ko_end), [(R1_X - 0.7, R1_Y + dy - 0.6, R1_X + 0.7, R1_Y + dy + 0.6) for dy in (-1.0, 1.0)])
+    c.silk_gapped("ko_right", (ko_x1, ko_y), (ko_x1, ko_end), [])
     c.silk("sockname", "E07-M1101D / D-Sun / Ra-02", mx, CC_H - 0.9, 0.6)
     for i, net in enumerate(EXP_PINS, 1):  # the UART pins carry their function too (21TX, 20RX)
         c.silk(f"exp{i}", EXP_LABELS[net] + EXP_UART.get(net, ""), ex(i), EXP_Y - 1.3, 0.5)
