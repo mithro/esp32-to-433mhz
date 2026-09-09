@@ -229,7 +229,7 @@ Approximate positions of the SX1278 and its crystal are drawn on `F.Fab`.
 Sources and accuracy:
 
 * Seller PDF for the "SX1278 LoRa 433MHz Wireless Module (PXL1276-D01)":
-  module size 17module size 17 mm x 16.5 mm.nbsp;mmmodule size 17 mm x 16.5 mm.nbsp;xmodule size 17 mm x 16.5 mm.nbsp;16.5module size 17 mm x 16.5 mm.nbsp;mm.
+  module size 17&nbsp;mm&nbsp;x&nbsp;16.5&nbsp;mm.
 * Seller pinout photo (top-down with dimension lines) for the pin names in
   physical order: GND DIO1 DIO2 DIO3 VCC MISO MOSI SCK NSS DIO0 REST GND
   along the row, DIO4 and DIO5 at the adjacent corner, ANT and GND at the
