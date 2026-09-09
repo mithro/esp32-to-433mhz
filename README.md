@@ -31,24 +31,22 @@ Contents:
 
 ## What you need
 
-Everything here is a stock AliExpress / eBay / Amazon part; the search
-terms below are the names the listings use. Prices are a few dollars each.
+Everything is a stock AliExpress / eBay / Amazon part costing a few
+dollars. The "Buy" links are AliExpress searches for the listing names;
+the "Details" links go to the reference drawings in this repository.
 
-### The two boards
+### Boards
 
-| Part | What to search for | How to recognise it |
-| --- | --- | --- |
-| ESP32-C3 SuperMini | "ESP32-C3 SuperMini" | 18&nbsp;x&nbsp;22.5 mm, USB-C, 8 castellated pins per side, ceramic antenna at the far end from the USB-C. Usually ships with two 1x8 pin headers. |
-| **One** radio board, from the three below | | |
-
-| Radio board | What to search for | How to recognise it | Antenna |
+| Board | Buy | How to recognise it | Details |
 | --- | --- | --- | --- |
-| Ebyte E07-M1101D-SMA (CC1101) | "E07-M1101D", "TENSTAR CC1101 433MHz wireless module" | Blue, 15&nbsp;x&nbsp;30 mm, 2x4 header at one end, SMA jack at the other, PCB marked "E07-M1101D V2.0" | 433 MHz SMA antenna (often included) |
-| D-Sun CC1101 | "CC1101 433MHz module" (green) | Green, 14.4&nbsp;x&nbsp;30 mm, silk "433MHz D-Sun CC1101", 2x4 header, SMA jack | 433 MHz SMA antenna |
-| SX1278 Ra-02 breakout | "SX1278 LoRa 433MHz Ra-02 module" | Blue 17.5&nbsp;x&nbsp;22.5 mm carrier with the Ai-Thinker Ra-02 can on top, 2x4 header underneath, silk "SX1278 LoRa 433MHz v4.0" | U.FL (IPEX) to SMA pigtail plus a 433 MHz SMA antenna |
+| **ESP32-C3 SuperMini** | [ESP32-C3 SuperMini](https://www.aliexpress.com/w/wholesale-esp32-c3-supermini.html) | 18&nbsp;x&nbsp;22.5 mm, USB-C, 8 castellated pins per side, ceramic antenna at the far end from the USB-C. Usually ships with two 1x8 pin headers. | [dimensions and pinout](docs/component-boards.md#esp32-c3-supermini) |
+| **One radio board**, any of: | | | |
+| Ebyte E07-M1101D-SMA (CC1101) | [E07-M1101D](https://www.aliexpress.com/w/wholesale-e07-m1101d.html), also sold as "TENSTAR CC1101 433MHz wireless module" | Blue, 15&nbsp;x&nbsp;30 mm, 2x4 header at one end, SMA jack at the other, PCB marked "E07-M1101D V2.0". Needs a 433 MHz SMA antenna (often included). | [Ebyte product page](https://www.cdebyte.com/products/E07-M1101D-SMA), [drawing](docs/component-boards.md#cc1101-e07-m1101d-sma) |
+| D-Sun CC1101 (green) | [CC1101 433MHz module](https://www.aliexpress.com/w/wholesale-cc1101-433mhz-module.html), pick the green one | Green, 14.4&nbsp;x&nbsp;30 mm, silk "433MHz D-Sun CC1101", 2x4 header, SMA jack. Needs a 433 MHz SMA antenna. | [drawing](docs/component-boards.md#cc1101-d-sun-green-board) |
+| SX1278 Ra-02 breakout | [SX1278 LoRa 433MHz Ra-02](https://www.aliexpress.com/w/wholesale-sx1278-lora-433mhz-ra-02.html) | Blue 17.5&nbsp;x&nbsp;22.5 mm carrier with the Ai-Thinker Ra-02 can on top, 2x4 header underneath, silk "SX1278 LoRa 433MHz v4.0". Needs a [U.FL (IPEX) to SMA pigtail](https://www.aliexpress.com/w/wholesale-ipex-to-sma-pigtail.html) plus a 433 MHz SMA antenna. | [Ai-Thinker Ra-02 page](https://docs.ai-thinker.com/en/Ra-02/index.html), [drawing](docs/component-boards.md#sx1278-ra-02-breakout) |
 
-Get a 433 MHz antenna, not the 868/915 MHz one many listings bundle with
-the same radio.
+Get a [433 MHz SMA antenna](https://www.aliexpress.com/w/wholesale-433mhz-sma-antenna.html),
+not the 868/915 MHz one many listings bundle with the same radio.
 
 ### Headers and small parts
 
@@ -56,9 +54,9 @@ the same radio.
 | --- | --- | --- | --- |
 | J1, J2 | 1x8 male pin header, 2.54 mm | 2 | For the SuperMini; usually in the bag with it. Or solder the SuperMini flat by its castellations and skip these. |
 | J3 | 2x4 male pin header, 2.54 mm | 1 | The radio board's own header solders straight into the adapter. Fit a 2x4 female header instead if you want the radio removable. |
-| J4 | 1x7 male pin header, 2.54 mm | 1 | Expansion header: 3V3 and the spare GPIOs. Optional. |
-| J5 | 1x2 male pin header, 2.54 mm | 1 | DIO2 fly-wire header. Only needed for raw OOK on the SX1278. |
-| JP1 | 1x2 male pin header + jumper cap, 2.54 mm | 1 | Radio-type strap. Jumper fitted for the Ra-02, open for a CC1101. |
+| [J4](docs/design-notes.md#expansion-header-j4) | 1x7 male pin header, 2.54 mm | 1 | Expansion header: 3V3 and the spare GPIOs. Optional. |
+| [J5](docs/design-notes.md#the-dio2-fly-wire-header) | 1x2 male pin header, 2.54 mm | 1 | DIO2 fly-wire header. Only needed for raw OOK on the SX1278. |
+| [JP1](docs/design-notes.md#radio-type-strap-jp1-r1) | 1x2 male pin header + jumper cap, 2.54 mm | 1 | Radio-type strap. Jumper fitted for the Ra-02, open for a CC1101. |
 | R1 | 0805 0 ohm resistor | 0 or 1 | Permanent alternative to the JP1 jumper (Ra-02 only). |
 | R2, R3, R4 | 0805 4.7 kOhm resistors | 0 | Do-not-populate pull-ups on the boot straps: GPIO8 and GPIO2 (on J4) and GPIO9 (unused). Only if something you add holds one of them low at boot. |
 | | M2 screws or standoffs | 4 | The corner holes are 2.2 mm. |
