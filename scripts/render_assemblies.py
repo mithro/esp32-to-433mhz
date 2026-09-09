@@ -12,7 +12,7 @@ in the socket adapter; the Ra-02 variant is generated here):
   radio-e07    socket adapter + SuperMini + E07-M1101D (CC1101, SMA jack)
   radio-ra02   socket adapter + SuperMini + Ra-02 breakout + U.FL-to-SMA pigtail, JP1 jumper fitted
   radio-e07-case, radio-ra02-case
-               the same in the printed case (scripts/build_case.py), lid lifted clear
+               the same in the printed case (scripts/build_case.py), top half lifted clear
   sx1278       SX1278 module adapter + SuperMini + module + SMA jack
 
 For each it writes docs/images/<adapter>-assembly-<variant>-{iso,top,side}.png

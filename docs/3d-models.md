@@ -65,10 +65,10 @@ the drawn one, so leave room to stow the excess beside the breakout.
 
 `scripts/build_case.py` builds exactly that case with CadQuery, from the
 generator's constants and the table above: `hardware/case/*.stl` for
-printing and `hardware/3d/esp32c3-radio-adapter-case-{base,lid}.step` as
+printing and `hardware/3d/esp32c3-radio-adapter-case-{bottom,top}.step` as
 KiCad models (origin at mounting hole H1), which the `radio-e07-case` and
 `radio-ra02-case` variants of `scripts/render_assemblies.py` put on the
-board with the lid lifted 16 mm:
+board with the top half lifted 16 mm:
 
 | E07-M1101D | Ra-02 breakout and pigtail |
 | --- | --- |
@@ -80,19 +80,23 @@ top-left corner, z up from its top surface):
 | Feature | Value |
 | --- | --- |
 | Cavity | x -2.3 to 29.5, y -0.5 to 61.5, z -7.0 to 9.6 (the USB-C face, the pin tips under the board and the J4/J5 pins with 0.3 to 1.1 mm to spare) |
-| Walls, floor, lid | 2.0 mm; the antenna wall 2.5 mm, y 61.5 to 64.0 |
-| Outside | 35.8&nbsp;x&nbsp;66.5&nbsp;x&nbsp;20.6 mm, vertical corners R2 |
-| Standoffs | 4.0 mm diameter under the four M2 holes, floor to the board's underside (5.4 mm), 1.8 mm holes 4.5 mm deep for M2&nbsp;x&nbsp;6 self-tapping screws. 4 mm rather than 5 so the bottom-left one clears JP1's pin 2. |
+| Walls, floor, ceiling | 2.2 / 2.0 / 2.0 mm; the antenna wall 2.5 mm, y 61.5 to 64.0 |
+| Outside | 36.2&nbsp;x&nbsp;66.7&nbsp;x&nbsp;20.6 mm, vertical corners R2 |
+| Parting line | z = -0.5, just under the board's top, so the USB-C window and the antenna hole are whole in the top half. Bottom half 8.5 mm tall, top half 12.1 |
+| Standoffs and pegs | 4.0 mm standoffs under the four M2 holes, floor to the board's underside (5.4 mm), each with a 2.15 mm peg, chamfered, standing 0.4 mm proud of the board (flush at the bottom-left hole). FDM pegs print a touch oversize, which is the press fit into the 2.2 mm holes. 4 mm rather than 5 so the bottom-left one clears JP1's pin 2. |
+| Hold-down bosses | from the ceiling to 0.2 mm above the board: 4.4 mm bosses bored 2.6 mm over three pegs, and a 3.0 mm solid one at (2.2, 36.6) in the bottom-left corner, beside its hole, because a jumper cap on JP1 and the Ra-02's overhang leave no room over it |
+| Snap fit | the bottom half's lip (the inner 0.8 mm of the wall) rises 1.5 mm into a rebate in the top half's skirt, 0.15 mm clear, gapped at the antenna hole. Two tabs per long wall (at y 32 and 50), 8 mm wide, 6 mm tall, cut free of the lip by 1 mm slots, each with a 0.35 mm half-round bump at 5.3 mm that clicks into a 0.42 mm groove in the skirt. The bump stands 0.2 mm proud of the skirt face, about 1 % strain over the tab |
 | USB-C window | left wall, 13&nbsp;x&nbsp;7.5 mm centred on the receptacle (y 14.6, z 5.1): room for a plug's overmoulding, so it seats fully |
 | Antenna hole | 6.6 mm at x 12.67, z 3.3, with a 7.4 mm square pocket 0.6 mm deep on the inside for the E07 jack's body, which reaches 0.4 mm into the wall |
-| Lid | drops into a 1 mm rebate (the outer half of the wall runs 2 mm higher than the inner half), 0.15 mm clearance, flush with the rim; a 10&nbsp;x&nbsp;1.2 mm notch in the rim at the y = 0 end lifts it |
+| Pry notch | 10&nbsp;x&nbsp;1.2 mm in the top half's skirt at the y = 0 end, on the seam |
 
 The script's constants are the numbers above, and before it writes
-anything it intersects the base and the lid with a solid for every part
-they have to house (the boards, the pins under the adapter, the back-side
-resistors, the USB-C receptacle and a plug's overmoulding, both radios'
-antenna connectors and the pigtail's nut) and stops if any intersection is
-not empty.
+anything it intersects both halves with a solid for every part they have
+to house (the boards, the headers and a jumper cap, the pins under the
+adapter, the back-side resistors, the USB-C receptacle and a plug's
+overmoulding, both radios' antenna connectors and the pigtail's nut), with
+the cavity above the board (which only the pegs and bosses may enter), and
+with each other closed, and stops if any intersection is not empty.
 
 The SX1278 module adapter assembly (`esp32c3-sx1278-adapter-assembly-module`)
 is 24&nbsp;x&nbsp;58 mm with the SuperMini at the top, the module soldered flat

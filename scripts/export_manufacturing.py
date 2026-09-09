@@ -165,7 +165,7 @@ def main() -> None:
         "by CI from the committed KiCad files after ERC/DRC passed. Each zip contains a README.txt with the",
         "board size, stack-up and ordering notes. The `.step` / `.glb` files are the assembled adapters (SuperMini,",
         "radio board, headers, antenna connector) for designing a case, and the `.stl` files are the printable case",
-        "for the socket adapter (base and lid); see docs/3d-models.md.",
+        "for the socket adapter (two snap-together halves); see docs/3d-models.md.",
         "",
         "| Board | Size (mm) | Rev | JLCPCB | NextPCB |",
         "| --- | --- | --- | --- | --- |",

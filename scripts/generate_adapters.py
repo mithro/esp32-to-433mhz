@@ -731,8 +731,9 @@ def build_radio(radio: str = "e07", case: bool = False) -> Design:
           "Fly-wire header beside the socket: pin 2 (GPIO20) is the SX1278's DIO2/DATA raw-bitstream pin, pin 1 (GPIO21) a spare",
           models=[Model("pin-header-1x02.step", (0, 0, 0), (0, 0, -90))])  # the model's pins step along +y, so turn it to lie along +x
     # The printed case (scripts/build_case.py) hangs off H1 in the renders:
-    # the base in place and the lid lifted clear so the inside stays visible.
-    c.holes([Model("esp32c3-radio-adapter-case-base.step"), Model("esp32c3-radio-adapter-case-lid.step", (0, 0, 16.0))] if case else None)
+    # the bottom half in place and the top half lifted clear so the inside
+    # stays visible.
+    c.holes([Model("esp32c3-radio-adapter-case-bottom.step"), Model("esp32c3-radio-adapter-case-top.step", (0, 0, 16.0))] if case else None)
 
     g = lambda a, b: gap(px(a), px(b))  # noqa: E731  gap between two SuperMini pins
     L1, L2, L3, L4 = LANES
