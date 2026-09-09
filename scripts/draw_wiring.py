@@ -181,10 +181,19 @@ def draw(radio: str) -> None:
     left_x = {p: sx - 2.5 - i * LANE for i, p in enumerate(left_order)}
     bx = max(gap_x.values()) + 5.0
     by = max(lane_y.values()) + 2.5 - cc.HDR_ROW_Y
-    total_w = max(bx + board.w + 8.0, 104.0)  # room for the legend, top right
     hang = 8.5 if dio2_wire else 14.5  # the SMA jack, or the DIO2 note (below the size line), below the outline
     total_h = by + board.h + hang + 1.5
-    legend_x, legend_y = bx + 2.0, 9.0  # the legend fills the corner right of the gap lanes, above the header lanes
+    # The legend runs down the column right of the radio board (nothing else
+    # reaches past the header's last column), two lines per wire; the page is
+    # as wide as its longest line.
+    legend_x, legend_y = bx + board.w + 4.5, 9.0
+    legend_rows = [(POS_PIN[n], names[n], SIGNAL[names[n]]) for n in range(1, 9)]
+    legend_rows.append(("5", "GPIO0" if dio2_wire else "(none)", "radio-type strap" + (", to GPIO0" if dio2_wire else ", left open")))
+    if dio2_wire:
+        legend_rows.append(("20", "DIO2 (pin 7)", DIO2_SIGNAL))
+    legend_w = max(max(5.0 + 0.55 * 1.0 * len(f"{WIRES[pin][0]}  {pin if pin in ('G', '3V3') else f'{pin} (GPIO{pin})'} \u2192 {name}"),
+                       5.0 + 0.55 * 0.85 * len(signal)) for pin, name, signal in legend_rows)
+    total_w = legend_x + legend_w + 3.0
     px = lambda x, y, ox, oy: ((ox + x) * S, (oy + y) * S)  # noqa: E731
     hp = lambda n: px(*hdr[n], bx, by)  # noqa: E731
     sp = lambda name: px(*sm_pins[name], sx, sy)  # noqa: E731
@@ -282,24 +291,16 @@ def draw(radio: str) -> None:
         overlay.text(smv.w - 2.6, y, SM_RIGHT[i], size=0.95, anchor="start", weight="bold", halo=True)
     parts.append(overlay.svg_group(sx * S, sy * S, "", 0, 0))
 
-    # Legend: one row per wire, in socket-position order plus the strap, in
-    # the corner right of the gap lanes and above the header lanes.
-    ly0, margin = legend_y, legend_x
-    cols = ((margin + 10.5, "SuperMini"), (margin + 20.5, radio_col), (margin + 32.5, "Signal"))
-    parts.append(f'<text x="{margin * S:.1f}" y="{ly0 * S:.1f}" font-size="{1.1 * S:.1f}" font-family="Helvetica, Arial, sans-serif" font-weight="bold" fill="{INK}" dy="0.36em">Wire</text>')
-    for x, t in cols:
-        parts.append(f'<text x="{x * S:.1f}" y="{ly0 * S:.1f}" font-size="{1.1 * S:.1f}" font-family="Helvetica, Arial, sans-serif" font-weight="bold" fill="{INK}" dy="0.36em">{t}</text>')
-    rows = [(POS_PIN[n], names[n], SIGNAL[names[n]]) for n in range(1, 9)]
-    rows.append(("5", "GPIO0" if dio2_wire else "(none)", "radio-type strap" + (", to GPIO0" if dio2_wire else ", left open")))
-    if dio2_wire:
-        rows.append(("20", "DIO2 (pin 7)", DIO2_SIGNAL))
-    for i, (pin, name, signal) in enumerate(rows):
+    # Legend: one entry per wire, in socket-position order plus the strap:
+    # colour and the two pins it joins, then what the signal is.
+    parts.append(f'<text x="{legend_x * S:.1f}" y="{legend_y * S:.1f}" font-size="{1.1 * S:.1f}" font-family="Helvetica, Arial, sans-serif" font-weight="bold" fill="{INK}" dy="0.36em">Wires</text>')
+    for i, (pin, name, signal) in enumerate(legend_rows):
         colour, fill = WIRES[pin]
-        y = ly0 + 2.0 + i * 1.9
-        parts.append(f'<rect x="{margin * S:.1f}" y="{(y - 0.55) * S:.1f}" width="{3.6 * S:.1f}" height="{1.1 * S:.1f}" fill="{fill}" stroke="{INK}" stroke-width="{0.1 * S:.1f}" rx="{0.45 * S:.1f}"/>')
-        parts.append(f'<text x="{(margin + 4.3) * S:.1f}" y="{y * S:.1f}" font-size="{1.0 * S:.1f}" font-family="Helvetica, Arial, sans-serif" fill="{INK}" dy="0.36em">{colour}</text>')
-        for (x, _), t in zip(cols, (pin if pin in ("G", "3V3") else f"{pin} (GPIO{pin})", name, signal)):
-            parts.append(f'<text x="{x * S:.1f}" y="{y * S:.1f}" font-size="{1.0 * S:.1f}" font-family="Helvetica, Arial, sans-serif" fill="{INK}" dy="0.36em">{t}</text>')
+        y = legend_y + 2.6 + i * 4.4
+        parts.append(f'<rect x="{legend_x * S:.1f}" y="{(y - 0.55) * S:.1f}" width="{3.6 * S:.1f}" height="{1.1 * S:.1f}" fill="{fill}" stroke="{INK}" stroke-width="{0.1 * S:.1f}" rx="{0.45 * S:.1f}"/>')
+        sm_pin = pin if pin in ("G", "3V3") else f"{pin} (GPIO{pin})"
+        parts.append(f'<text x="{(legend_x + 4.6) * S:.1f}" y="{y * S:.1f}" font-size="{1.0 * S:.1f}" font-family="Helvetica, Arial, sans-serif" fill="{INK}" dy="0.36em"><tspan font-weight="bold">{colour}</tspan>  {sm_pin} \u2192 {name}</text>')
+        parts.append(f'<text x="{(legend_x + 4.6) * S:.1f}" y="{(y + 1.5) * S:.1f}" font-size="{0.85 * S:.1f}" font-family="Helvetica, Arial, sans-serif" fill="#555c66" dy="0.36em">{signal}</text>')
     parts.append("</svg>")
     path = OUT / f"wiring-{radio}.svg"
     path.write_text("\n".join(parts) + "\n")
