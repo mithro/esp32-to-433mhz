@@ -15,7 +15,13 @@ GPIO4 (MOSI) takes the ribbon's remaining colour, white.  GPIO5 is the
 radio-type strap: for the
 Ra-02 breakout it goes to GPIO0, which the firmware drives low while it reads
 the strap (the SuperMini's only GND pin is taken by the brown wire); for a
-CC1101 board it is left open.
+CC1101 board it is left open.  The Ra-02 gets a tenth wire, black: DIO2 to
+GPIO20.  It is not a header pin -- the carrier brings out DIO0 and nothing
+else of the SX1278's six DIO lines -- so it is soldered to the module's pin-7
+castellation, or to the carrier land just outside it, on the face away from
+the header.  Continuous mode puts the raw bitstream on DIO2 alone, so OOK
+receive and transmit need it; see
+https://github.com/mithro/433mhz/blob/worktree-ra02-dio2-wire-diagram/hardware/devices/sx1278-ra02-dio2-wire.md
 
 Boards: the blue E07-M1101D and the green D-Sun CC1101 boards, and the Ra-02
 breakout.  All three plug into the same socket positions; only the names of
@@ -59,6 +65,7 @@ WIRES = {
     "10": ("grey", "#8c8c8c"),
     "4": ("white", "#f4f4f4"),
     "3": ("blue", "#2464c8"),
+    "20": ("black", "#26262e"),  # the Ra-02's DIO2 wire, which is not a header pin
 }
 # SuperMini columns, top to bottom (front view, USB-C up).
 SM_LEFT = ["5", "6", "7", "8", "9", "10", "20", "21"]
@@ -71,6 +78,7 @@ POS_PIN = {1: "G", 2: "3V3", 3: "10", 4: "1", 5: "3", 6: "4", 7: "7", 8: "6"}
 E07_NAMES = {1: "GND", 2: "VCC", 3: "GDO0", 4: "CSN", 5: "SCK", 6: "MOSI", 7: "MISO", 8: "GDO2"}
 DSUN_NAMES = {1: "GND", 2: "VCC", 3: "MOSI", 4: "SCK", 5: "MISO", 6: "GDO2", 7: "GDO0", 8: "CSN"}
 RA02_NAMES = {1: "GND", 2: "3V3", 3: "RST", 4: "NSS", 5: "SCK", 6: "MOSI", 7: "MISO", 8: "DIO0"}
+DIO2_SIGNAL = "raw data in/out: OOK RX and TX (SX1278 DIO2/DATA)"
 SIGNAL = {"GND": "ground", "VCC": "3.3 V", "3V3": "3.3 V", "MOSI": "SPI MOSI", "MISO": "SPI MISO", "SCK": "SPI clock",
           "CSN": "SPI chip select", "NSS": "SPI chip select", "GDO0": "IRQ / packet (CC1101 GDO0)", "GDO2": "second IRQ (CC1101 GDO2)",
           "RST": "reset (drive as an output)", "DIO0": "IRQ / packet (SX1278 DIO0)"}
@@ -141,6 +149,9 @@ def draw(radio: str) -> None:
         pos = {n: (rb.BOARD_W - rb.hdr_x(n), rb.hdr_y(n)) for n in range(1, 9)}
         remap = {1: 7, 2: 8, 3: 5, 4: 6, 5: 3, 6: 4, 7: 1, 8: 2}
         hdr = {n: pos[remap[n]] for n in range(1, 9)}
+        # DIO2's land (module pin 7), on the far face in this view and near the
+        # board's left edge, which is the edge facing the SuperMini.
+        dio2 = (rb.BOARD_W - (rb.MOD_X + rb.mod_pad(7)[0]), rb.MOD_Y + rb.mod_pad(7)[1])
     smv, sm_pins = supermini_view()
 
     # Layout (mm).  SuperMini top left, back view: GPIO column on the right.
@@ -154,9 +165,9 @@ def draw(radio: str) -> None:
     by = lane_y[-1] + 2.5 - cc.HDR_ROW_Y
     left_x = [sx - 2.5 - i * LANE for i in range(5)]  # left-side lanes, innermost first: GPIO4, GPIO3, 3V3, GND, GPIO1
     total_w = max(bx + board.w + 8.0, 102.0)  # room for the legend's signal column
-    hang = 4.0 if radio == "ra02" else 14.5  # the SMA jack and size caption below the outline
+    hang = 7.5 if radio == "ra02" else 14.5  # the SMA jack, or the DIO2 note, below the outline
     legend_y = by + board.h + hang + 4.0
-    total_h = legend_y + 22.0
+    total_h = legend_y + (24.0 if radio == "ra02" else 22.0)  # the Ra-02 has a tenth legend row
     px = lambda x, y, ox, oy: ((ox + x) * S, (oy + y) * S)  # noqa: E731
     hp = lambda n: px(*hdr[n], bx, by)  # noqa: E731
     sp = lambda name: px(*sm_pins[name], sx, sy)  # noqa: E731
@@ -216,6 +227,13 @@ def draw(radio: str) -> None:
         wires.append((WIRES["5"][1], [(smx, smy), (smx, over), (gx + 4.3 * S, over), (gx + 4.3 * S, gy), (gx, gy)]))
     else:
         wires.append((WIRES["5"][1], [(smx, smy), (gap_x[0] * S, smy), (gap_x[0] * S, smy - 3.5 * S)]))
+    # DIO2 -> GPIO20: down a lane inside all the others (GPIO20 is the lowest
+    # pin used on the GPIO column, and the pad is below the header), then
+    # straight in at the pad's own height, crossing the left-column bundle.
+    if radio == "ra02":
+        (smx, smy), (dx, dy) = sp("20"), px(*dio2, bx, by)
+        lane = (gap_x[0] - LANE) * S
+        wires.append((WIRES["20"][1], [(smx, smy), (lane, smy), (lane, dy), (dx, dy)]))
     for fill, pts in wires:
         d = rounded_path(pts, 1.6 * S)
         parts.append(f'<path d="{d}" fill="none" stroke="{INK}" stroke-width="{1.3 * S:.1f}" stroke-linecap="round"/>')
@@ -227,8 +245,16 @@ def draw(radio: str) -> None:
         parts.append(f'<text x="{(sx + smv.w / 2) * S:.1f}" y="{(sy - 4.6) * S:.1f}" font-size="{0.95 * S:.1f}" font-family="Helvetica, Arial, sans-serif" fill="{INK}" text-anchor="middle" dy="0.36em">GPIO5 strap to GPIO0 (firmware drives GPIO0 low to read it)</text>')
     else:
         parts.append(f'<text x="{note_x:.1f}" y="{smy - 5.0 * S:.1f}" font-size="{0.95 * S:.1f}" font-family="Helvetica, Arial, sans-serif" fill="{INK}" text-anchor="middle" dy="0.36em">GPIO5: leave open</text>')
+    if radio == "ra02":
+        for i, t in enumerate(("DIO2 is not on the header: solder to the module's pin-7 castellation,",
+                               "or the land just outside it, on the face away from the header pins.")):
+            parts.append(f'<text x="{(bx + board.w / 2) * S:.1f}" y="{(by + board.h + 5.0 + i * 1.6) * S:.1f}" font-size="{0.95 * S:.1f}" font-family="Helvetica, Arial, sans-serif" fill="{INK}" text-anchor="middle" dy="0.36em">{t}</text>')
     # The header's pin names again, on top of the wires (with a halo).
     overlay = View(board.w, board.h, False)
+    if radio == "ra02":
+        # The crimp covers DIO2's land, so outline it again over the wire: it is
+        # on the far face, which is what the dashes mean.
+        overlay.rect(dio2[0] - 0.7, dio2[1] - 0.6, dio2[0] + 0.7, dio2[1] + 0.6, fill="none", stroke="#ffffff", width=0.18, dash="1.2 1.0")
     for n in range(1, 9):
         hx, hy = hdr[n]
         outer = n % 2 == 1
@@ -251,6 +277,8 @@ def draw(radio: str) -> None:
         parts.append(f'<text x="{x * S:.1f}" y="{ly0 * S:.1f}" font-size="{1.2 * S:.1f}" font-family="Helvetica, Arial, sans-serif" font-weight="bold" fill="{INK}" dy="0.36em">{t}</text>')
     rows = [(POS_PIN[n], names[n], SIGNAL[names[n]]) for n in range(1, 9)]
     rows.append(("5", "(to the SuperMini's GPIO0)" if radio == "ra02" else "(none)", "radio-type strap: to GPIO0 for the Ra-02, open for a CC1101"))
+    if radio == "ra02":
+        rows.append(("20", "DIO2 (module pin 7)", DIO2_SIGNAL))
     for i, (pin, name, signal) in enumerate(rows):
         colour, fill = WIRES[pin]
         y = ly0 + 2.0 + i * 2.0

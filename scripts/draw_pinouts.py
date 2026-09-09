@@ -187,14 +187,24 @@ def ra02_views() -> tuple[View, View]:
             v.rect(0.8, 6.1, 15.6, 18.4, fill="#c9ced6", stroke=INK, width=0.1, rx=0.3)
             v.text(8.2, 11.5, "Ra-02", size=1.6, weight="bold")
             v.text(8.2, 13.6, "SX1278, shield can", size=1.0)
+            # Castellations 8 (top) down to 1 (bottom, the IPEX corner).  Pin 7
+            # is DIO2: the only way to the raw bitstream, and the carrier routes
+            # it nowhere, so it is the one that takes a soldered wire.
             for i in range(8):
-                v.rect(16.2, 6.4 + i * 2.0, 17.2, 7.4 + i * 2.0, fill=PIN, stroke=INK, width=0.08)
+                v.rect(16.2, 6.4 + i * 2.0, 17.2, 7.4 + i * 2.0, fill="#f2994a" if i == 1 else PIN, stroke=INK, width=0.08)
+            v.text(18.0, 8.9, "DIO2 (pin 7)", size=0.95, anchor="start", weight="bold")
             v.rect(12.0, 19.0, 15.6, 22.0, fill="#ffffff", stroke=INK, width=0.1)
             v.circle(13.8, 20.5, 0.9, fill="#e0b040", stroke=INK, width=0.1)
             v.text(9.5, 20.5, "IPEX", size=1.0, anchor="end")
         else:
             v.text(cx - 1.2, 15.0, "SX1278 LoRa", size=1.4, fill="#ffffff", angle=-90, anchor="middle")
             v.text(cx + 1.0, 15.0, "433MHz v4.0", size=1.2, fill="#ffffff", angle=-90, anchor="middle")
+            # DIO2's land pad, on the far (module) face from this view: dashed,
+            # because you reach it by turning the board over.
+            d2x, d2y = rb.MOD_X + rb.mod_pad(7)[0], rb.MOD_Y + rb.mod_pad(7)[1]
+            v.rect(d2x - 0.7, d2y - 0.6, d2x + 0.7, d2y + 0.6, fill=GHOST, stroke=INK, width=0.1, dash="1.2 1.0")
+            v.text(15.2, d2y + 2.1, "DIO2", size=0.95, anchor="start", fill="#ffffff", weight="bold")
+            v.text(15.2, d2y + 3.6, "far side", size=0.75, anchor="start", fill="#ffffff")
         for n in range(1, 9):
             col, row = (n - 1) // 2, (n - 1) % 2
             x = rb.hdr_x(n)

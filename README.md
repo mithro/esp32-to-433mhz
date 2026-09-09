@@ -168,8 +168,12 @@ bursts with no sync word. DIO2 is the SX1278's GDO2, and the Ra-02 breakout
 leaves it unconnected on the module edge, so the raw-OOK path needs one
 wire: from the breakout's DIO2 pad (its exposed land sticks 0.8 mm out past
 the module edge, on the right-hand side about 9 mm down from the header) to
-J5 pin 2. In the [jumper-wire build](#jumper-wire-version) the same wire
-goes straight to GPIO20. Nothing is given up by sharing the pin with J4:
+J5 pin 2 (the pad is marked on the
+[pinout diagrams](#why-one-socket-fits-all-three-boards), and
+[**Adding the DIO2 wire**](https://github.com/mithro/433mhz/blob/worktree-ra02-dio2-wire-diagram/hardware/devices/sx1278-ra02-dio2-wire.md)
+covers the radio end and how to verify it). In the
+[jumper-wire build](#jumper-wire-version) the same wire goes straight to
+GPIO20. Nothing is given up by sharing the pin with J4:
 it is one net brought out twice, so only one of the two may be used at a
 time, and GPIO21 keeps the UART console's TX.
 
@@ -258,7 +262,9 @@ NSS) -- and GPIO4 (MOSI) takes the ribbon's remaining colour, white. The
 orange wire is the radio-type strap: for the Ra-02 breakout it goes from
 GPIO5 to GPIO0, which the firmware drives low while reading the strap (the
 SuperMini's only GND pin is taken by the brown wire); for a CC1101 board it
-is left open. Drawn by
+is left open. The Ra-02 gets a tenth wire, black: DIO2 to GPIO20, the
+same pin J5 carries on the adapter. It is the one wire with no header pin at
+either end of the radio -- see [below](#the-dio2-fly-wire-header). Drawn by
 `scripts/draw_wiring.py`.
 
 ![Jumper wires from the SuperMini to the blue CC1101 E07-M1101D board](docs/images/wiring-cc1101.svg)
@@ -270,6 +276,16 @@ positions the wiring is the same; only the names at the far end change:
 ![Jumper wires from the SuperMini to the green D-Sun CC1101 board](docs/images/wiring-cc1101-dsun.svg)
 
 ![Jumper wires from the SuperMini to the Ra-02 breakout](docs/images/wiring-ra02.svg)
+
+The Ra-02's DIO2 is not on its header: the breakout brings out DIO0 and
+nothing else of the SX1278's six DIO lines, so the black wire is soldered to
+the module's pin-7 castellation, or to the carrier land just outside it, on
+the face away from the header pins. The pinout diagrams
+[below](#why-one-socket-fits-all-three-boards) mark that pad on both faces.
+[**Adding the DIO2 wire**](https://github.com/mithro/433mhz/blob/worktree-ra02-dio2-wire-diagram/hardware/devices/sx1278-ra02-dio2-wire.md)
+covers the radio end in detail -- which pad, and how to prove by hand that
+the wire landed on it, by forcing DIO2 to a known level over SPI and
+watching the ESP32-C3's whole GPIO input register flip.
 
 ### Why one socket fits all three boards
 
