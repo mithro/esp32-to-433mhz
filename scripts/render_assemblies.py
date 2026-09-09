@@ -17,11 +17,17 @@ in the socket adapter; the Ra-02 variant is generated here):
                in the bottom half of the case only, the boards in view
   radio-e07-case-exploded, radio-ra02-case-exploded
                both halves, the top half lifted clear (an isometric view only)
+  case-bottom, case-top
+               each half of the case by itself: the bottom from above (pegs,
+               lip, snap tabs), the top from below (bosses, grooves, notch)
   sx1278       SX1278 module adapter + SuperMini + module + SMA jack
 
-For each it writes docs/images/<adapter>-assembly-<variant>-<view>.png (kicad-cli
-pcb render): iso, top and side for the bare assemblies, iso and all six
-orthographic sides (top, bottom, front, back, left, right) for the case.
+Each is rendered (kicad-cli pcb render) from its views: iso, top and side
+for the bare assemblies, iso and all six orthographic sides (top, bottom,
+front, back, left, right) for the case.  The closed and open cases come
+out as one labelled sheet each, docs/images/<adapter>-assembly-<variant>-sheet.png,
+composed from the seven renders; every other view, and the open case's top
+view, is written as docs/images/<adapter>-assembly-<variant>-<view>.png.
 With --export DIR the bare assemblies and the closed cases also go to
 DIR/<adapter>-assembly-<variant>.step and .glb (kicad-cli pcb export step /
 glb) for case design.
@@ -42,6 +48,7 @@ import subprocess
 import sys
 import hashlib
 import tempfile
+from typing import Callable, NamedTuple
 
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
 import generate_adapters as ga  # noqa: E402
@@ -63,33 +70,60 @@ VIEWS = {  # name -> (extra kicad-cli render args, width, height)
 # from every side.  The renderer's floor shadow is the trouble: from the side
 # lights' default 60 degree elevation it runs some 60 mm out from the case and
 # fills the frame of the top and bottom views, so those raise the lights to
-# 80 degrees and get a drop shadow that stays under the case; the wall views
-# see the floor edge-on and lower the lights to 45 degrees so the walls are
-# lit rather than in their own shadow.
+# 80 degrees and get a drop shadow that stays under the case.  The wall views
+# see the floor edge-on, but the side lights throw the antenna connector's
+# shadow across the wall as a big X, so they are lit by the camera with the
+# side lights turned down and steep: a flat wall, and just enough shading
+# to show the recesses (the pry notch, the USB-C window).
 CASE_PIVOT = ["--pivot", "'0,-1.2,0'"]
+DROP_SHADOW = ["--light-side-elevation", "80"]
+FLAT_WALL = ["--light-side", "0.15", "--light-side-elevation", "80", "--light-camera", "0.85"]
 CASE_VIEWS = {
-    "iso": (["--perspective", "--rotate", "'-55,0,28'", "--zoom", "0.5", *CASE_PIVOT], 1800, 1400),
-    "top": (["--side", "top", "--zoom", "0.5", "--light-side-elevation", "80", *CASE_PIVOT], 1000, 1600),
-    "bottom": (["--side", "bottom", "--zoom", "0.5", "--light-side-elevation", "80", *CASE_PIVOT], 1000, 1600),
-    "front": (["--side", "front", "--zoom", "1.3", "--light-side-elevation", "45", *CASE_PIVOT], 1200, 800),
-    "back": (["--side", "back", "--zoom", "1.3", "--light-side-elevation", "45", *CASE_PIVOT], 1200, 800),
-    "left": (["--side", "left", "--zoom", "1.15", "--light-side-elevation", "45", *CASE_PIVOT], 1800, 700),
-    "right": (["--side", "right", "--zoom", "1.15", "--light-side-elevation", "45", *CASE_PIVOT], 1800, 700),
+    "iso": (["--perspective", "--rotate", "'-55,0,28'", "--zoom", "0.45", "--light-side", "0.35", "--light-camera", "0.5", *CASE_PIVOT], 1800, 1400),
+    "top": (["--side", "top", "--zoom", "0.45", *DROP_SHADOW, *CASE_PIVOT], 1000, 1600),
+    "bottom": (["--side", "bottom", "--zoom", "0.45", *DROP_SHADOW, *CASE_PIVOT], 1000, 1600),
+    "front": (["--side", "front", "--zoom", "1.3", *FLAT_WALL, *CASE_PIVOT], 1200, 800),
+    "back": (["--side", "back", "--zoom", "1.3", *FLAT_WALL, *CASE_PIVOT], 1200, 800),
+    "left": (["--side", "left", "--zoom", "1.15", *FLAT_WALL, *CASE_PIVOT], 1800, 700),
+    "right": (["--side", "right", "--zoom", "1.15", *FLAT_WALL, *CASE_PIVOT], 1800, 700),
 }
-# The exploded case is taller (the top half floats 16 mm above the bottom), so it zooms out and pivots a little higher.
+# The exploded case is taller (the top half floats CASE_LIFT above the bottom), so it zooms out and pivots a little higher.
 EXPLODED_VIEWS = {
     "iso": (["--perspective", "--rotate", "'-55,0,28'", "--zoom", "0.42", "--pivot", "'0,-1.5,0.6'"], 1800, 1500),
 }
-VARIANTS = {  # name -> (adapter project, builder, file suffix, views, exported as STEP/GLB)
-    "radio-e07": ("esp32c3-radio-adapter", lambda: ga.build_radio("e07"), "e07", VIEWS, True),
-    "radio-ra02": ("esp32c3-radio-adapter", lambda: ga.build_radio("ra02"), "ra02", VIEWS, True),
-    "radio-e07-case-closed": ("esp32c3-radio-adapter", lambda: ga.build_radio("e07", case="closed"), "e07-case-closed", CASE_VIEWS, True),
-    "radio-ra02-case-closed": ("esp32c3-radio-adapter", lambda: ga.build_radio("ra02", case="closed"), "ra02-case-closed", CASE_VIEWS, True),
-    "radio-e07-case-open": ("esp32c3-radio-adapter", lambda: ga.build_radio("e07", case="open"), "e07-case-open", CASE_VIEWS, False),
-    "radio-ra02-case-open": ("esp32c3-radio-adapter", lambda: ga.build_radio("ra02", case="open"), "ra02-case-open", CASE_VIEWS, False),
-    "radio-e07-case-exploded": ("esp32c3-radio-adapter", lambda: ga.build_radio("e07", case="exploded"), "e07-case-exploded", EXPLODED_VIEWS, False),
-    "radio-ra02-case-exploded": ("esp32c3-radio-adapter", lambda: ga.build_radio("ra02", case="exploded"), "ra02-case-exploded", EXPLODED_VIEWS, False),
-    "sx1278": ("esp32c3-sx1278-adapter", ga.build_sx1278, "module", VIEWS, True),
+# The halves alone: the bottom from the usual isometric, the top turned over
+# (the camera 125 degrees round the x axis: looking up into it from below).
+BOTTOM_ALONE_VIEWS = {"iso": (["--perspective", "--rotate", "'-55,0,28'", "--zoom", "0.5", *CASE_PIVOT], 1800, 1400)}
+TOP_ALONE_VIEWS = {"underside": (["--perspective", "--rotate", "'125,0,28'", "--zoom", "0.5", *CASE_PIVOT], 1800, 1400)}
+# The sheets' panels, in order, with their labels: the first three make the
+# top row (isometric large, then the plan views), the walls the row below.
+CLOSED_SHEET = {"iso": "isometric", "top": "top", "bottom": "bottom", "front": "front (antenna)", "back": "back (pry notch)", "left": "left (USB-C)", "right": "right"}
+OPEN_SHEET = {"iso": "isometric", "top": "top", "bottom": "bottom", "front": "front (antenna)", "back": "back (SuperMini end)", "left": "left (USB-C)", "right": "right"}
+
+
+class Variant(NamedTuple):
+    project: str  # the adapter project under hardware/
+    build: Callable[[], ga.Design]
+    suffix: str  # file name part after "<project>-assembly-"
+    views: dict[str, tuple[list[str], int, int]]  # name -> (extra kicad-cli render args, width, height)
+    export: bool = False  # written as STEP/GLB with --export
+    sheet: dict[str, str] | None = None  # views composed into one labelled sheet, view -> label
+    keep: tuple[str, ...] | None = None  # views written as separate PNGs (None: all of them)
+
+
+RADIO = "esp32c3-radio-adapter"
+VARIANTS = {
+    "radio-e07": Variant(RADIO, lambda: ga.build_radio("e07"), "e07", VIEWS, export=True),
+    "radio-ra02": Variant(RADIO, lambda: ga.build_radio("ra02"), "ra02", VIEWS, export=True),
+    "radio-e07-case-closed": Variant(RADIO, lambda: ga.build_radio("e07", case="closed"), "e07-case-closed", CASE_VIEWS, export=True, sheet=CLOSED_SHEET, keep=()),
+    "radio-ra02-case-closed": Variant(RADIO, lambda: ga.build_radio("ra02", case="closed"), "ra02-case-closed", CASE_VIEWS, export=True, sheet=CLOSED_SHEET, keep=()),
+    "radio-e07-case-open": Variant(RADIO, lambda: ga.build_radio("e07", case="open"), "e07-case-open", CASE_VIEWS, sheet=OPEN_SHEET, keep=("top",)),
+    "radio-ra02-case-open": Variant(RADIO, lambda: ga.build_radio("ra02", case="open"), "ra02-case-open", CASE_VIEWS, sheet=OPEN_SHEET, keep=("top",)),
+    "radio-e07-case-exploded": Variant(RADIO, lambda: ga.build_radio("e07", case="exploded"), "e07-case-exploded", EXPLODED_VIEWS),
+    "radio-ra02-case-exploded": Variant(RADIO, lambda: ga.build_radio("ra02", case="exploded"), "ra02-case-exploded", EXPLODED_VIEWS),
+    "case-bottom": Variant(RADIO, lambda: ga.build_radio("none", case="bottom"), "case-bottom", BOTTOM_ALONE_VIEWS),
+    "case-top": Variant(RADIO, lambda: ga.build_radio("none", case="top"), "case-top", TOP_ALONE_VIEWS),
+    "sx1278": Variant("esp32c3-sx1278-adapter", ga.build_sx1278, "module", VIEWS, export=True),
 }
 
 
@@ -119,6 +153,33 @@ def trim(png: pathlib.Path, margin: int = 24) -> None:
     Image.alpha_composite(white, im).convert("RGB").save(png)
 
 
+def compose_sheet(png: pathlib.Path, panels: list[tuple[str, pathlib.Path]], width: int = 2400, gap: int = 48, label_h: int = 56) -> None:
+    """One white sheet of labelled renders: the first three panels across the
+    top (the isometric view and the two plan views), the rest in a row below,
+    each row scaled to a common height so it spans the sheet's width."""
+    from PIL import Image, ImageDraw, ImageFont
+
+    rows = [panels[:3], panels[3:]]
+    font = ImageFont.load_default(size=label_h * 2 // 3)
+    scaled: list[list[tuple[str, Image.Image]]] = []
+    for row in rows:
+        ims = [(label, Image.open(path).convert("RGB")) for label, path in row]
+        h = round((width - gap * (len(ims) + 1)) / sum(im.width / im.height for _, im in ims))
+        scaled.append([(label, im.resize((round(im.width * h / im.height), h), Image.LANCZOS)) for label, im in ims])
+    height = gap + sum(gap + label_h + row[0][1].height for row in scaled)
+    sheet = Image.new("RGB", (width, height), (255, 255, 255))
+    draw = ImageDraw.Draw(sheet)
+    y = gap
+    for row in scaled:
+        x = gap
+        for label, im in row:
+            draw.text((x + 8, y + (label_h - font.size) // 2), label, fill=(60, 60, 60), font=font)
+            sheet.paste(im, (x, y + label_h))
+            x += im.width + gap
+        y += label_h + row[0][1].height + gap
+    sheet.save(png)
+
+
 def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--export", type=pathlib.Path, help="also write STEP and GLB assemblies into this directory")
@@ -140,8 +201,11 @@ def main() -> None:
                 trim(png)
                 print(f"wrote {png.relative_to(ROOT)}")
             continue
-        adapter, build, suffix, views, export = VARIANTS[variant]
-        design = build()
+        v = VARIANTS[variant]
+        adapter, export = v.project, args.export and v.export
+        if args.no_render and not export:
+            continue
+        design = v.build()
         design.model_root = str(MODELS)  # the copy lives outside the project tree
         with tempfile.TemporaryDirectory(prefix="asm-", dir=ROOT) as tmp:
             out = pathlib.Path(tmp) / adapter
@@ -150,15 +214,23 @@ def main() -> None:
             pcb = out / f"{adapter}.kicad_pcb"
             define = ["--define-var", "GIT_DESCRIBE=assembly"]
             if not args.no_render:
-                for view, (extra, w, h) in views.items():
-                    png = IMAGES / f"{adapter}-assembly-{suffix}-{view}.png"
+                rendered: dict[str, pathlib.Path] = {}
+                for view, (extra, w, h) in v.views.items():
+                    name = f"{adapter}-assembly-{v.suffix}-{view}.png"
+                    png = IMAGES / name if v.keep is None or view in v.keep else pathlib.Path(tmp) / name
                     run([cli, "pcb", "render", "--output", str(png), "--width", str(w), "--height", str(h),
                          "--quality", "high", "--background", "transparent", *define, *extra, str(pcb)])
                     trim(png)
+                    rendered[view] = png
+                    if png.is_relative_to(IMAGES):
+                        print(f"wrote {png.relative_to(ROOT)}")
+                if v.sheet:
+                    png = IMAGES / f"{adapter}-assembly-{v.suffix}-sheet.png"
+                    compose_sheet(png, [(label, rendered[view]) for view, label in v.sheet.items()])
                     print(f"wrote {png.relative_to(ROOT)}")
-            if args.export and export:
+            if export:
                 for fmt in ("step", "glb"):
-                    dst = args.export / f"{adapter}-assembly-{suffix}.{fmt}"
+                    dst = args.export / f"{adapter}-assembly-{v.suffix}.{fmt}"
                     run([cli, "pcb", "export", fmt, "--output", str(dst), "--no-dnp", "--include-tracks", "--include-zones",
                          "--subst-models", *define, str(pcb)])
                     print(f"wrote {dst if not dst.is_relative_to(ROOT) else dst.relative_to(ROOT)} ({dst.stat().st_size // 1024} kB)")
