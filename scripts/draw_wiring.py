@@ -88,7 +88,7 @@ POS_PIN = {1: "G", 2: "3V3", 3: "10", 4: "1", 5: "3", 6: "4", 7: "7", 8: "6"}
 E07_NAMES = {1: "GND", 2: "VCC", 3: "GDO0", 4: "CSN", 5: "SCK", 6: "MOSI", 7: "MISO", 8: "GDO2"}
 DSUN_NAMES = {1: "GND", 2: "VCC", 3: "MOSI", 4: "SCK", 5: "MISO", 6: "GDO2", 7: "GDO0", 8: "CSN"}
 RA02_NAMES = {1: "GND", 2: "3V3", 3: "RST", 4: "NSS", 5: "SCK", 6: "MOSI", 7: "MISO", 8: "DIO0"}
-DIO2_SIGNAL = "raw data, OOK RX and TX (DIO2/DATA)"
+DIO2_SIGNAL = "raw data, OOK RX/TX (DIO2/DATA)"
 SIGNAL = {"GND": "ground", "VCC": "3.3 V", "3V3": "3.3 V", "MOSI": "SPI MOSI", "MISO": "SPI MISO", "SCK": "SPI clock",
           "CSN": "SPI chip select", "NSS": "SPI chip select", "GDO0": "IRQ / packet (GDO0)", "GDO2": "second IRQ (GDO2)",
           "RST": "reset (drive as an output)", "DIO0": "IRQ / packet (DIO0)"}
@@ -141,6 +141,7 @@ def rounded_path(pts: list[tuple[float, float]], r: float) -> str:
 
 
 LANE = 2.2  # mm between parallel wires (1.3 mm wide: 0.9 mm of daylight)
+PAGE_W = 71.0  # every diagram the same width: the widest radio board plus a margin
 
 
 def draw(radio: str) -> None:
@@ -181,19 +182,18 @@ def draw(radio: str) -> None:
     left_x = {p: sx - 2.5 - i * LANE for i, p in enumerate(left_order)}
     bx = max(gap_x.values()) + 5.0
     by = max(lane_y.values()) + 2.5 - cc.HDR_ROW_Y
-    hang = 8.5 if dio2_wire else 14.5  # the SMA jack, or the DIO2 note (below the size line), below the outline
-    total_h = by + board.h + hang + 1.5
-    # The legend runs down the column right of the radio board (nothing else
-    # reaches past the header's last column), two lines per wire; the page is
-    # as wide as its longest line.
-    legend_x, legend_y = bx + board.w + 4.5, 9.0
+    total_w = PAGE_W  # the same for all three diagrams
+    # The legend fills the block below the wires and left of the radio board,
+    # one line per wire; on the Ra-02 diagram the DIO2 note follows it there.
+    legend_x = 4.0
+    legend_y = by + hdr[6][1] + 3.0 + 4.5  # under MOSI's lane, the lowest wire
     legend_rows = [(POS_PIN[n], names[n], SIGNAL[names[n]]) for n in range(1, 9)]
     legend_rows.append(("5", "GPIO0" if dio2_wire else "(none)", "radio-type strap" + (", to GPIO0" if dio2_wire else ", left open")))
     if dio2_wire:
-        legend_rows.append(("20", "DIO2 (pin 7)", DIO2_SIGNAL))
-    legend_w = max(max(5.0 + 0.55 * 1.0 * len(f"{WIRES[pin][0]}  {pin if pin in ('G', '3V3') else f'{pin} (GPIO{pin})'} \u2192 {name}"),
-                       5.0 + 0.55 * 0.85 * len(signal)) for pin, name, signal in legend_rows)
-    total_w = legend_x + legend_w + 3.0
+        legend_rows.append(("20", "DIO2", DIO2_SIGNAL))
+    legend_h = 2.4 + len(legend_rows) * 2.2 + (5.5 if dio2_wire else 0.0)
+    hang = 4.5 if dio2_wire else 14.5  # the size line, or the SMA jack, below the board's outline
+    total_h = max(by + board.h + hang, legend_y + legend_h) + 1.5
     px = lambda x, y, ox, oy: ((ox + x) * S, (oy + y) * S)  # noqa: E731
     hp = lambda n: px(*hdr[n], bx, by)  # noqa: E731
     sp = lambda name: px(*sm_pins[name], sx, sy)  # noqa: E731
@@ -201,8 +201,8 @@ def draw(radio: str) -> None:
     parts = [
         f'<svg xmlns="http://www.w3.org/2000/svg" width="{total_w * S:.0f}" height="{total_h * S:.0f}" viewBox="0 0 {total_w * S:.0f} {total_h * S:.0f}">',
         '<rect width="100%" height="100%" fill="#ffffff"/>',
-        f'<text x="{total_w * S / 2:.1f}" y="{3.0 * S:.1f}" font-size="{2.0 * S:.1f}" font-family="Helvetica, Arial, sans-serif" font-weight="bold" fill="{INK}" text-anchor="middle" dy="0.36em">ESP32-C3 SuperMini to the {title} with jumper wires</text>',
-        f'<text x="{total_w * S / 2:.1f}" y="{5.6 * S:.1f}" font-size="{1.2 * S:.1f}" font-family="Helvetica, Arial, sans-serif" fill="{INK}" text-anchor="middle" dy="0.36em">Same pins as the socket adapter. Both boards seen from the back, header pins towards you.</text>',
+        f'<text x="{total_w * S / 2:.1f}" y="{3.0 * S:.1f}" font-size="{1.7 * S:.1f}" font-family="Helvetica, Arial, sans-serif" font-weight="bold" fill="{INK}" text-anchor="middle" dy="0.36em">ESP32-C3 SuperMini to the {title} with jumper wires</text>',
+        f'<text x="{total_w * S / 2:.1f}" y="{5.6 * S:.1f}" font-size="{1.1 * S:.1f}" font-family="Helvetica, Arial, sans-serif" fill="{INK}" text-anchor="middle" dy="0.36em">Same pins as the socket adapter. Both boards seen from the back, header pins towards you.</text>',
         board.svg_group(bx * S, by * S, "", 0, 0),
         smv.svg_group(sx * S, sy * S, "", 0, 0),
     ]
@@ -264,10 +264,6 @@ def draw(radio: str) -> None:
         parts.append(f'<text x="{(sx + smv.w / 2) * S:.1f}" y="{(sy - 6.9) * S:.1f}" font-size="{0.95 * S:.1f}" font-family="Helvetica, Arial, sans-serif" fill="{INK}" text-anchor="middle" dy="0.36em">GPIO5 strap to GPIO0 (firmware drives GPIO0 low to read it)</text>')
     else:
         parts.append(f'<text x="{(gap_x["10"] + 1.2) * S:.1f}" y="{smy - 5.0 * S:.1f}" font-size="{0.95 * S:.1f}" font-family="Helvetica, Arial, sans-serif" fill="{INK}" text-anchor="middle" dy="0.36em">GPIO5: leave open</text>')
-    if dio2_wire:
-        for i, t in enumerate(("DIO2 is not on the header: solder to the module's pin-7 castellation,",
-                               "or the land just outside it, on the face away from the header pins.")):
-            parts.append(f'<text x="{(bx + board.w / 2) * S:.1f}" y="{(by + board.h + 5.6 + i * 1.6) * S:.1f}" font-size="{0.95 * S:.1f}" font-family="Helvetica, Arial, sans-serif" fill="{INK}" text-anchor="middle" dy="0.36em">{t}</text>')
     # The header's pins and their names again, on top of the wires: the pins
     # stand proud of the board, so a wire passing between two of them runs
     # beneath their tips.
@@ -291,16 +287,23 @@ def draw(radio: str) -> None:
         overlay.text(smv.w - 2.6, y, SM_RIGHT[i], size=0.95, anchor="start", weight="bold", halo=True)
     parts.append(overlay.svg_group(sx * S, sy * S, "", 0, 0))
 
-    # Legend: one entry per wire, in socket-position order plus the strap:
-    # colour and the two pins it joins, then what the signal is.
-    parts.append(f'<text x="{legend_x * S:.1f}" y="{legend_y * S:.1f}" font-size="{1.1 * S:.1f}" font-family="Helvetica, Arial, sans-serif" font-weight="bold" fill="{INK}" dy="0.36em">Wires</text>')
+    # Legend: one line per wire, in socket-position order plus the strap:
+    # colour, the two pins it joins, and what the signal is.
+    lx, cols = legend_x, (4.4, 10.6, 22.6)
+    parts.append(f'<text x="{lx * S:.1f}" y="{legend_y * S:.1f}" font-size="{1.05 * S:.1f}" font-family="Helvetica, Arial, sans-serif" font-weight="bold" fill="{INK}" dy="0.36em">Wires</text>')
     for i, (pin, name, signal) in enumerate(legend_rows):
         colour, fill = WIRES[pin]
-        y = legend_y + 2.6 + i * 4.4
-        parts.append(f'<rect x="{legend_x * S:.1f}" y="{(y - 0.55) * S:.1f}" width="{3.6 * S:.1f}" height="{1.1 * S:.1f}" fill="{fill}" stroke="{INK}" stroke-width="{0.1 * S:.1f}" rx="{0.45 * S:.1f}"/>')
+        y = legend_y + 2.4 + i * 2.2
         sm_pin = pin if pin in ("G", "3V3") else f"{pin} (GPIO{pin})"
-        parts.append(f'<text x="{(legend_x + 4.6) * S:.1f}" y="{y * S:.1f}" font-size="{1.0 * S:.1f}" font-family="Helvetica, Arial, sans-serif" fill="{INK}" dy="0.36em"><tspan font-weight="bold">{colour}</tspan>  {sm_pin} \u2192 {name}</text>')
-        parts.append(f'<text x="{(legend_x + 4.6) * S:.1f}" y="{(y + 1.5) * S:.1f}" font-size="{0.85 * S:.1f}" font-family="Helvetica, Arial, sans-serif" fill="#555c66" dy="0.36em">{signal}</text>')
+        parts.append(f'<rect x="{lx * S:.1f}" y="{(y - 0.55) * S:.1f}" width="{3.6 * S:.1f}" height="{1.1 * S:.1f}" fill="{fill}" stroke="{INK}" stroke-width="{0.1 * S:.1f}" rx="{0.45 * S:.1f}"/>')
+        for x, txt, size, weight in ((cols[0], colour, 0.95, "bold"), (cols[1], f"{sm_pin} \u2192 {name}", 0.95, "normal"), (cols[2], signal, 0.85, "normal")):
+            parts.append(f'<text x="{(lx + x) * S:.1f}" y="{y * S:.1f}" font-size="{size * S:.1f}" font-family="Helvetica, Arial, sans-serif" font-weight="{weight}" fill="{INK if weight == "bold" or x != cols[2] else "#555c66"}" dy="0.36em">{txt}</text>')
+    if dio2_wire:
+        y = legend_y + 2.4 + len(legend_rows) * 2.2 + 0.6
+        for i, txt in enumerate(("DIO2 is not on the header: solder the black wire to the",
+                                 "module's pin-7 castellation, or the land just outside it,",
+                                 "on the face away from the header pins.")):
+            parts.append(f'<text x="{lx * S:.1f}" y="{(y + i * 1.5) * S:.1f}" font-size="{0.85 * S:.1f}" font-family="Helvetica, Arial, sans-serif" fill="{INK}" dy="0.36em">{txt}</text>')
     parts.append("</svg>")
     path = OUT / f"wiring-{radio}.svg"
     path.write_text("\n".join(parts) + "\n")

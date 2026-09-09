@@ -1,7 +1,7 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1059" height="929" viewBox="0 0 1059 929">
+<svg xmlns="http://www.w3.org/2000/svg" width="781" height="1041" viewBox="0 0 781 1041">
 <rect width="100%" height="100%" fill="#ffffff"/>
-<text x="529.4" y="33.0" font-size="22.0" font-family="Helvetica, Arial, sans-serif" font-weight="bold" fill="#1a1a2e" text-anchor="middle" dy="0.36em">ESP32-C3 SuperMini to the SX1278 Ra-02 breakout with jumper wires</text>
-<text x="529.4" y="61.6" font-size="13.2" font-family="Helvetica, Arial, sans-serif" fill="#1a1a2e" text-anchor="middle" dy="0.36em">Same pins as the socket adapter. Both boards seen from the back, header pins towards you.</text>
+<text x="390.5" y="33.0" font-size="18.7" font-family="Helvetica, Arial, sans-serif" font-weight="bold" fill="#1a1a2e" text-anchor="middle" dy="0.36em">ESP32-C3 SuperMini to the SX1278 Ra-02 breakout with jumper wires</text>
+<text x="390.5" y="61.6" font-size="12.1" font-family="Helvetica, Arial, sans-serif" fill="#1a1a2e" text-anchor="middle" dy="0.36em">Same pins as the socket adapter. Both boards seen from the back, header pins towards you.</text>
 <g transform="translate(529.1 571.1)"><text x="96.2" y="0.0" font-size="0.0" font-family="Helvetica, Arial, sans-serif" font-weight="bold" fill="#1a1a2e" text-anchor="middle"></text>
 <rect x="0.0" y="0.0" width="192.5" height="247.5" rx="6.6" fill="#1c6b9c" stroke="#0d3f5e" stroke-width="2.75"/>
 <text x="96.2" y="280.5" font-size="13.2" font-family="Helvetica, Arial, sans-serif" font-weight="normal" fill="#1a1a2e" text-anchor="middle" dy="0.36em">17.5 x 22.5 mm</text>
@@ -141,8 +141,6 @@
 <circle cx="347.8" cy="357.3" r="8.8" fill="#26262e" stroke="#1a1a2e" stroke-width="1.6"/>
 <circle cx="542.3" cy="670.1" r="8.8" fill="#26262e" stroke="#1a1a2e" stroke-width="1.6"/>
 <text x="264.0" y="94.6" font-size="10.4" font-family="Helvetica, Arial, sans-serif" fill="#1a1a2e" text-anchor="middle" dy="0.36em">GPIO5 strap to GPIO0 (firmware drives GPIO0 low to read it)</text>
-<text x="625.4" y="880.2" font-size="10.4" font-family="Helvetica, Arial, sans-serif" fill="#1a1a2e" text-anchor="middle" dy="0.36em">DIO2 is not on the header: solder to the module's pin-7 castellation,</text>
-<text x="625.4" y="897.8" font-size="10.4" font-family="Helvetica, Arial, sans-serif" fill="#1a1a2e" text-anchor="middle" dy="0.36em">or the land just outside it, on the face away from the header pins.</text>
 <g transform="translate(529.1 571.1)"><text x="96.2" y="0.0" font-size="0.0" font-family="Helvetica, Arial, sans-serif" font-weight="bold" fill="#1a1a2e" text-anchor="middle"></text>
 <rect x="5.5" y="92.4" width="15.4" height="13.2" rx="0.0" fill="none" stroke="#ffffff" stroke-width="1.98" stroke-dasharray="1.2 1.0"/>
 <circle cx="54.3" cy="14.3" r="8.8" fill="#f2c94c" stroke="#1a1a2e" stroke-width="1.32"/>
@@ -188,35 +186,48 @@
 <text x="169.4" y="214.7" font-size="10.4" font-family="Helvetica, Arial, sans-serif" font-weight="bold" fill="#1a1a2e" text-anchor="end" dy="0.36em" stroke="#ffffff" stroke-width="3.8" paint-order="stroke" stroke-linejoin="round">21</text>
 <text x="28.6" y="214.7" font-size="10.4" font-family="Helvetica, Arial, sans-serif" font-weight="bold" fill="#1a1a2e" text-anchor="start" dy="0.36em" stroke="#ffffff" stroke-width="3.8" paint-order="stroke" stroke-linejoin="round">0</text>
 </g>
-<text x="771.1" y="99.0" font-size="12.1" font-family="Helvetica, Arial, sans-serif" font-weight="bold" fill="#1a1a2e" dy="0.36em">Wires</text>
-<rect x="771.1" y="121.5" width="39.6" height="12.1" fill="#7b4a1e" stroke="#1a1a2e" stroke-width="1.1" rx="5.0"/>
-<text x="821.7" y="127.6" font-size="11.0" font-family="Helvetica, Arial, sans-serif" fill="#1a1a2e" dy="0.36em"><tspan font-weight="bold">brown</tspan>  G → GND</text>
-<text x="821.7" y="144.1" font-size="9.3" font-family="Helvetica, Arial, sans-serif" fill="#555c66" dy="0.36em">ground</text>
-<rect x="771.1" y="169.9" width="39.6" height="12.1" fill="#d81e1e" stroke="#1a1a2e" stroke-width="1.1" rx="5.0"/>
-<text x="821.7" y="176.0" font-size="11.0" font-family="Helvetica, Arial, sans-serif" fill="#1a1a2e" dy="0.36em"><tspan font-weight="bold">red</tspan>  3V3 → 3V3</text>
-<text x="821.7" y="192.5" font-size="9.3" font-family="Helvetica, Arial, sans-serif" fill="#555c66" dy="0.36em">3.3 V</text>
-<rect x="771.1" y="218.3" width="39.6" height="12.1" fill="#8c8c8c" stroke="#1a1a2e" stroke-width="1.1" rx="5.0"/>
-<text x="821.7" y="224.4" font-size="11.0" font-family="Helvetica, Arial, sans-serif" fill="#1a1a2e" dy="0.36em"><tspan font-weight="bold">grey</tspan>  10 (GPIO10) → RST</text>
-<text x="821.7" y="240.9" font-size="9.3" font-family="Helvetica, Arial, sans-serif" fill="#555c66" dy="0.36em">reset (drive as an output)</text>
-<rect x="771.1" y="266.8" width="39.6" height="12.1" fill="#7d3fa8" stroke="#1a1a2e" stroke-width="1.1" rx="5.0"/>
-<text x="821.7" y="272.8" font-size="11.0" font-family="Helvetica, Arial, sans-serif" fill="#1a1a2e" dy="0.36em"><tspan font-weight="bold">purple</tspan>  1 (GPIO1) → NSS</text>
-<text x="821.7" y="289.3" font-size="9.3" font-family="Helvetica, Arial, sans-serif" fill="#555c66" dy="0.36em">SPI chip select</text>
-<rect x="771.1" y="315.2" width="39.6" height="12.1" fill="#2464c8" stroke="#1a1a2e" stroke-width="1.1" rx="5.0"/>
-<text x="821.7" y="321.2" font-size="11.0" font-family="Helvetica, Arial, sans-serif" fill="#1a1a2e" dy="0.36em"><tspan font-weight="bold">blue</tspan>  3 (GPIO3) → SCK</text>
-<text x="821.7" y="337.7" font-size="9.3" font-family="Helvetica, Arial, sans-serif" fill="#555c66" dy="0.36em">SPI clock</text>
-<rect x="771.1" y="363.6" width="39.6" height="12.1" fill="#f4f4f4" stroke="#1a1a2e" stroke-width="1.1" rx="5.0"/>
-<text x="821.7" y="369.6" font-size="11.0" font-family="Helvetica, Arial, sans-serif" fill="#1a1a2e" dy="0.36em"><tspan font-weight="bold">white</tspan>  4 (GPIO4) → MOSI</text>
-<text x="821.7" y="386.1" font-size="9.3" font-family="Helvetica, Arial, sans-serif" fill="#555c66" dy="0.36em">SPI MOSI</text>
-<rect x="771.1" y="412.0" width="39.6" height="12.1" fill="#2e9e4f" stroke="#1a1a2e" stroke-width="1.1" rx="5.0"/>
-<text x="821.7" y="418.0" font-size="11.0" font-family="Helvetica, Arial, sans-serif" fill="#1a1a2e" dy="0.36em"><tspan font-weight="bold">green</tspan>  7 (GPIO7) → MISO</text>
-<text x="821.7" y="434.5" font-size="9.3" font-family="Helvetica, Arial, sans-serif" fill="#555c66" dy="0.36em">SPI MISO</text>
-<rect x="771.1" y="460.4" width="39.6" height="12.1" fill="#f2d21e" stroke="#1a1a2e" stroke-width="1.1" rx="5.0"/>
-<text x="821.7" y="466.4" font-size="11.0" font-family="Helvetica, Arial, sans-serif" fill="#1a1a2e" dy="0.36em"><tspan font-weight="bold">yellow</tspan>  6 (GPIO6) → DIO0</text>
-<text x="821.7" y="482.9" font-size="9.3" font-family="Helvetica, Arial, sans-serif" fill="#555c66" dy="0.36em">IRQ / packet (DIO0)</text>
-<rect x="771.1" y="508.8" width="39.6" height="12.1" fill="#f28c1e" stroke="#1a1a2e" stroke-width="1.1" rx="5.0"/>
-<text x="821.7" y="514.8" font-size="11.0" font-family="Helvetica, Arial, sans-serif" fill="#1a1a2e" dy="0.36em"><tspan font-weight="bold">orange</tspan>  5 (GPIO5) → GPIO0</text>
-<text x="821.7" y="531.3" font-size="9.3" font-family="Helvetica, Arial, sans-serif" fill="#555c66" dy="0.36em">radio-type strap, to GPIO0</text>
-<rect x="771.1" y="557.2" width="39.6" height="12.1" fill="#26262e" stroke="#1a1a2e" stroke-width="1.1" rx="5.0"/>
-<text x="821.7" y="563.2" font-size="11.0" font-family="Helvetica, Arial, sans-serif" fill="#1a1a2e" dy="0.36em"><tspan font-weight="bold">black</tspan>  20 (GPIO20) → DIO2 (pin 7)</text>
-<text x="821.7" y="579.7" font-size="9.3" font-family="Helvetica, Arial, sans-serif" fill="#555c66" dy="0.36em">raw data, OOK RX and TX (DIO2/DATA)</text>
+<text x="44.0" y="695.9" font-size="11.6" font-family="Helvetica, Arial, sans-serif" font-weight="bold" fill="#1a1a2e" dy="0.36em">Wires</text>
+<rect x="44.0" y="716.2" width="39.6" height="12.1" fill="#7b4a1e" stroke="#1a1a2e" stroke-width="1.1" rx="5.0"/>
+<text x="92.4" y="722.3" font-size="10.4" font-family="Helvetica, Arial, sans-serif" font-weight="bold" fill="#1a1a2e" dy="0.36em">brown</text>
+<text x="160.6" y="722.3" font-size="10.4" font-family="Helvetica, Arial, sans-serif" font-weight="normal" fill="#1a1a2e" dy="0.36em">G → GND</text>
+<text x="292.6" y="722.3" font-size="9.3" font-family="Helvetica, Arial, sans-serif" font-weight="normal" fill="#555c66" dy="0.36em">ground</text>
+<rect x="44.0" y="740.4" width="39.6" height="12.1" fill="#d81e1e" stroke="#1a1a2e" stroke-width="1.1" rx="5.0"/>
+<text x="92.4" y="746.5" font-size="10.4" font-family="Helvetica, Arial, sans-serif" font-weight="bold" fill="#1a1a2e" dy="0.36em">red</text>
+<text x="160.6" y="746.5" font-size="10.4" font-family="Helvetica, Arial, sans-serif" font-weight="normal" fill="#1a1a2e" dy="0.36em">3V3 → 3V3</text>
+<text x="292.6" y="746.5" font-size="9.3" font-family="Helvetica, Arial, sans-serif" font-weight="normal" fill="#555c66" dy="0.36em">3.3 V</text>
+<rect x="44.0" y="764.6" width="39.6" height="12.1" fill="#8c8c8c" stroke="#1a1a2e" stroke-width="1.1" rx="5.0"/>
+<text x="92.4" y="770.7" font-size="10.4" font-family="Helvetica, Arial, sans-serif" font-weight="bold" fill="#1a1a2e" dy="0.36em">grey</text>
+<text x="160.6" y="770.7" font-size="10.4" font-family="Helvetica, Arial, sans-serif" font-weight="normal" fill="#1a1a2e" dy="0.36em">10 (GPIO10) → RST</text>
+<text x="292.6" y="770.7" font-size="9.3" font-family="Helvetica, Arial, sans-serif" font-weight="normal" fill="#555c66" dy="0.36em">reset (drive as an output)</text>
+<rect x="44.0" y="788.8" width="39.6" height="12.1" fill="#7d3fa8" stroke="#1a1a2e" stroke-width="1.1" rx="5.0"/>
+<text x="92.4" y="794.9" font-size="10.4" font-family="Helvetica, Arial, sans-serif" font-weight="bold" fill="#1a1a2e" dy="0.36em">purple</text>
+<text x="160.6" y="794.9" font-size="10.4" font-family="Helvetica, Arial, sans-serif" font-weight="normal" fill="#1a1a2e" dy="0.36em">1 (GPIO1) → NSS</text>
+<text x="292.6" y="794.9" font-size="9.3" font-family="Helvetica, Arial, sans-serif" font-weight="normal" fill="#555c66" dy="0.36em">SPI chip select</text>
+<rect x="44.0" y="813.0" width="39.6" height="12.1" fill="#2464c8" stroke="#1a1a2e" stroke-width="1.1" rx="5.0"/>
+<text x="92.4" y="819.1" font-size="10.4" font-family="Helvetica, Arial, sans-serif" font-weight="bold" fill="#1a1a2e" dy="0.36em">blue</text>
+<text x="160.6" y="819.1" font-size="10.4" font-family="Helvetica, Arial, sans-serif" font-weight="normal" fill="#1a1a2e" dy="0.36em">3 (GPIO3) → SCK</text>
+<text x="292.6" y="819.1" font-size="9.3" font-family="Helvetica, Arial, sans-serif" font-weight="normal" fill="#555c66" dy="0.36em">SPI clock</text>
+<rect x="44.0" y="837.2" width="39.6" height="12.1" fill="#f4f4f4" stroke="#1a1a2e" stroke-width="1.1" rx="5.0"/>
+<text x="92.4" y="843.3" font-size="10.4" font-family="Helvetica, Arial, sans-serif" font-weight="bold" fill="#1a1a2e" dy="0.36em">white</text>
+<text x="160.6" y="843.3" font-size="10.4" font-family="Helvetica, Arial, sans-serif" font-weight="normal" fill="#1a1a2e" dy="0.36em">4 (GPIO4) → MOSI</text>
+<text x="292.6" y="843.3" font-size="9.3" font-family="Helvetica, Arial, sans-serif" font-weight="normal" fill="#555c66" dy="0.36em">SPI MOSI</text>
+<rect x="44.0" y="861.4" width="39.6" height="12.1" fill="#2e9e4f" stroke="#1a1a2e" stroke-width="1.1" rx="5.0"/>
+<text x="92.4" y="867.5" font-size="10.4" font-family="Helvetica, Arial, sans-serif" font-weight="bold" fill="#1a1a2e" dy="0.36em">green</text>
+<text x="160.6" y="867.5" font-size="10.4" font-family="Helvetica, Arial, sans-serif" font-weight="normal" fill="#1a1a2e" dy="0.36em">7 (GPIO7) → MISO</text>
+<text x="292.6" y="867.5" font-size="9.3" font-family="Helvetica, Arial, sans-serif" font-weight="normal" fill="#555c66" dy="0.36em">SPI MISO</text>
+<rect x="44.0" y="885.6" width="39.6" height="12.1" fill="#f2d21e" stroke="#1a1a2e" stroke-width="1.1" rx="5.0"/>
+<text x="92.4" y="891.7" font-size="10.4" font-family="Helvetica, Arial, sans-serif" font-weight="bold" fill="#1a1a2e" dy="0.36em">yellow</text>
+<text x="160.6" y="891.7" font-size="10.4" font-family="Helvetica, Arial, sans-serif" font-weight="normal" fill="#1a1a2e" dy="0.36em">6 (GPIO6) → DIO0</text>
+<text x="292.6" y="891.7" font-size="9.3" font-family="Helvetica, Arial, sans-serif" font-weight="normal" fill="#555c66" dy="0.36em">IRQ / packet (DIO0)</text>
+<rect x="44.0" y="909.8" width="39.6" height="12.1" fill="#f28c1e" stroke="#1a1a2e" stroke-width="1.1" rx="5.0"/>
+<text x="92.4" y="915.9" font-size="10.4" font-family="Helvetica, Arial, sans-serif" font-weight="bold" fill="#1a1a2e" dy="0.36em">orange</text>
+<text x="160.6" y="915.9" font-size="10.4" font-family="Helvetica, Arial, sans-serif" font-weight="normal" fill="#1a1a2e" dy="0.36em">5 (GPIO5) → GPIO0</text>
+<text x="292.6" y="915.9" font-size="9.3" font-family="Helvetica, Arial, sans-serif" font-weight="normal" fill="#555c66" dy="0.36em">radio-type strap, to GPIO0</text>
+<rect x="44.0" y="934.0" width="39.6" height="12.1" fill="#26262e" stroke="#1a1a2e" stroke-width="1.1" rx="5.0"/>
+<text x="92.4" y="940.1" font-size="10.4" font-family="Helvetica, Arial, sans-serif" font-weight="bold" fill="#1a1a2e" dy="0.36em">black</text>
+<text x="160.6" y="940.1" font-size="10.4" font-family="Helvetica, Arial, sans-serif" font-weight="normal" fill="#1a1a2e" dy="0.36em">20 (GPIO20) → DIO2</text>
+<text x="292.6" y="940.1" font-size="9.3" font-family="Helvetica, Arial, sans-serif" font-weight="normal" fill="#555c66" dy="0.36em">raw data, OOK RX/TX (DIO2/DATA)</text>
+<text x="44.0" y="970.9" font-size="9.3" font-family="Helvetica, Arial, sans-serif" fill="#1a1a2e" dy="0.36em">DIO2 is not on the header: solder the black wire to the</text>
+<text x="44.0" y="987.4" font-size="9.3" font-family="Helvetica, Arial, sans-serif" fill="#1a1a2e" dy="0.36em">module's pin-7 castellation, or the land just outside it,</text>
+<text x="44.0" y="1003.9" font-size="9.3" font-family="Helvetica, Arial, sans-serif" fill="#1a1a2e" dy="0.36em">on the face away from the header pins.</text>
 </svg>
