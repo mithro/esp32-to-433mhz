@@ -59,9 +59,14 @@ jobs:
       - name: Export the 3D assemblies (STEP and GLB)
         run: python3 scripts/render_assemblies.py --no-render --export dist
 
-      - name: Add the printable case
-        # Built by scripts/build_case.py (CadQuery) and committed like the STEP models.
-        run: cp hardware/case/*.stl dist/ && (cd dist && sha256sum *.stl >> SHA256SUMS)
+      - name: Package the printable case
+        # The case is built by scripts/build_case.py (CadQuery) and committed
+        # like the STEP models; this checks the committed files, zips them
+        # with a README.txt (print settings, ordering from a 3D-printing
+        # service), copies the STL files loose beside the zip and adds them
+        # all to SHA256SUMS and RELEASE_NOTES.md.  Runs last: it appends to
+        # the files the two steps above write.
+        run: python3 scripts/export_case.py --out dist
 
       - uses: actions/upload-artifact@v4
         with:

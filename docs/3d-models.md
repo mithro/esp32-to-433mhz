@@ -65,17 +65,19 @@ the drawn one, so leave room to stow the excess beside the breakout.
 
 `scripts/build_case.py` builds exactly that case with CadQuery, from the
 generator's constants and the table above: `hardware/case/*.stl` for
-printing and `hardware/3d/esp32c3-radio-adapter-case-{bottom,top}.step` as
-KiCad models (origin at mounting hole H1), which the `radio-*-case-*`
-variants of `scripts/render_assemblies.py` put on the board:
-`-case-closed` with both halves snapped together, `-case-open` with the
-bottom half only, and `-case-exploded` with the top half lifted 16 mm;
-`case-bottom` and `case-top` render each half by itself.  Closed and open
-come out as one sheet each of the isometric view and the six sides (front
-is the antenna end, back the SuperMini end with the pry notch, left the
-USB-C window); the README's [Printing a case](../README.md#printing-a-case)
-has the closed case with the E07-M1101D, the open one with the Ra-02 and
-the halves on their own.  The design views, with either radio:
+printing (each half in print orientation, open side up) and
+`hardware/3d/esp32c3-radio-adapter-case-{bottom,top}.step` as KiCad models
+(origin at mounting hole H1, both halves in their assembled position),
+which the `radio-*-case-*` variants of `scripts/render_assemblies.py` put
+on the board: `-case-closed` with both halves snapped together,
+`-case-open` with the bottom half only, and `-case-exploded` with the top
+half lifted 16 mm; `case-bottom` and `case-top` render each half by
+itself.  Closed and open come out as one sheet each of the isometric view
+and the six sides (front is the antenna end, back the SuperMini end with
+the pry notch, left the USB-C window); the README's
+[Printing a case](../README.md#printing-a-case) has the closed case with
+the E07-M1101D, the open one with the Ra-02 and the halves on their own.
+The design views, with either radio:
 
 | E07-M1101D | Ra-02 breakout and pigtail |
 | --- | --- |
@@ -90,6 +92,12 @@ antenna hole:
 Open with the E07-M1101D:
 
 ![The bottom half of the case with the adapter and the E07-M1101D: isometric, top, bottom, front (antenna), back (SuperMini end), left (USB-C) and right views](images/esp32c3-radio-adapter-assembly-e07-case-open-sheet.png)
+
+Every release carries all four files, zipped with a README.txt of print
+settings and ordering notes as `esp32c3-radio-adapter-case-<git describe>.zip`
+(built by `scripts/export_case.py` from the committed files, see
+[Development](development.md#ci-and-manufacturing-packages)), plus the two
+STL files loose.
 
 Dimensions, in the adapter's frame (x right, y down from the board's
 top-left corner, z up from its top surface):

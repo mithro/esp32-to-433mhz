@@ -224,8 +224,13 @@ pinouts, with the DIO2 land marked on both faces:
 ## Printing a case
 
 A two-part case that fits the adapter with either radio is in
-`hardware/case/` as STL files (also attached to every
-[release](https://github.com/mithro/esp32-to-433mhz/releases/latest)).
+`hardware/case/` as STL files. Every
+[release](https://github.com/mithro/esp32-to-433mhz/releases/latest)
+carries it as `esp32c3-radio-adapter-case-<version>.zip`, plus the two
+`.stl` files loose for dropping straight into a slicer. The zip holds the
+STL files in print orientation, the case's STEP models, and a README.txt
+with the parts' sizes, home FDM print settings and how to order them from
+JLCPCB's 3D-printing service.
 In the pictures and the notes below, the **front** is the antenna end,
 the **back** the SuperMini end with the pry notch on the seam, and the
 **left** wall the one with the USB-C window. The top half is the darker
@@ -256,15 +261,19 @@ open) and the exploded views are in
   and `esp32c3-radio-adapter-case-top.stl`, each printed open side up. No
   supports, no screws; 2.2 mm walls; 36.2&nbsp;x&nbsp;66.7&nbsp;x&nbsp;20.6 mm
   outside.
-* The board presses onto four pegs in the bottom half (they fit the M2
-  holes), and bosses in the top half hold it there once the case is shut.
-  The USB-C plug goes through the window in the left wall.
+* The board presses onto four 2.15 mm pegs in the bottom half (they fit
+  the 2.2 mm M2 corner holes), and bosses in the top half hold it there
+  once the case is shut. The USB-C plug goes through the window in the
+  left wall.
 * One 6.6 mm hole in the front wall serves both radios: the E07-M1101D's
   SMA jack pokes through it, and the Ra-02's U.FL-to-SMA pigtail bulkhead
   is clamped in it by its nut, with the spare cable stowed beside the
   breakout.
 * Four snap tabs on the bottom half click into grooves in the top half's
   skirt; the notch at the seam on the back takes a fingernail to open it.
+* The package's README.txt has the print settings, what to inspect (the
+  0.8 mm snap tabs, the peg fit, which depends on the printer's
+  calibration) and the material to pick at a service.
 
 The case is generated from the same dimensions as the boards by
 `scripts/build_case.py`; see [3D models and case design](docs/3d-models.md#the-printed-case).

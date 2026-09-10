@@ -36,6 +36,7 @@ uv run scripts/draw_wiring.py        # docs/images/wiring-*.svg
 uv run scripts/build_3d.py           # hardware/3d/*.step (CadQuery; fetched by uv)
 uv run scripts/build_case.py         # hardware/case/*.stl and the case's STEP models (CadQuery)
 uv run scripts/render_assemblies.py  # docs/images/*-assembly-*.png, *-model-iso.png
+uv run scripts/export_case.py        # dist/esp32c3-radio-adapter-case-<rev>.zip from the committed case files
 ```
 
 ERC reports only "global label not connected anywhere else" warnings (each
@@ -64,9 +65,19 @@ the same `git describe` string through the `GIT_DESCRIBE` text variable, which
 the export defines at plot time.
 
 ```sh
-uv run scripts/export_manufacturing.py --out dist            # same packages locally
+uv run scripts/export_manufacturing.py --out dist              # same packages locally
 uv run scripts/render_assemblies.py --no-render --export dist  # the STEP / GLB assemblies
+uv run scripts/export_case.py --out dist                       # the printable case package
 ```
 
 The release also carries the assembled adapters as STEP and GLB files (see
-[3D models and case design](3d-models.md)).
+[3D models and case design](3d-models.md)) and the printable case as
+`esp32c3-radio-adapter-case-<git describe>.zip`: the two STL files in print
+orientation, the two case STEP models and a README.txt with the parts'
+sizes, FDM print settings and how to order them from a 3D-printing service.
+`scripts/export_case.py` builds it from the committed `hardware/case/*.stl`
+and `hardware/3d/*case*.step` (CI has no CadQuery, so the case is not
+rebuilt there) after checking that they exist, parse as STL and carry the
+STEP header, copies the two STL files loose beside the zip, and adds them
+all to `SHA256SUMS` and `RELEASE_NOTES.md`; it runs last because it appends
+to what the other two scripts wrote.
