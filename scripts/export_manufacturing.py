@@ -67,8 +67,11 @@ def run(cmd: list[str]) -> None:
         raise SystemExit(f"command failed ({r.returncode}): {' '.join(cmd)}\n{r.stdout}{r.stderr}")
 
 
-def git_describe() -> str:
-    r = subprocess.run(["git", "-C", str(ROOT), "describe", "--tags", "--dirty", "--always", "--match", "v[0-9]*"], capture_output=True, text=True)
+def git_describe(commit: str | None = None) -> str:
+    """`git describe` of HEAD (with --dirty), or of `commit` (git refuses
+    --dirty for anything but HEAD; draw_case.py adds its own suffix)."""
+    args = ["--dirty"] if commit is None else []
+    r = subprocess.run(["git", "-C", str(ROOT), "describe", "--tags", *args, "--always", "--match", "v[0-9]*", *([commit] if commit else [])], capture_output=True, text=True)
     if r.returncode != 0:
         raise SystemExit(f"git describe failed: {r.stderr}")
     return r.stdout.strip()
