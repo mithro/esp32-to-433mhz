@@ -27,3 +27,6 @@ dist/
 
 # Git worktrees for parallel work (superpowers:using-git-worktrees)
 .worktrees/
+
+# Worktrees created by the Claude Code Agent tool
+.claude/worktrees/

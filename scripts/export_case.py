@@ -322,8 +322,9 @@ each, and pick the process and material for both:
     order it dyed.
   * SLA resin: usually the cheapest option and the finest surface, but do
     not order the standard grey or black resins for this case; they are
-    brittle and the {c['LIP_T']} mm snap tabs will crack on the second opening.  If
-    you must use resin, treat the case as close-once.  SLA parts also
+    brittle and the {c['LIP_T']} mm snap tabs are likely to crack the first time
+    the case is opened.  If you must use resin, treat the case as
+    close-once.  SLA parts also
     carry support witness marks, which may land in the grooves and slots.
   * FDM (PLA, ABS or ASA) is offered too and gives what a home printer
     gives, with the notes above; the peg fit then depends on their
@@ -341,8 +342,11 @@ on part size (1.5 mm at 50 x 50 mm, the nearest row to this part) and says
 positioning, snaps and fasteners is more than 1.5mm".  The case's walls are
 {c['WALL']} mm, but its snap tabs are {c['LIP_T']} mm thick and the bumps and grooves are
 {c['BUMP_R']} and {c['GROOVE_R']} mm in radius, because the case was drawn for FDM at home.
-If the order review flags the {c['LIP_T']} mm tabs, confirm "print as designed": in
-PA12 they print intact, softer than in PLA, and the case still snaps.
+If the order review flags the {c['LIP_T']} mm tabs, confirm "print as designed":
+PA12 at that thickness should print intact and come out softer than
+PLA, so the snap should still engage.  This case has not been printed
+in any material yet; the tabs and pegs are the two things to check on
+the first print, and reports are welcome.
 Thicker tabs mean regenerating the case with a larger LIP_T in
 scripts/build_case.py, which also changes the rebate in the top half.  The
 process and material names above are as sold in 2026; check the current
