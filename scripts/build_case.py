@@ -305,6 +305,7 @@ def measure(bottom: cq.Workplane, top: cq.Workplane, top_slot: cq.Workplane) -> 
     row("out_x_top", "outside width, top half", OUT_X1 - OUT_X0, t["x"][1] - t["x"][0])
     row("out_y_top", "outside length, top half", OUT_Y1 - OUT_Y0, t["y"][1] - t["y"][0])
     row("tab_tips_z", "highest point of the bottom half (tab tips)", PART_Z + TAB_H, b["z"][1])
+    row("tab_tips_from_bottom", "tab tips above the outside bottom face", PART_Z + TAB_H - OUT_Z0, b["z"][1] - z0)
     seam = row("seam_z", "the seam: the bottom half's wall top and the top half's skirt edge", PART_Z, rod(bottom, "z", -3.9, 41.0)[0][1])
     row("seam_z_top", "the top half's skirt edge", PART_Z, rod(top, "z", -3.9, 41.0)[0][0])
     row("top_lowest", "the top half's lowest point (the boss faces)", BOSS_Z0, t["z"][0])
@@ -349,6 +350,12 @@ def measure(bottom: cq.Workplane, top: cq.Workplane, top_slot: cq.Workplane) -> 
     row("standoff_h", "standoff height above the floor", STANDOFF_Z1 - STANDOFF_Z0, standoff_top - floor_top)
     row("standoff_top_from_bottom", "standoff top above the outside bottom face", STANDOFF_Z1 - OUT_Z0, standoff_top - z0)
     row("standoff_top_below_seam", "standoff top below the seam", PART_Z - STANDOFF_Z1, seam - standoff_top)
+    # depths a caliper reads with its base across both long walls' lips (at y = 44, section D-D: no tab there)
+    lip_top = rod(bottom, "z", -2.7, 44.0)[0][1]
+    row("floor_below_lip", "floor top below the lip top", PART_Z + LIP_H - CAV_Z0, lip_top - floor_top)
+    row("standoff_top_below_lip", "standoff top below the lip top", PART_Z + LIP_H - STANDOFF_Z1, lip_top - standoff_top)
+    row("peg_tip_below_lip", "peg tip below the lip top (H1)", PART_Z + LIP_H - PEG_Z1, lip_top - tips[0])
+    row("peg_tip_H3_below_lip", "peg tip below the lip top (H3, flush)", PART_Z + LIP_H - 0.0, lip_top - tips[2])
     row("hole_pitch_x", "standoff pitch across", W - 2 * HOLE_IN, sx[1] - sx[0])
     row("hole_pitch_y", "standoff pitch along", H - 2 * HOLE_IN, sy[2] - sy[0])
     row("hole_H1_from_usb_face", "H1 from the USB-C wall's outside face", HOLE_IN - OUT_X0, sx[0] - x0)
@@ -359,6 +366,8 @@ def measure(bottom: cq.Workplane, top: cq.Workplane, top_slot: cq.Workplane) -> 
     row("peg_d", "peg diameter below the chamfer", PEG_D, s[0][1] - s[0][0])
     s = spans(bottom, "x", HOLES[0][0] - 3, HOLES[0][1] - 0.01, HOLES[0][0] + 3, HOLES[0][1] + 0.01, PEG_Z1 - 0.25, PEG_Z1 - 0.24)
     row("peg_chamfer_d", "peg diameter 0.25 below the tip, in the chamfer", PEG_D - 2 * (PEG_CHAMFER - 0.25), s[0][1] - s[0][0])
+    s = spans(bottom, "x", HOLES[0][0] - 3, HOLES[0][1] - 0.01, HOLES[0][0] + 3, HOLES[0][1] + 0.01, PEG_Z1 - 0.025, PEG_Z1 - 0.015)
+    row("peg_chamfer", "peg tip chamfer, from the diameter 0.02 below the tip", PEG_CHAMFER, (rows["peg_d"]["measured"] - (s[0][1] - s[0][0])) / 2 + 0.02)
     row("peg_h", "peg above the standoff (H1)", PEG_H, tips[0] - standoff_top)
     row("peg_h_H3", "peg above the standoff (H3, flush with the PCB)", BOARD_T, tips[2] - standoff_top)
     row("peg_proud", "peg tip above the PCB top (H1)", PEG_Z1, tips[0])
@@ -371,6 +380,9 @@ def measure(bottom: cq.Workplane, top: cq.Workplane, top_slot: cq.Workplane) -> 
     s = rod(bottom, "x", LIP_Y1 - 0.4, PART_Z + 0.5)  # along the front wall's lip
     row("lip_gap_w", "lip gap in the front wall", LIP_GAP_X1 - LIP_GAP_X0, gap(s))
     row("lip_gap_from_usb_face", "lip gap centre from the USB-C wall's outside face", SOCKET_MID_X - OUT_X0, (s[0][1] + s[1][0]) / 2 - x0)
+    g = gap_at(rod(bottom, "y", CAV_X0 - LIP_T / 2, PART_Z + 0.5), USB_WIN_Y)  # along the USB-C wall's lip
+    row("lip_gap_usb_w", "lip gap in the USB-C wall (across the plug recess)", LIP_GAP_USB_Y1 - LIP_GAP_USB_Y0, g[1] - g[0])
+    row("lip_gap_usb_from_back_face", "USB-C wall lip gap centre from the back outside face", USB_WIN_Y - OUT_Y0, (g[0] + g[1]) / 2 - y0)
     for side, xr, xb in (("l", CAV_X0 - 0.4, LIP_X0 - BUMP_R / 2), ("r", CAV_X1 + 0.4, LIP_X1 + BUMP_R / 2)):
         s = rod(bottom, "y", xr, PART_Z + LIP_H + 1.0)  # above the lip: only the tabs
         row(f"tab_count_{side}", f"tabs on the {'USB-C' if side == 'l' else 'plain'} wall", len(TAB_Y), len(s))
@@ -388,6 +400,7 @@ def measure(bottom: cq.Workplane, top: cq.Workplane, top_slot: cq.Workplane) -> 
         row(f"tab_t_at_bump_{side}", f"tab thickness through the bump, {side}", LIP_T + BUMP_R, s3[0][1] - s3[0][0])
         s4 = rod(bottom, "z", xb, TAB_Y[0])  # the wall below the seam, then the bump
         row(f"bump_z_{side}", f"bump centre above the seam, {side}", BUMP_Z, mid(s4[-1]) - seam)
+    row("bump_r", "bump radius (tab thickness through the bump, less the lip)", BUMP_R, rows["tab_t_at_bump_l"]["measured"] - rows["lip_t"]["measured"])
     # the top half: skirt, rebate, grooves on both walls
     s = rod(top, "x", 41.0, PART_Z + 2.0)
     row("skirt_t", "skirt thickness", SKIRT_T, s[0][1] - s[0][0])
@@ -396,6 +409,11 @@ def measure(bottom: cq.Workplane, top: cq.Workplane, top_slot: cq.Workplane) -> 
     row("rebate_h", "rebate height above the seam", SKIRT_H, rod(top, "z", -2.8, 41.0)[0][0] - seam)
     row("rebate_over_tab", "rebate ceiling above the tab tips", SKIRT_H - TAB_H, rod(top, "z", -2.8, 41.0)[0][0] - b["z"][1])
     row("rebate_over_lip", "rebate ceiling above the lip", SKIRT_H - LIP_H, rod(top, "z", -2.8, 41.0)[0][0] - rod(bottom, "z", -2.7, 41.0)[0][1])
+    row("fit", "lip to skirt clearance (rebate depth less the lip)", REBATE - LIP_T, rows["rebate"]["measured"] - rows["lip_t"]["measured"])
+    s = rod(top, "y", CAV_X0 - REBATE + 0.25, PART_Z + 0.5)  # just inside the skirt face: solid only where there is no rebate
+    mats = [sp for sp in s if abs(mid(sp) - USB_WIN_Y) < USB_RECESS_W / 2]
+    row("rebate_gap_usb_w", "no rebate across the plug recess: the full-thickness wall's width", LIP_GAP_USB_Y1 - LIP_GAP_USB_Y0, mats[-1][1] - mats[0][0])
+    row("rebate_gap_usb_from_back_face", "that full-thickness wall's centre from the back outside face", USB_WIN_Y - OUT_Y0, (mats[0][0] + mats[-1][1]) / 2 - y0)
     for side, xf, lo, hi in (("l", CAV_X0 - REBATE, -10, 0), ("r", CAV_X1 + REBATE, 25, 40)):
         s = rod(top, "x", TAB_Y[0], PART_Z + BUMP_Z, lo=lo, hi=hi)
         face = s[0][1] if side == "l" else s[0][0]
@@ -429,6 +447,7 @@ def measure(bottom: cq.Workplane, top: cq.Workplane, top_slot: cq.Workplane) -> 
     row("boss_len", "boss length, ceiling to face", BOSS_Z1 - BOSS_Z0, ceiling - face)
     row("boss_face_from_bottom", "boss face above the outside bottom face", BOSS_Z0 - OUT_Z0, face - z0)
     row("boss_face_below_seam", "boss face below the skirt edge (seam)", BOSS_Z0 - PART_Z, face - seam)
+    row("boss_past_skirt", "boss face standing past the skirt edge (seam)", PART_Z - BOSS_Z0, seam - face)
     sbx, sby, sbd, _ = SOLID_BOSS
     row("solid_boss_from_usb_face", "solid boss centre from the USB-C wall's outside face", sbx - OUT_X0, rows["boss_x_3"]["measured"] - x0)
     row("solid_boss_from_back_face", "solid boss centre from the back outside face", sby - OUT_Y0, rows["boss_y_3"]["measured"] - y0)
@@ -447,6 +466,7 @@ def measure(bottom: cq.Workplane, top: cq.Workplane, top_slot: cq.Workplane) -> 
     row("window_w_top", "USB-C window width (top half)", USB_WIN_W, g[1] - g[0])
     row("window_from_back_face", "window centre from the back outside face", USB_WIN_Y - OUT_Y0, wy - y0)
     row("window_sill_from_bottom", "window sill above the outside bottom face", USB_WIN_Z0 - OUT_Z0, sill - z0)
+    row("window_head_from_bottom", "window head above the outside bottom face", USB_WIN_Z1 - OUT_Z0, head - z0)
     ry = USB_WIN_Y + USB_RECESS_W / 2 - 0.7  # inside the recess, beside the window
     s = rod(top, "x", ry, PART_Z + 1.0, lo=-10, hi=0)
     row("recess_floor_x", "plug recess floor x", USB_RECESS_X, s[0][0])
@@ -459,6 +479,7 @@ def measure(bottom: cq.Workplane, top: cq.Workplane, top_slot: cq.Workplane) -> 
     rz1 = row("recess_z1", "plug recess top z (top half)", USB_RECESS_Z1, rod(top, "z", OUT_X0 + 0.5, ry)[0][0])
     row("recess_h", "plug recess height", USB_RECESS_H, rz1 - rz0)
     row("recess_from_bottom", "plug recess bottom above the outside bottom face", USB_RECESS_Z0 - OUT_Z0, rz0 - z0)
+    row("recess_top_from_bottom", "plug recess top above the outside bottom face", USB_RECESS_Z1 - OUT_Z0, rz1 - z0)
     # the antenna hole and the E07 pocket, both split by the seam
     s = spans(top, "z", SOCKET_MID_X - 0.01, 62.5, SOCKET_MID_X + 0.01, 63.5, -5, 15)
     htop = row("hole_top_z", "antenna hole top z (top half)", ANT_HOLE_Z1, s[0][0])
@@ -467,6 +488,9 @@ def measure(bottom: cq.Workplane, top: cq.Workplane, top_slot: cq.Workplane) -> 
     row("hole_d_z", "antenna hole diameter (up)", ANT_HOLE_D, htop - hbot)
     hz = row("hole_z", "antenna hole centre z", ANT_Z, (htop + hbot) / 2)
     row("hole_z_on_seam", "hole centre on the seam", 0.0, hz - seam)
+    row("hole_below_seam", "the half-hole in the bottom half: seam to the hole bottom", ANT_Z - ANT_HOLE_Z0, seam - hbot)
+    row("hole_above_seam", "the half-hole in the top half: seam to the hole top", ANT_HOLE_Z1 - ANT_Z, htop - seam)
+    row("hole_top_from_bottom", "top of the hole above the outside bottom face", ANT_HOLE_Z1 - OUT_Z0, htop - z0)
     dz = 0.5  # chord across the hole this far below the seam, in the bottom half
     chord = 2 * math.sqrt((ANT_HOLE_D / 2) ** 2 - dz ** 2)
     s = spans(bottom, "x", 0, 62.5, 25, 63.5, ANT_Z - dz - 0.01, ANT_Z - dz + 0.01)
@@ -503,6 +527,7 @@ def measure(bottom: cq.Workplane, top: cq.Workplane, top_slot: cq.Workplane) -> 
     row("slot_w", "J4 slot width", J4_SLOT_Y1 - J4_SLOT_Y0, gap(s))
     row("slot_y", "J4 slot centre y", (J4_SLOT_Y0 + J4_SLOT_Y1) / 2, (s[0][1] + s[1][0]) / 2)
     row("slot_from_back_face", "J4 slot centre from the back outside face", (J4_SLOT_Y0 + J4_SLOT_Y1) / 2 - OUT_Y0, (s[0][1] + s[1][0]) / 2 - y0)
+    row("slot_from_usb_face", "J4 slot centre from the USB-C wall's outside face", (J4_SLOT_X0 + J4_SLOT_X1) / 2 - OUT_X0, rows["slot_x"]["measured"] - x0)
     if bad:
         raise SystemExit("case measurement failed:\n  " + "\n  ".join(bad))
     print(f"case measurement: {len(rows)} dimensions match case_dims")
