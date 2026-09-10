@@ -79,7 +79,7 @@ CASE = {k: round(v, 4) for k, v in {
     "BUMP_R - FIT": cd.BUMP_PROUD,  # how far the bump stands proud of the skirt's face
     "ANT_HOLE_D": cd.ANT_HOLE_D,
     "OUT_Z0": cd.OUT_Z0,  # the bottom half's floor, in the STL's z
-    "PIN_STUBS": cd.PIN_STUBS,  # what is left of a trimmed pin under the board
+    "PIN_STUB": cd.PIN_STUB,  # what is left of a trimmed pin under the board
     "J4_SLOT_X1 - J4_SLOT_X0": cd.J4_SLOT_X1 - cd.J4_SLOT_X0,  # the optional slot over J4
     "J4_SLOT_Y1 - J4_SLOT_Y0": cd.J4_SLOT_Y1 - cd.J4_SLOT_Y0,
 }.items()}
@@ -231,7 +231,7 @@ axis: the antenna hole and the USB-C window are each half in one half, so
 the connectors sit in the bottom half's cut-outs and the top half closes
 over them.  The SuperMini may be on its pin headers or soldered flat by its
 castellations; the window takes its USB-C at either height.  Every
-through-hole pin is assumed trimmed under the board to about {-c['PIN_STUBS']:.0f} mm, which
+through-hole pin is assumed trimmed under the board to about {c['PIN_STUB']:.0f} mm, which
 is what lets the case be only {closed:.1f} mm tall.  It is not water-tight and does
 not try to be.
 
@@ -325,7 +325,7 @@ What to look at after printing:
     edges with a knife.  If you print the slotted top, the {c['J4_SLOT_X1 - J4_SLOT_X0']:.1f} x {c['J4_SLOT_Y1 - J4_SLOT_Y0']:.1f} mm slot
     is a plain hole in the ceiling.
 
-To assemble: trim every pin under the board to about {-c['PIN_STUBS']:.0f} mm, press the
+To assemble: trim every pin under the board to about {c['PIN_STUB']:.0f} mm, press the
 board onto the pegs (SuperMini's USB-C into the window side, radio's
 antenna connector into the cut-out in the far wall), lay the pigtail's
 bulkhead in the same cut-out if it is the Ra-02, and press the top half

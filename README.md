@@ -259,7 +259,7 @@ open) and the exploded views are in
 
 * Two halves that snap together: `esp32c3-radio-adapter-case-bottom.stl`
   and `esp32c3-radio-adapter-case-top.stl`, each printed open side up. No
-  supports, no screws; 2.2 mm walls; 36.2&nbsp;x&nbsp;66.7&nbsp;x&nbsp;16.2 mm
+  supports, no screws; 2.2 mm walls; 36.2&nbsp;x&nbsp;66.7&nbsp;x&nbsp;16.7 mm
   outside. Trim every pin under the board to about 1 mm first: the floor
   counts on it.
 * The board presses onto four 2.15 mm pegs in the bottom half (they fit

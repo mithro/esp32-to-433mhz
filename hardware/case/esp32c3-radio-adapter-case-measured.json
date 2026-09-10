@@ -21,8 +21,8 @@
  },
  "out_z0": {
   "what": "outside bottom face z",
-  "expected": -4.6,
-  "measured": -4.6
+  "expected": -5.1,
+  "measured": -5.1
  },
  "out_z1": {
   "what": "outside top face z",
@@ -56,8 +56,8 @@
  },
  "tab_tips_from_bottom": {
   "what": "tab tips above the outside bottom face",
-  "expected": 12.9,
-  "measured": 12.9
+  "expected": 13.4,
+  "measured": 13.4
  },
  "seam_z": {
   "what": "the seam: the bottom half's wall top and the top half's skirt edge",
@@ -76,8 +76,8 @@
  },
  "bottom_h": {
   "what": "bottom half, outside bottom face to the seam",
-  "expected": 7.9,
-  "measured": 7.9
+  "expected": 8.4,
+  "measured": 8.4
  },
  "top_h": {
   "what": "top half, seam to the outside top face",
@@ -86,8 +86,8 @@
  },
  "overall_h": {
   "what": "closed case height",
-  "expected": 16.2,
-  "measured": 16.2
+  "expected": 16.7,
+  "measured": 16.7
  },
  "wall": {
   "what": "long wall thickness (top half, above the rebate)",
@@ -126,8 +126,8 @@
  },
  "floor_top_z": {
   "what": "floor top z",
-  "expected": -2.6,
-  "measured": -2.6
+  "expected": -3.1,
+  "measured": -3.1
  },
  "floor": {
   "what": "floor thickness",
@@ -141,8 +141,8 @@
  },
  "floor_below_seam": {
   "what": "floor top below the seam",
-  "expected": 5.9,
-  "measured": 5.9
+  "expected": 6.4,
+  "measured": 6.4
  },
  "ceiling_z": {
   "what": "ceiling underside z",
@@ -156,8 +156,8 @@
  },
  "ceiling_from_bottom": {
   "what": "ceiling underside above the outside bottom face",
-  "expected": 14.2,
-  "measured": 14.2
+  "expected": 14.7,
+  "measured": 14.7
  },
  "ceiling_above_seam": {
   "what": "ceiling underside above the seam",
@@ -171,8 +171,8 @@
  },
  "top_face_from_bottom": {
   "what": "outside top face above the outside bottom face",
-  "expected": 16.2,
-  "measured": 16.2
+  "expected": 16.7,
+  "measured": 16.7
  },
  "standoff_x_H1": {
   "what": "standoff H1 centre x",
@@ -276,13 +276,13 @@
  },
  "standoff_h": {
   "what": "standoff height above the floor",
-  "expected": 1.0,
-  "measured": 1.0
+  "expected": 1.5,
+  "measured": 1.5
  },
  "standoff_top_from_bottom": {
   "what": "standoff top above the outside bottom face",
-  "expected": 3.0,
-  "measured": 3.0
+  "expected": 3.5,
+  "measured": 3.5
  },
  "standoff_top_below_seam": {
   "what": "standoff top below the seam",
@@ -291,8 +291,8 @@
  },
  "floor_below_lip": {
   "what": "floor top below the lip top",
-  "expected": 7.4,
-  "measured": 7.4
+  "expected": 7.9,
+  "measured": 7.9
  },
  "standoff_top_below_lip": {
   "what": "standoff top below the lip top",
@@ -371,18 +371,18 @@
  },
  "peg_tip_from_bottom": {
   "what": "peg tip above the outside bottom face (H1)",
-  "expected": 5.0,
-  "measured": 5.0
+  "expected": 5.5,
+  "measured": 5.5
  },
  "peg_tip_H3_from_bottom": {
   "what": "peg tip above the outside bottom face (H3)",
-  "expected": 4.6,
-  "measured": 4.6
+  "expected": 5.1,
+  "measured": 5.1
  },
  "pcb_top_from_bottom": {
   "what": "the PCB's top face (z = 0, where the H3 peg tip is) above the outside bottom face",
-  "expected": 4.6,
-  "measured": 4.6
+  "expected": 5.1,
+  "measured": 5.1
  },
  "lip_t": {
   "what": "lip thickness",
@@ -811,8 +811,8 @@
  },
  "boss_face_from_bottom": {
   "what": "boss face above the outside bottom face",
-  "expected": 4.8,
-  "measured": 4.8
+  "expected": 5.3,
+  "measured": 5.3
  },
  "boss_face_below_seam": {
   "what": "boss face below the skirt edge (seam)",
@@ -886,13 +886,13 @@
  },
  "window_sill_from_bottom": {
   "what": "window sill above the outside bottom face",
-  "expected": 5.3,
-  "measured": 5.3
+  "expected": 5.8,
+  "measured": 5.8
  },
  "window_head_from_bottom": {
   "what": "window head above the outside bottom face",
-  "expected": 11.6,
-  "measured": 11.6
+  "expected": 12.1,
+  "measured": 12.1
  },
  "wall_above_window": {
   "what": "window head to the outside top face",
@@ -941,13 +941,13 @@
  },
  "recess_from_bottom": {
   "what": "plug recess bottom above the outside bottom face",
-  "expected": 3.45,
-  "measured": 3.45
+  "expected": 3.95,
+  "measured": 3.95
  },
  "recess_top_from_bottom": {
   "what": "plug recess top above the outside bottom face",
-  "expected": 13.45,
-  "measured": 13.45
+  "expected": 13.95,
+  "measured": 13.95
  },
  "hole_top_z": {
   "what": "antenna hole top z (top half)",
@@ -986,8 +986,8 @@
  },
  "hole_top_from_bottom": {
   "what": "top of the hole above the outside bottom face",
-  "expected": 11.2,
-  "measured": 11.2
+  "expected": 11.7,
+  "measured": 11.7
  },
  "hole_chord": {
   "what": "antenna hole chord 0.5 below the seam",
@@ -1011,8 +1011,8 @@
  },
  "hole_z_from_bottom": {
   "what": "hole centre above the outside bottom face",
-  "expected": 7.9,
-  "measured": 7.9
+  "expected": 8.4,
+  "measured": 8.4
  },
  "above_hole": {
   "what": "top of the hole to the outside top face",
@@ -1021,8 +1021,8 @@
  },
  "below_hole": {
   "what": "bottom of the hole to the outside bottom face",
-  "expected": 4.6,
-  "measured": 4.6
+  "expected": 5.1,
+  "measured": 5.1
  },
  "pocket_depth": {
   "what": "E07 pocket depth into the front wall",

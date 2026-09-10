@@ -11,11 +11,11 @@ table in docs/3d-models.md; everything is in the adapter's board frame (x
 right, y down, origin at the board's top-left corner) with z up from the
 board's top surface, converted to KiCad's model frame on export.
 
-  bottom  floor and the walls up to the parting line, 0.5 mm below the
-          board's top surface; four standoffs under the adapter's corner
+  bottom  floor and the walls up to the parting line, on the antenna axis
+          3.3 mm above the board's top; four standoffs under the corner
           holes, each with a chamfered 2.15 mm peg that the board's 2.2 mm
           hole presses onto (no screws); round the top a 0.8 mm lip that
-          locates the other half, and on each long wall two 6 mm cantilever
+          locates the other half, and on each long wall two 5 mm cantilever
           snap tabs with a rounded bump near the tip.
   top     the rest of the walls and the ceiling; its skirt is rebated to sit
           over the lip and has grooves the bumps click into; four bosses come
@@ -61,7 +61,7 @@ from case_dims import (  # noqa: E402
     SMA_BARREL_D, SOCKET_MID_X, SOLID_BOSS, STANDOFF_D, STANDOFF_Z0, STANDOFF_Z1, TAB_H, TAB_W,
     TAB_Y, TOP_T, USB_WIN_H, USB_WIN_W, USB_WIN_Y, USB_WIN_Z, USB_X0, USB_Y0, USB_Y1, USB_Z0,
     USB_Z1, W, WALL, slots,
-    J4_SLOT_X0, J4_SLOT_X1, J4_SLOT_Y0, J4_SLOT_Y1, LIP_GAP_USB_Y0, LIP_GAP_USB_Y1, PIN_STUBS, PLUG_H, PLUG_SHELL_H,
+    J4_SLOT_X0, J4_SLOT_X1, J4_SLOT_Y0, J4_SLOT_Y1, LIP_GAP_USB_Y0, LIP_GAP_USB_Y1, STUB_TIP_Z, PLUG_H, PLUG_SHELL_H,
     PLUG_SHELL_W, PLUG_W, SM_FLAT_Z0, SM_HDR_Z0, SM_PCB_T, USB_FLAT_Z0, USB_H, USB_HDR_Z0, USB_RECESS_H,
     ANT_HOLE_Z0, USB_RECESS_DEPTH, USB_RECESS_W, USB_RECESS_X, USB_RECESS_Z0, USB_RECESS_Z1, USB_WIN_Z0, USB_WIN_Z1,
 )
@@ -191,7 +191,7 @@ def obstacles() -> dict[str, cq.Workplane]:
         "jumper cap on JP1": box(ga.JP1_X - 1.25, ga.JP1_Y - 1.27, ga.JP1_X + 1.25, ga.JP1_Y + ga.SM_PITCH + 1.27, ga.HEADER_BODY, ga.HEADER_BODY + 6.0),
         "J4 header body and pins": box(ga.EXP_X1 - 1.27, ga.EXP_Y - 1.27, ga.EXP_X1 + 6 * ga.SM_PITCH + 1.27, ga.EXP_Y + 1.27, 0, HIGHEST),
         "J5 header body and pins": box(ga.J5_X - 1.27, ga.J5_Y - 1.27, ga.J5_X + ga.SM_PITCH + 1.27, ga.J5_Y + 1.27, 0, HIGHEST),
-        "trimmed pin stubs under the board": pins(sm_pins + sock + j4 + j5 + jp1, PIN_STUBS),
+        "trimmed pin stubs under the board": pins(sm_pins + sock + j4 + j5 + jp1, STUB_TIP_Z),
         "R1 on the back": box(ga.R1_X - 0.7, ga.R1_Y - 2.0, ga.R1_X + 0.7, ga.R1_Y + 2.0, -BOARD_T - 0.6, -BOARD_T),
         "R4 on the back": box(ga.R4_X - 0.7, ga.R4_Y - 1.6, ga.R4_X + 0.7, ga.R4_Y + 1.6, -BOARD_T - 0.6, -BOARD_T),
         "SuperMini PCB on its headers": box(-0.5, 5.6, 22.0, 23.6, SM_HDR_Z0, SM_HDR_Z0 + SM_PCB_T),

@@ -69,7 +69,7 @@ PITCH = 2.54
 HDR_BODY, PIN_SHORT, PIN_LONG, PIN_SQ = 2.5, 3.0, 6.0, 0.64
 # On the adapter every through-hole pin is trimmed under the board to this
 # much of stub and solder (the printed case counts on it: scripts/case_dims.py
-# PIN_STUBS).  The full-board models, which plug into the adapter, and the
+# PIN_STUB).  The full-board models, which plug into the adapter, and the
 # adapter's own headers are drawn trimmed; the "-components" models of the
 # reference boards keep the pins as the products come.
 ADAPTER_T, PIN_STUB = 1.6, 1.0
