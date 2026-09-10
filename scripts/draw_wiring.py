@@ -36,17 +36,31 @@ into the header from above; the power-column wires come down the
 SuperMini's left side.  GND and 3V3 enter the header's first column from the
 left at pin height; GPIO4 (MOSI) runs along the back of the radio board just
 below the header and up into its pin; GPIO3 (SCK) and GPIO1 (CSN/NSS) take
-lanes above the header and drop in.
+lanes above the header and drop in.  The strap and the Ra-02's DIO2 wire
+keep out of all that: the strap crosses the SuperMini's own face, clear of
+the USB-C, and DIO2 comes down in the open beside the radio board.
 
 The lane order was chosen by exhaustive search over which channel each wire
 takes (above or below the header, or at pin height) and the order of the
-lanes, counting every crossing between wire segments.  The remaining
-crossings are forced: GND and 3V3 must swap once (G is above 3V3 on the
-SuperMini but GND is the outer header row), and the wires bound for the
-header's second and third columns from the SuperMini's left side have to
-cross the GDO0/RST wire, which drops into the second column from the gap.
-The Ra-02's DIO2 wire drops between the first two header columns to reach
-its pad below the header.
+lanes, counting every crossing between wire segments.  Five are left on the
+CC1101 diagrams and each one is forced: GND, 3V3 and MOSI swap over on the
+way in (G is above 3V3 on the SuperMini but GND is the outer header row,
+and MOSI arrives from below the header), SCK crosses GDO0/RST's drop out of
+the gap, and SCK and CSN/NSS swap on the SuperMini's left side.  The Ra-02's
+DIO2 wire adds five more, and they are forced too: its pad is on the far
+side of every wire that comes in from the left, so any route to it crosses
+them.  Threading it between the header's pin columns instead would save two,
+at the price of squeezing between two rows of pins and doubling back
+underneath them.
+
+No two wires share one 2.54 mm channel between the pin columns.  A drop
+beside a column steps half a pitch aside, which passes under the pins but
+leaves no daylight beside another wire, so where two would have met, one
+takes a wider step (GDO2/DIO0, which has spare board outside the last
+column) or the drop it would have touched is nudged 0.6 mm off its column
+(GDO0/RST, whose step is hidden under its own pin).  The closest two wires
+now run is 1.86 mm centre to centre, 0.56 mm of daylight between 1.3 mm
+wires.
 """
 
 from __future__ import annotations
@@ -169,7 +183,7 @@ def draw(radio: str) -> None:
     # Radio board lower right, back view with the header up: its GND/VCC
     # column is the one nearest the gap.
     dio2_wire = radio == "ra02"
-    sx, sy = 15.0, 15.5 if dio2_wire else 12.5  # room above for the strap looping over the SuperMini
+    sx, sy = 15.0, 14.5 if dio2_wire else 12.5  # room above for the strap's note
     sm_bot = sy + smv.h
     # Lanes.  Gap (vertical, innermost first): DIO2, GDO0/RST, MISO, GDO2/DIO0.
     # Above the header (highest first): GDO2/DIO0, MISO, GDO0/RST, SCK, DIO2, CSN/NSS.
@@ -210,26 +224,32 @@ def draw(radio: str) -> None:
     half = cc.PITCH / 2 * S
     wires: list[tuple[str, list[tuple[float, float]]]] = []
 
-    def above(pin: str, n: int, side: int = 0) -> None:
+    def above(pin: str, n: int, side: int = 0, off: float = 0.0) -> None:
         """From the SuperMini pin along its gap or left lane, along its lane
         above the header, and down into socket position n: straight into an
         outer-row pin, or beside the column (side = +1 right, -1 left) and
-        across into an inner-row pin."""
+        across into an inner-row pin.  The step aside is half a pitch, which
+        lands midway between two pin columns; `off` overrides it where the
+        drop is outside the outermost column and there is board to spare."""
         (smx, smy), (hx, hy) = sp(pin), hp(n)
         vx = (gap_x[pin] if pin in gap_x else left_x[pin]) * S
         ly = lane_y[pin] * S
+        step = (off * S) if off else half
         pts = [(smx, smy), (vx, smy), (vx, ly)]
         if side:
-            pts += [(hx + side * half, ly), (hx + side * half, hy), (hx, hy)]
+            pts += [(hx + side * step, ly), (hx + side * step, hy), (hx, hy)]
         else:
             pts += [(hx, ly), (hx, hy)]
         wires.append((WIRES[pin][1], pts))
 
-    above("6", 8, +1)  # GDO2/DIO0: outer gap lane, top lane, round the right of column D
+    above("6", 8, +1, 2.0)  # GDO2/DIO0: outer gap lane, top lane, round the right of column D,
+    #                        clear of MISO's drop into the outer pin of the same column
     above("7", 7)  # MISO
-    above("10", 3)  # GDO0/RST
+    above("10", 3, +1, 0.6)  # GDO0/RST: a whisker off the column, so that it sits midway
+    #                          between CSN/NSS's drop and SCK's; the step is hidden under its pin
     above("3", 5)  # SCK, from the left
-    above("1", 4, +1)  # CSN/NSS, from the left, round the right of column B
+    above("1", 4, -1)  # CSN/NSS, from the left, down the near side of column B: the far
+    #                    side would cross GDO0/RST's drop into the outer pin of that column
     # GND and 3V3: straight into the first column from the left, at pin height.
     for n in (1, 2):
         pin = POS_PIN[n]
@@ -244,15 +264,19 @@ def draw(radio: str) -> None:
     (smx, smy) = sp("5")
     if dio2_wire:
         gx, gy = sp("0")
-        over = (sy - 5.2) * S
-        wires.append((WIRES["5"][1], [(smx, smy), (smx, over), (gx + 4.3 * S, over), (gx + 4.3 * S, gy), (gx, gy)]))
+        down = smx - 2.6 * S  # clear of the USB-C's outline and of the board's name
+        wires.append((WIRES["5"][1], [(smx, smy), (down, smy), (down, gy), (gx, gy)]))
     else:
         wires.append((WIRES["5"][1], [(smx, smy), (gap_x["10"] * S, smy), (gap_x["10"] * S, smy - 3.5 * S)]))
     # DIO2 -> GPIO20: innermost gap lane, its lane above the header, then down
-    # between the first two header columns to the pad's height and across.
+    # just clear of the board's edge and in to the pad, which sits left of the
+    # first header column, below the board's edge-most wires.
+    # It crosses the three wires that come in from the left below it (GND,
+    # 3V3 and MOSI); every route to a pad on that edge does, and crossing
+    # them square beats threading between the pin columns and hooking back.
     if dio2_wire:
         (smx, smy), (dx, dy) = sp("20"), px(*dio2, bx, by)
-        vx, ly, drop = gap_x["20"] * S, lane_y["20"] * S, hp(1)[0] + half
+        vx, ly, drop = gap_x["20"] * S, lane_y["20"] * S, (bx - 1.5) * S
         wires.append((WIRES["20"][1], [(smx, smy), (vx, smy), (vx, ly), (drop, ly), (drop, dy), (dx, dy)]))
     for fill, pts in wires:
         d = rounded_path(pts, 1.6 * S)
