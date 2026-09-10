@@ -137,8 +137,8 @@ with the measured solids.
 | # | Measurement | Expected | Tolerance |
 | --- | --- | --- | --- |
 | 1 | Each half outside, width x length (calipers across the outside faces) | 36.20 x 66.70 | ±0.20 |
-| 2 | Closed case height, outside bottom face (A) to the outside top face | 16.20 | ±0.10 |
-| 3 | Bottom half: A to the wall's top (the rim, on the seam), beside a tab; tab tips above A | 7.90; 12.90 | ±0.10 |
+| 2 | Closed case height, outside bottom face (A) to the outside top face | 16.70 | ±0.10 |
+| 3 | Bottom half: A to the wall's top (the rim, on the seam), beside a tab; tab tips above A | 8.40; 13.40 | ±0.10 |
 | 4 | Top half: outside top face to the skirt's edge (on the seam); boss faces standing past the skirt's edge (straight edge across the skirt) | 8.30; 3.10 | ±0.10 |
 | 5 | Vertical corner radius (radius gauge), each half | R2.00 | ±0.20 |
 | 6 | Bottom half: long wall, back (J4 end) wall and antenna wall thickness at the rim, below the lip | 2.20; 2.20; 2.50 | ±0.20 |
@@ -147,13 +147,13 @@ with the measured solids.
 | 9 | Bottom half: lip gaps, in the antenna wall (centred on the antenna axis) and in the USB-C wall (across the plug recess) | 8.40; 13.00 | ±0.20 |
 | 10 | Bottom half: tab width; tab height above the rim; tab thickness through the bump; pitch of the two tabs | 8.00; 5.00; 1.15; 18.00 | ±0.10 |
 | 11 | Bottom half: first tab's centre from the J4-end outside face (C); bump centre above the rim | 34.70; 4.30 | ±0.20 |
-| 12 | Bottom half, depth rod with its base across both lips at y = 44 (section D-D, no tab there), the lips 1.50 above the rim: floor; standoff top; peg tip (H1, H2, H4); peg tip H3 | 7.40; 6.40; 4.40; 4.80 | ±0.10 |
+| 12 | Bottom half, depth rod with its base across both lips at y = 44 (section D-D, no tab there), the lips 1.50 above the rim: floor; standoff top; peg tip (H1, H2, H4); peg tip H3 | 7.90; 6.40; 4.40; 4.80 | ±0.10 |
 | 13 | Bottom half: floor thickness (bottom half height less the floor depth from the rim) | 2.00 | ±0.10 |
-| 14 | Bottom half: standoff diameter; standoff height, floor to the PCB's underside (the trimmed pin stubs' room); standoff pitch, across x along | 4.00; 1.00; 24.20 x 33.20 | ±0.20 |
+| 14 | Bottom half: standoff diameter; standoff height, floor to the PCB's underside (the trimmed pin stubs' room); standoff pitch, across x along | 4.00; 1.50; 24.20 x 33.20 | ±0.20 |
 | 15 | Bottom half: H1 standoff centre from the USB-C wall's outside face (B) and from the J4-end face (C) | 6.90; 5.10 | ±0.20 |
 | 16 | Bottom half: peg diameter below the chamfer; peg above the standoff (H1, H2, H4); H3 | 2.15; 2.00; 1.60 | ±0.10 |
 | 17 | Bottom half: USB-C window width; its sill below the rim; window centre from C | 10.00; 2.60; 17.30 | ±0.20 |
-| 18 | Both halves: plug recess width; recess depth into the wall; wall left under it; recess bottom above A (bottom half) and top above A (top half) | 13.00; 1.00; 1.20; 3.45; 13.45 | ±0.20 |
+| 18 | Both halves: plug recess width; recess depth into the wall; wall left under it; recess bottom above A (bottom half) and top above A (top half) | 13.00; 1.00; 1.20; 3.95; 13.95 | ±0.20 |
 | 19 | Bottom half: antenna half-hole width at the rim; its depth below the rim; centre from B; E07 pocket width; pocket depth into the wall; pocket floor below the rim | 6.60; 3.30; 17.17; 7.40; 0.60; 3.70 | ±0.20 |
 | 20 | Top half: skirt thickness at its edge; between the skirt's inner faces | 1.25; 33.70 | ±0.10 |
 | 21 | Top half: rebate height above the skirt's edge. No depth rod fits the 0.95 rebate: a strip of 0.80 card cut to this height should just enter it, or take it from the tab height plus the clearance over the tab | 5.30 (0.30 over the tab) | ±0.10 |

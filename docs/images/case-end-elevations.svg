@@ -1,28 +1,28 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="210mm" height="269.8mm" viewBox="0 0 210 269.8">
-<rect width="210" height="269.8" fill="#ffffff"/>
+<svg xmlns="http://www.w3.org/2000/svg" width="210mm" height="270.8mm" viewBox="0 0 210 270.8">
+<rect width="210" height="270.8" fill="#ffffff"/>
 <text x="4.00" y="8.00" font-size="3.40" font-family="Helvetica, Arial, sans-serif" font-weight="bold" fill="#1a1a2e" text-anchor="start" dy="0.35em">Sheet 4: USB-C WALL from outside (viewed from -x), case closed: the J4 end on the left, the antenna end on the right, 2:1</text>
 <text x="4.00" y="13.50" font-size="2.10" font-family="Helvetica, Arial, sans-serif" font-weight="normal" fill="#1a1a2e" text-anchor="start" dy="0.35em">Outside faces only; hidden detail (tabs, lip, rebate, bosses) is omitted, see sheets 1, 2 and 5. The seam is drawn as an assembly edge.</text>
-<rect x="30.00" y="51.80" width="133.40" height="32.40" rx="0.00" fill="none" stroke="#1a1a2e" stroke-width="0.35"/>
+<rect x="30.00" y="51.80" width="133.40" height="33.40" rx="0.00" fill="none" stroke="#1a1a2e" stroke-width="0.35"/>
 <line x1="30.00" y1="68.40" x2="54.60" y2="68.40" stroke="#1a1a2e" stroke-width="0.18" stroke-linecap="butt"/>
 <line x1="74.60" y1="68.40" x2="163.40" y2="68.40" stroke="#1a1a2e" stroke-width="0.18" stroke-linecap="butt"/>
 <rect x="54.60" y="61.00" width="20.00" height="12.60" rx="0.00" fill="none" stroke="#1a1a2e" stroke-width="0.35"/>
 <rect x="51.60" y="57.30" width="26.00" height="20.00" rx="0.00" fill="none" stroke="#1a1a2e" stroke-width="0.35"/>
 <line x1="64.60" y1="83.30" x2="64.60" y2="51.30" stroke="#555566" stroke-width="0.18" stroke-linecap="butt" stroke-dasharray="5 0.9 0.9 0.9"/>
 <text x="161.40" y="66.80" font-size="1.90" font-family="Helvetica, Arial, sans-serif" font-weight="normal" fill="#1a1a2e" text-anchor="end" dy="0.35em" stroke="#ffffff" stroke-width="0.53" paint-order="stroke" stroke-linejoin="round">seam</text>
-<text x="32.00" y="87.20" font-size="1.90" font-family="Helvetica, Arial, sans-serif" font-weight="normal" fill="#1a1a2e" text-anchor="start" dy="0.35em" stroke="#ffffff" stroke-width="0.53" paint-order="stroke" stroke-linejoin="round">J4 end (C)</text>
-<text x="161.40" y="87.20" font-size="1.90" font-family="Helvetica, Arial, sans-serif" font-weight="normal" fill="#1a1a2e" text-anchor="end" dy="0.35em" stroke="#ffffff" stroke-width="0.53" paint-order="stroke" stroke-linejoin="round">antenna end</text>
+<text x="32.00" y="88.20" font-size="1.90" font-family="Helvetica, Arial, sans-serif" font-weight="normal" fill="#1a1a2e" text-anchor="start" dy="0.35em" stroke="#ffffff" stroke-width="0.53" paint-order="stroke" stroke-linejoin="round">J4 end (C)</text>
+<text x="161.40" y="88.20" font-size="1.90" font-family="Helvetica, Arial, sans-serif" font-weight="normal" fill="#1a1a2e" text-anchor="end" dy="0.35em" stroke="#ffffff" stroke-width="0.53" paint-order="stroke" stroke-linejoin="round">antenna end</text>
 <text x="64.60" y="67.30" font-size="1.90" font-family="Helvetica, Arial, sans-serif" font-weight="normal" fill="#1a1a2e" text-anchor="middle" dy="0.35em" stroke="#ffffff" stroke-width="0.53" paint-order="stroke" stroke-linejoin="round">window</text>
 <text x="64.60" y="59.30" font-size="1.90" font-family="Helvetica, Arial, sans-serif" font-weight="normal" fill="#1a1a2e" text-anchor="middle" dy="0.35em" stroke="#ffffff" stroke-width="0.53" paint-order="stroke" stroke-linejoin="round">plug recess</text>
-<line x1="30.00" y1="85.00" x2="30.00" y2="97.40" stroke="#1f4e9c" stroke-width="0.18" stroke-linecap="butt"/>
-<line x1="163.40" y1="85.00" x2="163.40" y2="97.40" stroke="#1f4e9c" stroke-width="0.18" stroke-linecap="butt"/>
-<line x1="30.00" y1="96.20" x2="163.40" y2="96.20" stroke="#1f4e9c" stroke-width="0.18" stroke-linecap="butt"/>
-<polygon points="30.00,96.20 32.00,95.85 32.00,96.55" fill="#1f4e9c"/>
-<polygon points="163.40,96.20 161.40,96.55 161.40,95.85" fill="#1f4e9c"/>
-<text x="96.70" y="95.00" font-size="2.60" font-family="Helvetica, Arial, sans-serif" font-weight="normal" fill="#1f4e9c" text-anchor="middle" dy="0.35em" stroke="#ffffff" stroke-width="0.73" paint-order="stroke" stroke-linejoin="round"><tspan data-dim="out_y">66.70</tspan></text>
-<polygon points="105.40,84.20 104.40,85.60 106.40,85.60" fill="#1a1a2e"/>
-<line x1="105.40" y1="85.60" x2="105.40" y2="87.60" stroke="#1a1a2e" stroke-width="0.25" stroke-linecap="butt"/>
-<rect x="103.60" y="87.60" width="3.60" height="3.60" rx="0.00" fill="#ffffff" stroke="#1a1a2e" stroke-width="0.30"/>
-<text x="105.40" y="89.40" font-size="2.60" font-family="Helvetica, Arial, sans-serif" font-weight="bold" fill="#1a1a2e" text-anchor="middle" dy="0.35em">A</text>
+<line x1="30.00" y1="86.00" x2="30.00" y2="98.40" stroke="#1f4e9c" stroke-width="0.18" stroke-linecap="butt"/>
+<line x1="163.40" y1="86.00" x2="163.40" y2="98.40" stroke="#1f4e9c" stroke-width="0.18" stroke-linecap="butt"/>
+<line x1="30.00" y1="97.20" x2="163.40" y2="97.20" stroke="#1f4e9c" stroke-width="0.18" stroke-linecap="butt"/>
+<polygon points="30.00,97.20 32.00,96.85 32.00,97.55" fill="#1f4e9c"/>
+<polygon points="163.40,97.20 161.40,97.55 161.40,96.85" fill="#1f4e9c"/>
+<text x="96.70" y="96.00" font-size="2.60" font-family="Helvetica, Arial, sans-serif" font-weight="normal" fill="#1f4e9c" text-anchor="middle" dy="0.35em" stroke="#ffffff" stroke-width="0.73" paint-order="stroke" stroke-linejoin="round"><tspan data-dim="out_y">66.70</tspan></text>
+<polygon points="105.40,85.20 104.40,86.60 106.40,86.60" fill="#1a1a2e"/>
+<line x1="105.40" y1="86.60" x2="105.40" y2="88.60" stroke="#1a1a2e" stroke-width="0.25" stroke-linecap="butt"/>
+<rect x="103.60" y="88.60" width="3.60" height="3.60" rx="0.00" fill="#ffffff" stroke="#1a1a2e" stroke-width="0.30"/>
+<text x="105.40" y="90.40" font-size="2.60" font-family="Helvetica, Arial, sans-serif" font-weight="bold" fill="#1a1a2e" text-anchor="middle" dy="0.35em">A</text>
 <line x1="54.60" y1="60.20" x2="54.60" y2="41.60" stroke="#1f4e9c" stroke-width="0.18" stroke-linecap="butt"/>
 <line x1="74.60" y1="60.20" x2="74.60" y2="41.60" stroke="#1f4e9c" stroke-width="0.18" stroke-linecap="butt"/>
 <line x1="54.60" y1="42.80" x2="74.60" y2="42.80" stroke="#1f4e9c" stroke-width="0.18" stroke-linecap="butt"/>
@@ -43,20 +43,20 @@
 <line x1="25.50" y1="24.80" x2="30.00" y2="24.80" stroke="#1f4e9c" stroke-width="0.18" stroke-linecap="butt"/>
 <line x1="64.60" y1="24.80" x2="69.10" y2="24.80" stroke="#1f4e9c" stroke-width="0.18" stroke-linecap="butt"/>
 <text x="67.60" y="23.60" font-size="2.60" font-family="Helvetica, Arial, sans-serif" font-weight="normal" fill="#1f4e9c" text-anchor="start" dy="0.35em" stroke="#ffffff" stroke-width="0.73" paint-order="stroke" stroke-linejoin="round"><tspan data-dim="window_from_back_face">17.30</tspan> window and recess centre</text>
-<line x1="164.20" y1="84.20" x2="173.60" y2="84.20" stroke="#1f4e9c" stroke-width="0.18" stroke-linecap="butt"/>
+<line x1="164.20" y1="85.20" x2="173.60" y2="85.20" stroke="#1f4e9c" stroke-width="0.18" stroke-linecap="butt"/>
 <line x1="164.20" y1="68.40" x2="173.60" y2="68.40" stroke="#1f4e9c" stroke-width="0.18" stroke-linecap="butt"/>
-<line x1="172.40" y1="68.40" x2="172.40" y2="84.20" stroke="#1f4e9c" stroke-width="0.18" stroke-linecap="butt"/>
+<line x1="172.40" y1="68.40" x2="172.40" y2="85.20" stroke="#1f4e9c" stroke-width="0.18" stroke-linecap="butt"/>
 <polygon points="172.40,68.40 172.75,70.40 172.05,70.40" fill="#1f4e9c"/>
-<polygon points="172.40,84.20 172.05,82.20 172.75,82.20" fill="#1f4e9c"/>
-<text x="171.20" y="76.30" font-size="2.60" font-family="Helvetica, Arial, sans-serif" font-weight="normal" fill="#1f4e9c" text-anchor="middle" dy="0.35em" transform="rotate(-90 171.20 76.30)" stroke="#ffffff" stroke-width="0.73" paint-order="stroke" stroke-linejoin="round"><tspan data-dim="bottom_h">7.90</tspan></text>
-<line x1="164.20" y1="84.20" x2="182.60" y2="84.20" stroke="#1f4e9c" stroke-width="0.18" stroke-linecap="butt"/>
+<polygon points="172.40,85.20 172.05,83.20 172.75,83.20" fill="#1f4e9c"/>
+<text x="171.20" y="76.80" font-size="2.60" font-family="Helvetica, Arial, sans-serif" font-weight="normal" fill="#1f4e9c" text-anchor="middle" dy="0.35em" transform="rotate(-90 171.20 76.80)" stroke="#ffffff" stroke-width="0.73" paint-order="stroke" stroke-linejoin="round"><tspan data-dim="bottom_h">8.40</tspan></text>
+<line x1="164.20" y1="85.20" x2="182.60" y2="85.20" stroke="#1f4e9c" stroke-width="0.18" stroke-linecap="butt"/>
 <line x1="75.40" y1="73.60" x2="182.60" y2="73.60" stroke="#1f4e9c" stroke-width="0.18" stroke-linecap="butt"/>
-<line x1="181.40" y1="73.60" x2="181.40" y2="84.20" stroke="#1f4e9c" stroke-width="0.18" stroke-linecap="butt"/>
+<line x1="181.40" y1="73.60" x2="181.40" y2="85.20" stroke="#1f4e9c" stroke-width="0.18" stroke-linecap="butt"/>
 <polygon points="181.40,73.60 181.05,71.60 181.75,71.60" fill="#1f4e9c"/>
-<polygon points="181.40,84.20 181.75,86.20 181.05,86.20" fill="#1f4e9c"/>
+<polygon points="181.40,85.20 181.75,87.20 181.05,87.20" fill="#1f4e9c"/>
 <line x1="181.40" y1="69.10" x2="181.40" y2="73.60" stroke="#1f4e9c" stroke-width="0.18" stroke-linecap="butt"/>
-<line x1="181.40" y1="84.20" x2="181.40" y2="88.70" stroke="#1f4e9c" stroke-width="0.18" stroke-linecap="butt"/>
-<text x="180.20" y="87.20" font-size="2.60" font-family="Helvetica, Arial, sans-serif" font-weight="normal" fill="#1f4e9c" text-anchor="end" dy="0.35em" transform="rotate(-90 180.20 87.20)" stroke="#ffffff" stroke-width="0.73" paint-order="stroke" stroke-linejoin="round"><tspan data-dim="window_sill_from_bottom">5.30</tspan> sill</text>
+<line x1="181.40" y1="85.20" x2="181.40" y2="89.70" stroke="#1f4e9c" stroke-width="0.18" stroke-linecap="butt"/>
+<text x="180.20" y="88.20" font-size="2.60" font-family="Helvetica, Arial, sans-serif" font-weight="normal" fill="#1f4e9c" text-anchor="end" dy="0.35em" transform="rotate(-90 180.20 88.20)" stroke="#ffffff" stroke-width="0.73" paint-order="stroke" stroke-linejoin="round"><tspan data-dim="window_sill_from_bottom">5.80</tspan> sill</text>
 <line x1="75.40" y1="73.60" x2="182.60" y2="73.60" stroke="#1f4e9c" stroke-width="0.18" stroke-linecap="butt"/>
 <line x1="75.40" y1="61.00" x2="182.60" y2="61.00" stroke="#1f4e9c" stroke-width="0.18" stroke-linecap="butt"/>
 <line x1="181.40" y1="61.00" x2="181.40" y2="73.60" stroke="#1f4e9c" stroke-width="0.18" stroke-linecap="butt"/>
@@ -71,20 +71,20 @@
 <line x1="181.40" y1="47.30" x2="181.40" y2="51.80" stroke="#1f4e9c" stroke-width="0.18" stroke-linecap="butt"/>
 <line x1="181.40" y1="61.00" x2="181.40" y2="65.50" stroke="#1f4e9c" stroke-width="0.18" stroke-linecap="butt"/>
 <text x="180.20" y="48.80" font-size="2.60" font-family="Helvetica, Arial, sans-serif" font-weight="normal" fill="#1f4e9c" text-anchor="start" dy="0.35em" transform="rotate(-90 180.20 48.80)" stroke="#ffffff" stroke-width="0.73" paint-order="stroke" stroke-linejoin="round"><tspan data-dim="wall_above_window">4.60</tspan></text>
-<line x1="164.20" y1="84.20" x2="191.60" y2="84.20" stroke="#1f4e9c" stroke-width="0.18" stroke-linecap="butt"/>
+<line x1="164.20" y1="85.20" x2="191.60" y2="85.20" stroke="#1f4e9c" stroke-width="0.18" stroke-linecap="butt"/>
 <line x1="164.20" y1="51.80" x2="191.60" y2="51.80" stroke="#1f4e9c" stroke-width="0.18" stroke-linecap="butt"/>
-<line x1="190.40" y1="51.80" x2="190.40" y2="84.20" stroke="#1f4e9c" stroke-width="0.18" stroke-linecap="butt"/>
+<line x1="190.40" y1="51.80" x2="190.40" y2="85.20" stroke="#1f4e9c" stroke-width="0.18" stroke-linecap="butt"/>
 <polygon points="190.40,51.80 190.75,53.80 190.05,53.80" fill="#1f4e9c"/>
-<polygon points="190.40,84.20 190.05,82.20 190.75,82.20" fill="#1f4e9c"/>
-<text x="189.20" y="68.00" font-size="2.60" font-family="Helvetica, Arial, sans-serif" font-weight="normal" fill="#1f4e9c" text-anchor="middle" dy="0.35em" transform="rotate(-90 189.20 68.00)" stroke="#ffffff" stroke-width="0.73" paint-order="stroke" stroke-linejoin="round"><tspan data-dim="overall_h">16.20</tspan></text>
-<line x1="29.20" y1="84.20" x2="19.80" y2="84.20" stroke="#1f4e9c" stroke-width="0.18" stroke-linecap="butt"/>
+<polygon points="190.40,85.20 190.05,83.20 190.75,83.20" fill="#1f4e9c"/>
+<text x="189.20" y="68.50" font-size="2.60" font-family="Helvetica, Arial, sans-serif" font-weight="normal" fill="#1f4e9c" text-anchor="middle" dy="0.35em" transform="rotate(-90 189.20 68.50)" stroke="#ffffff" stroke-width="0.73" paint-order="stroke" stroke-linejoin="round"><tspan data-dim="overall_h">16.70</tspan></text>
+<line x1="29.20" y1="85.20" x2="19.80" y2="85.20" stroke="#1f4e9c" stroke-width="0.18" stroke-linecap="butt"/>
 <line x1="50.80" y1="77.30" x2="19.80" y2="77.30" stroke="#1f4e9c" stroke-width="0.18" stroke-linecap="butt"/>
-<line x1="21.00" y1="77.30" x2="21.00" y2="84.20" stroke="#1f4e9c" stroke-width="0.18" stroke-linecap="butt"/>
+<line x1="21.00" y1="77.30" x2="21.00" y2="85.20" stroke="#1f4e9c" stroke-width="0.18" stroke-linecap="butt"/>
 <polygon points="21.00,77.30 20.65,75.30 21.35,75.30" fill="#1f4e9c"/>
-<polygon points="21.00,84.20 21.35,86.20 20.65,86.20" fill="#1f4e9c"/>
+<polygon points="21.00,85.20 21.35,87.20 20.65,87.20" fill="#1f4e9c"/>
 <line x1="21.00" y1="72.80" x2="21.00" y2="77.30" stroke="#1f4e9c" stroke-width="0.18" stroke-linecap="butt"/>
-<line x1="21.00" y1="84.20" x2="21.00" y2="88.70" stroke="#1f4e9c" stroke-width="0.18" stroke-linecap="butt"/>
-<text x="19.80" y="87.20" font-size="2.60" font-family="Helvetica, Arial, sans-serif" font-weight="normal" fill="#1f4e9c" text-anchor="end" dy="0.35em" transform="rotate(-90 19.80 87.20)" stroke="#ffffff" stroke-width="0.73" paint-order="stroke" stroke-linejoin="round"><tspan data-dim="recess_from_bottom">3.45</tspan></text>
+<line x1="21.00" y1="85.20" x2="21.00" y2="89.70" stroke="#1f4e9c" stroke-width="0.18" stroke-linecap="butt"/>
+<text x="19.80" y="88.20" font-size="2.60" font-family="Helvetica, Arial, sans-serif" font-weight="normal" fill="#1f4e9c" text-anchor="end" dy="0.35em" transform="rotate(-90 19.80 88.20)" stroke="#ffffff" stroke-width="0.73" paint-order="stroke" stroke-linejoin="round"><tspan data-dim="recess_from_bottom">3.95</tspan></text>
 <line x1="50.80" y1="77.30" x2="19.80" y2="77.30" stroke="#1f4e9c" stroke-width="0.18" stroke-linecap="butt"/>
 <line x1="50.80" y1="57.30" x2="19.80" y2="57.30" stroke="#1f4e9c" stroke-width="0.18" stroke-linecap="butt"/>
 <line x1="21.00" y1="57.30" x2="21.00" y2="77.30" stroke="#1f4e9c" stroke-width="0.18" stroke-linecap="butt"/>
@@ -98,29 +98,29 @@
 <line x1="56.60" y1="71.60" x2="66.60" y2="111.60" stroke="#1f4e9c" stroke-width="0.18" stroke-linecap="butt"/>
 <polygon points="56.60,71.60 57.42,73.46 56.75,73.63" fill="#1f4e9c"/>
 <line x1="66.60" y1="111.60" x2="69.60" y2="111.60" stroke="#1f4e9c" stroke-width="0.18" stroke-linecap="butt"/>
-<text x="70.40" y="111.60" font-size="2.00" font-family="Helvetica, Arial, sans-serif" font-weight="normal" fill="#1f4e9c" text-anchor="start" dy="0.35em" stroke="#ffffff" stroke-width="0.56" paint-order="stroke" stroke-linejoin="round">window <tspan data-dim="window_w">10.00</tspan> x <tspan data-dim="window_h">6.30</tspan>: sill <tspan data-dim="window_below_seam">2.60</tspan> below the seam (bottom half), <tspan data-dim="window_sill_from_bottom">5.30</tspan> from A;</text>
-<text x="70.40" y="114.10" font-size="2.00" font-family="Helvetica, Arial, sans-serif" font-weight="normal" fill="#1f4e9c" text-anchor="start" dy="0.35em" stroke="#ffffff" stroke-width="0.56" paint-order="stroke" stroke-linejoin="round">head <tspan data-dim="window_above_seam">3.70</tspan> above the seam (top half), <tspan data-dim="window_head_from_bottom">11.60</tspan> from A. Plug recess <tspan data-dim="recess_w">13.00</tspan> x <tspan data-dim="recess_h">10.00</tspan>,</text>
-<text x="70.40" y="116.60" font-size="2.00" font-family="Helvetica, Arial, sans-serif" font-weight="normal" fill="#1f4e9c" text-anchor="start" dy="0.35em" stroke="#ffffff" stroke-width="0.56" paint-order="stroke" stroke-linejoin="round">bottom <tspan data-dim="recess_from_bottom">3.45</tspan> from A, <tspan data-dim="recess_depth">1.00</tspan> deep, <tspan data-dim="wall_under_recess">1.20</tspan> of wall left under it (sheets 1 and 2)</text>
+<text x="70.40" y="111.60" font-size="2.00" font-family="Helvetica, Arial, sans-serif" font-weight="normal" fill="#1f4e9c" text-anchor="start" dy="0.35em" stroke="#ffffff" stroke-width="0.56" paint-order="stroke" stroke-linejoin="round">window <tspan data-dim="window_w">10.00</tspan> x <tspan data-dim="window_h">6.30</tspan>: sill <tspan data-dim="window_below_seam">2.60</tspan> below the seam (bottom half), <tspan data-dim="window_sill_from_bottom">5.80</tspan> from A;</text>
+<text x="70.40" y="114.10" font-size="2.00" font-family="Helvetica, Arial, sans-serif" font-weight="normal" fill="#1f4e9c" text-anchor="start" dy="0.35em" stroke="#ffffff" stroke-width="0.56" paint-order="stroke" stroke-linejoin="round">head <tspan data-dim="window_above_seam">3.70</tspan> above the seam (top half), <tspan data-dim="window_head_from_bottom">12.10</tspan> from A. Plug recess <tspan data-dim="recess_w">13.00</tspan> x <tspan data-dim="recess_h">10.00</tspan>,</text>
+<text x="70.40" y="116.60" font-size="2.00" font-family="Helvetica, Arial, sans-serif" font-weight="normal" fill="#1f4e9c" text-anchor="start" dy="0.35em" stroke="#ffffff" stroke-width="0.56" paint-order="stroke" stroke-linejoin="round">bottom <tspan data-dim="recess_from_bottom">3.95</tspan> from A, <tspan data-dim="recess_depth">1.00</tspan> deep, <tspan data-dim="wall_under_recess">1.20</tspan> of wall left under it (sheets 1 and 2)</text>
 <text x="4.00" y="122.00" font-size="3.40" font-family="Helvetica, Arial, sans-serif" font-weight="bold" fill="#1a1a2e" text-anchor="start" dy="0.35em">ANTENNA WALL from outside (viewed from +y), case closed: the USB-C wall on the left, the plain wall on the right, 2:1</text>
-<rect x="39.00" y="142.80" width="72.40" height="32.40" rx="0.00" fill="none" stroke="#1a1a2e" stroke-width="0.35"/>
+<rect x="39.00" y="142.80" width="72.40" height="33.40" rx="0.00" fill="none" stroke="#1a1a2e" stroke-width="0.35"/>
 <line x1="39.00" y1="159.40" x2="66.74" y2="159.40" stroke="#1a1a2e" stroke-width="0.18" stroke-linecap="butt"/>
 <line x1="79.94" y1="159.40" x2="111.40" y2="159.40" stroke="#1a1a2e" stroke-width="0.18" stroke-linecap="butt"/>
 <circle cx="73.34" cy="159.40" r="6.60" fill="none" stroke="#1a1a2e" stroke-width="0.35"/>
 <line x1="63.74" y1="159.40" x2="82.94" y2="159.40" stroke="#555566" stroke-width="0.18" stroke-linecap="butt" stroke-dasharray="5 0.9 0.9 0.9"/>
 <line x1="73.34" y1="149.80" x2="73.34" y2="169.00" stroke="#555566" stroke-width="0.18" stroke-linecap="butt" stroke-dasharray="5 0.9 0.9 0.9"/>
 <text x="109.40" y="157.80" font-size="1.90" font-family="Helvetica, Arial, sans-serif" font-weight="normal" fill="#1a1a2e" text-anchor="end" dy="0.35em" stroke="#ffffff" stroke-width="0.53" paint-order="stroke" stroke-linejoin="round">seam</text>
-<text x="38.00" y="178.20" font-size="1.90" font-family="Helvetica, Arial, sans-serif" font-weight="normal" fill="#1a1a2e" text-anchor="end" dy="0.35em" stroke="#ffffff" stroke-width="0.53" paint-order="stroke" stroke-linejoin="round">USB-C wall (B)</text>
-<text x="112.40" y="178.20" font-size="1.90" font-family="Helvetica, Arial, sans-serif" font-weight="normal" fill="#1a1a2e" text-anchor="start" dy="0.35em" stroke="#ffffff" stroke-width="0.53" paint-order="stroke" stroke-linejoin="round">plain wall</text>
-<line x1="39.00" y1="176.00" x2="39.00" y2="188.40" stroke="#1f4e9c" stroke-width="0.18" stroke-linecap="butt"/>
-<line x1="111.40" y1="176.00" x2="111.40" y2="188.40" stroke="#1f4e9c" stroke-width="0.18" stroke-linecap="butt"/>
-<line x1="39.00" y1="187.20" x2="111.40" y2="187.20" stroke="#1f4e9c" stroke-width="0.18" stroke-linecap="butt"/>
-<polygon points="39.00,187.20 41.00,186.85 41.00,187.55" fill="#1f4e9c"/>
-<polygon points="111.40,187.20 109.40,187.55 109.40,186.85" fill="#1f4e9c"/>
-<text x="75.20" y="186.00" font-size="2.60" font-family="Helvetica, Arial, sans-serif" font-weight="normal" fill="#1f4e9c" text-anchor="middle" dy="0.35em" stroke="#ffffff" stroke-width="0.73" paint-order="stroke" stroke-linejoin="round"><tspan data-dim="out_x">36.20</tspan></text>
-<polygon points="92.00,175.20 91.00,176.60 93.00,176.60" fill="#1a1a2e"/>
-<line x1="92.00" y1="176.60" x2="92.00" y2="178.60" stroke="#1a1a2e" stroke-width="0.25" stroke-linecap="butt"/>
-<rect x="90.20" y="178.60" width="3.60" height="3.60" rx="0.00" fill="#ffffff" stroke="#1a1a2e" stroke-width="0.30"/>
-<text x="92.00" y="180.40" font-size="2.60" font-family="Helvetica, Arial, sans-serif" font-weight="bold" fill="#1a1a2e" text-anchor="middle" dy="0.35em">A</text>
+<text x="38.00" y="179.20" font-size="1.90" font-family="Helvetica, Arial, sans-serif" font-weight="normal" fill="#1a1a2e" text-anchor="end" dy="0.35em" stroke="#ffffff" stroke-width="0.53" paint-order="stroke" stroke-linejoin="round">USB-C wall (B)</text>
+<text x="112.40" y="179.20" font-size="1.90" font-family="Helvetica, Arial, sans-serif" font-weight="normal" fill="#1a1a2e" text-anchor="start" dy="0.35em" stroke="#ffffff" stroke-width="0.53" paint-order="stroke" stroke-linejoin="round">plain wall</text>
+<line x1="39.00" y1="177.00" x2="39.00" y2="189.40" stroke="#1f4e9c" stroke-width="0.18" stroke-linecap="butt"/>
+<line x1="111.40" y1="177.00" x2="111.40" y2="189.40" stroke="#1f4e9c" stroke-width="0.18" stroke-linecap="butt"/>
+<line x1="39.00" y1="188.20" x2="111.40" y2="188.20" stroke="#1f4e9c" stroke-width="0.18" stroke-linecap="butt"/>
+<polygon points="39.00,188.20 41.00,187.85 41.00,188.55" fill="#1f4e9c"/>
+<polygon points="111.40,188.20 109.40,188.55 109.40,187.85" fill="#1f4e9c"/>
+<text x="75.20" y="187.00" font-size="2.60" font-family="Helvetica, Arial, sans-serif" font-weight="normal" fill="#1f4e9c" text-anchor="middle" dy="0.35em" stroke="#ffffff" stroke-width="0.73" paint-order="stroke" stroke-linejoin="round"><tspan data-dim="out_x">36.20</tspan></text>
+<polygon points="92.00,176.20 91.00,177.60 93.00,177.60" fill="#1a1a2e"/>
+<line x1="92.00" y1="177.60" x2="92.00" y2="179.60" stroke="#1a1a2e" stroke-width="0.25" stroke-linecap="butt"/>
+<rect x="90.20" y="179.60" width="3.60" height="3.60" rx="0.00" fill="#ffffff" stroke="#1a1a2e" stroke-width="0.30"/>
+<text x="92.00" y="181.40" font-size="2.60" font-family="Helvetica, Arial, sans-serif" font-weight="bold" fill="#1a1a2e" text-anchor="middle" dy="0.35em">A</text>
 <line x1="39.00" y1="142.00" x2="39.00" y2="132.60" stroke="#1f4e9c" stroke-width="0.18" stroke-linecap="butt"/>
 <line x1="73.34" y1="152.00" x2="73.34" y2="132.60" stroke="#1f4e9c" stroke-width="0.18" stroke-linecap="butt"/>
 <line x1="39.00" y1="133.80" x2="73.34" y2="133.80" stroke="#1f4e9c" stroke-width="0.18" stroke-linecap="butt"/>
@@ -133,18 +133,18 @@
 <polygon points="73.34,133.80 75.34,133.45 75.34,134.15" fill="#1f4e9c"/>
 <polygon points="111.40,133.80 109.40,134.15 109.40,133.45" fill="#1f4e9c"/>
 <text x="92.37" y="132.60" font-size="2.60" font-family="Helvetica, Arial, sans-serif" font-weight="normal" fill="#1f4e9c" text-anchor="middle" dy="0.35em" stroke="#ffffff" stroke-width="0.73" paint-order="stroke" stroke-linejoin="round"><tspan data-dim="hole_from_plain_face">19.03</tspan></text>
-<line x1="112.20" y1="175.20" x2="121.60" y2="175.20" stroke="#1f4e9c" stroke-width="0.18" stroke-linecap="butt"/>
+<line x1="112.20" y1="176.20" x2="121.60" y2="176.20" stroke="#1f4e9c" stroke-width="0.18" stroke-linecap="butt"/>
 <line x1="80.74" y1="159.40" x2="121.60" y2="159.40" stroke="#1f4e9c" stroke-width="0.18" stroke-linecap="butt"/>
-<line x1="120.40" y1="159.40" x2="120.40" y2="175.20" stroke="#1f4e9c" stroke-width="0.18" stroke-linecap="butt"/>
+<line x1="120.40" y1="159.40" x2="120.40" y2="176.20" stroke="#1f4e9c" stroke-width="0.18" stroke-linecap="butt"/>
 <polygon points="120.40,159.40 120.75,161.40 120.05,161.40" fill="#1f4e9c"/>
-<polygon points="120.40,175.20 120.05,173.20 120.75,173.20" fill="#1f4e9c"/>
-<text x="119.20" y="167.30" font-size="2.60" font-family="Helvetica, Arial, sans-serif" font-weight="normal" fill="#1f4e9c" text-anchor="middle" dy="0.35em" transform="rotate(-90 119.20 167.30)" stroke="#ffffff" stroke-width="0.73" paint-order="stroke" stroke-linejoin="round"><tspan data-dim="hole_z_from_bottom">7.90</tspan></text>
-<line x1="112.20" y1="175.20" x2="130.60" y2="175.20" stroke="#1f4e9c" stroke-width="0.18" stroke-linecap="butt"/>
+<polygon points="120.40,176.20 120.05,174.20 120.75,174.20" fill="#1f4e9c"/>
+<text x="119.20" y="167.80" font-size="2.60" font-family="Helvetica, Arial, sans-serif" font-weight="normal" fill="#1f4e9c" text-anchor="middle" dy="0.35em" transform="rotate(-90 119.20 167.80)" stroke="#ffffff" stroke-width="0.73" paint-order="stroke" stroke-linejoin="round"><tspan data-dim="hole_z_from_bottom">8.40</tspan></text>
+<line x1="112.20" y1="176.20" x2="130.60" y2="176.20" stroke="#1f4e9c" stroke-width="0.18" stroke-linecap="butt"/>
 <line x1="112.20" y1="142.80" x2="130.60" y2="142.80" stroke="#1f4e9c" stroke-width="0.18" stroke-linecap="butt"/>
-<line x1="129.40" y1="142.80" x2="129.40" y2="175.20" stroke="#1f4e9c" stroke-width="0.18" stroke-linecap="butt"/>
+<line x1="129.40" y1="142.80" x2="129.40" y2="176.20" stroke="#1f4e9c" stroke-width="0.18" stroke-linecap="butt"/>
 <polygon points="129.40,142.80 129.75,144.80 129.05,144.80" fill="#1f4e9c"/>
-<polygon points="129.40,175.20 129.05,173.20 129.75,173.20" fill="#1f4e9c"/>
-<text x="128.20" y="159.00" font-size="2.60" font-family="Helvetica, Arial, sans-serif" font-weight="normal" fill="#1f4e9c" text-anchor="middle" dy="0.35em" transform="rotate(-90 128.20 159.00)" stroke="#ffffff" stroke-width="0.73" paint-order="stroke" stroke-linejoin="round"><tspan data-dim="overall_h">16.20</tspan></text>
+<polygon points="129.40,176.20 129.05,174.20 129.75,174.20" fill="#1f4e9c"/>
+<text x="128.20" y="159.50" font-size="2.60" font-family="Helvetica, Arial, sans-serif" font-weight="normal" fill="#1f4e9c" text-anchor="middle" dy="0.35em" transform="rotate(-90 128.20 159.50)" stroke="#ffffff" stroke-width="0.73" paint-order="stroke" stroke-linejoin="round"><tspan data-dim="overall_h">16.70</tspan></text>
 <line x1="74.14" y1="166.00" x2="87.14" y2="166.00" stroke="#1f4e9c" stroke-width="0.18" stroke-linecap="butt"/>
 <line x1="74.14" y1="159.40" x2="87.14" y2="159.40" stroke="#1f4e9c" stroke-width="0.18" stroke-linecap="butt"/>
 <line x1="85.94" y1="159.40" x2="85.94" y2="166.00" stroke="#1f4e9c" stroke-width="0.18" stroke-linecap="butt"/>
@@ -168,41 +168,41 @@
 <line x1="68.54" y1="164.00" x2="74.54" y2="194.00" stroke="#1f4e9c" stroke-width="0.18" stroke-linecap="butt"/>
 <polygon points="68.54,164.00 69.28,165.89 68.59,166.03" fill="#1f4e9c"/>
 <line x1="74.54" y1="194.00" x2="77.54" y2="194.00" stroke="#1f4e9c" stroke-width="0.18" stroke-linecap="butt"/>
-<text x="78.34" y="194.00" font-size="2.00" font-family="Helvetica, Arial, sans-serif" font-weight="normal" fill="#1f4e9c" text-anchor="start" dy="0.35em" stroke="#ffffff" stroke-width="0.56" paint-order="stroke" stroke-linejoin="round">Ø<tspan data-dim="hole_d_z">6.60</tspan> thru, centred on the seam (<tspan data-dim="hole_z_from_bottom">7.90</tspan> from A), half in each half;</text>
+<text x="78.34" y="194.00" font-size="2.00" font-family="Helvetica, Arial, sans-serif" font-weight="normal" fill="#1f4e9c" text-anchor="start" dy="0.35em" stroke="#ffffff" stroke-width="0.56" paint-order="stroke" stroke-linejoin="round">Ø<tspan data-dim="hole_d_z">6.60</tspan> thru, centred on the seam (<tspan data-dim="hole_z_from_bottom">8.40</tspan> from A), half in each half;</text>
 <text x="78.34" y="196.50" font-size="2.00" font-family="Helvetica, Arial, sans-serif" font-weight="normal" fill="#1f4e9c" text-anchor="start" dy="0.35em" stroke="#ffffff" stroke-width="0.56" paint-order="stroke" stroke-linejoin="round">E07 pocket <tspan data-dim="pocket_w">7.40</tspan> sq inside the bottom half (sheet 1)</text>
-<rect x="1.50" y="1.50" width="207.00" height="266.80" rx="0.00" fill="none" stroke="#1a1a2e" stroke-width="0.50"/>
-<rect x="126.50" y="209.20" width="82.00" height="59.10" rx="0.00" fill="none" stroke="#1a1a2e" stroke-width="0.50"/>
-<line x1="126.50" y1="215.70" x2="208.50" y2="215.70" stroke="#1a1a2e" stroke-width="0.30" stroke-linecap="butt"/>
-<line x1="126.50" y1="221.90" x2="208.50" y2="221.90" stroke="#1a1a2e" stroke-width="0.30" stroke-linecap="butt"/>
-<line x1="126.50" y1="225.90" x2="208.50" y2="225.90" stroke="#1a1a2e" stroke-width="0.30" stroke-linecap="butt"/>
-<text x="128.50" y="212.60" font-size="2.90" font-family="Helvetica, Arial, sans-serif" font-weight="bold" fill="#1a1a2e" text-anchor="start" dy="0.35em">ESP32-C3 radio adapter case - both halves, closed</text>
-<text x="128.50" y="218.00" font-size="1.90" font-family="Helvetica, Arial, sans-serif" font-weight="normal" fill="#1a1a2e" text-anchor="start" dy="0.35em">End elevations from outside: the USB-C window with its plug recess, and the antenna</text>
-<text x="128.50" y="220.40" font-size="1.90" font-family="Helvetica, Arial, sans-serif" font-weight="normal" fill="#1a1a2e" text-anchor="start" dy="0.35em">   hole, each split by the seam</text>
-<text class="free" x="128.50" y="223.90" font-size="2.00" font-family="Helvetica, Arial, sans-serif" font-weight="normal" fill="#1a1a2e" text-anchor="start" dy="0.35em">Scale 2:1  |  Units mm  |  Sheet 4 of 7  |  Rev v0.1-79-ga42670a</text>
-<text x="128.50" y="228.30" font-size="1.65" font-family="Helvetica, Arial, sans-serif" font-weight="normal" fill="#1a1a2e" text-anchor="start" dy="0.35em">Datums: A the outside bottom face, B the USB-C wall's outer face, C the J4-end outer face. Numbers</text>
-<text x="128.50" y="230.90" font-size="1.65" font-family="Helvetica, Arial, sans-serif" font-weight="normal" fill="#1a1a2e" text-anchor="start" dy="0.35em">   are in the PCB's frame:</text>
-<text x="128.50" y="233.50" font-size="1.65" font-family="Helvetica, Arial, sans-serif" font-weight="normal" fill="#1a1a2e" text-anchor="start" dy="0.35em">x right, y down from its top-left corner, z up from its top face; A is z = <tspan data-dim="out_z0">-4.60</tspan>, B is x = <tspan data-dim="out_x0">-4.50</tspan>,</text>
-<text x="128.50" y="236.10" font-size="1.65" font-family="Helvetica, Arial, sans-serif" font-weight="normal" fill="#1a1a2e" text-anchor="start" dy="0.35em">   C is y = <tspan data-dim="out_y0">-2.70</tspan>.</text>
-<text x="128.50" y="238.70" font-size="1.65" font-family="Helvetica, Arial, sans-serif" font-weight="normal" fill="#1a1a2e" text-anchor="start" dy="0.35em">Views are independent, each captioned with its viewing direction; they are not arranged in</text>
-<text x="128.50" y="241.30" font-size="1.65" font-family="Helvetica, Arial, sans-serif" font-weight="normal" fill="#1a1a2e" text-anchor="start" dy="0.35em">   projection.</text>
-<text x="128.50" y="243.90" font-size="1.65" font-family="Helvetica, Arial, sans-serif" font-weight="normal" fill="#1a1a2e" text-anchor="start" dy="0.35em">Tolerance: ±<tspan data-const="TOL_LINEAR">0.2</tspan> linear; ±<tspan data-const="TOL_SNAP">0.1</tspan> on snap and peg features; heights ±<tspan data-const="TOL_Z">0.1</tspan> (half a <tspan data-const="LAYER_H">0.2</tspan> mm layer).</text>
-<text x="128.50" y="246.50" font-size="1.65" font-family="Helvetica, Arial, sans-serif" font-weight="normal" fill="#1a1a2e" text-anchor="start" dy="0.35em">Print orientation as supplied (open side up). The Ø<tspan data-dim="bore_d_1">2.60</tspan> boss bore is a minimum limit. No draft is</text>
-<text x="128.50" y="249.10" font-size="1.65" font-family="Helvetica, Arial, sans-serif" font-weight="normal" fill="#1a1a2e" text-anchor="start" dy="0.35em">   modelled.</text>
-<text x="128.50" y="251.70" font-size="1.65" font-family="Helvetica, Arial, sans-serif" font-weight="normal" fill="#1a1a2e" text-anchor="start" dy="0.35em">Material: unspecified (modelled for FDM PLA or PETG). Files:</text>
-<text x="128.50" y="254.30" font-size="1.65" font-family="Helvetica, Arial, sans-serif" font-weight="normal" fill="#1a1a2e" text-anchor="start" dy="0.35em">   esp32c3-radio-adapter-case-bottom.stl, esp32c3-radio-adapter-case-top.stl</text>
-<text x="128.50" y="256.90" font-size="1.65" font-family="Helvetica, Arial, sans-serif" font-weight="normal" fill="#1a1a2e" text-anchor="start" dy="0.35em">Drawn by scripts/draw_case.py from scripts/case_dims.py; --check reads every number back against</text>
-<text x="128.50" y="259.50" font-size="1.65" font-family="Helvetica, Arial, sans-serif" font-weight="normal" fill="#1a1a2e" text-anchor="start" dy="0.35em">   the measured solids.</text>
-<rect x="128.50" y="262.50" width="4.00" height="1.20" rx="0.00" fill="#1a1a2e" stroke="#1a1a2e" stroke-width="0.25"/>
-<rect x="132.50" y="262.50" width="4.00" height="1.20" rx="0.00" fill="#ffffff" stroke="#1a1a2e" stroke-width="0.25"/>
-<rect x="136.50" y="262.50" width="4.00" height="1.20" rx="0.00" fill="#1a1a2e" stroke="#1a1a2e" stroke-width="0.25"/>
-<rect x="140.50" y="262.50" width="4.00" height="1.20" rx="0.00" fill="#ffffff" stroke="#1a1a2e" stroke-width="0.25"/>
-<rect x="144.50" y="262.50" width="4.00" height="1.20" rx="0.00" fill="#1a1a2e" stroke="#1a1a2e" stroke-width="0.25"/>
-<text x="128.50" y="265.70" font-size="1.80" font-family="Helvetica, Arial, sans-serif" font-weight="normal" fill="#1a1a2e" text-anchor="middle" dy="0.35em">0</text>
-<text x="148.50" y="265.70" font-size="1.80" font-family="Helvetica, Arial, sans-serif" font-weight="normal" fill="#1a1a2e" text-anchor="middle" dy="0.35em">10 mm</text>
-<text x="153.50" y="263.10" font-size="1.80" font-family="Helvetica, Arial, sans-serif" font-weight="normal" fill="#1a1a2e" text-anchor="start" dy="0.35em">at 2:1</text>
-<rect x="1.50" y="209.20" width="125.00" height="59.10" rx="0.00" fill="none" stroke="#1a1a2e" stroke-width="0.50"/>
-<text x="3.50" y="212.60" font-size="2.30" font-family="Helvetica, Arial, sans-serif" font-weight="bold" fill="#1a1a2e" text-anchor="start" dy="0.35em">NOTES for an injection-moulded or machined version (tooling notes)</text>
-<text class="free" x="3.50" y="216.60" font-size="1.90" font-family="Helvetica, Arial, sans-serif" font-weight="normal" fill="#1a1a2e" text-anchor="start" dy="0.35em">1. Tooling notes 1-8 are on sheet 1; the ones that bear on this sheet:</text>
-<text class="free" x="3.50" y="219.30" font-size="1.90" font-family="Helvetica, Arial, sans-serif" font-weight="normal" fill="#1a1a2e" text-anchor="start" dy="0.35em">2. Internal corners are sharp (only the vertical outside corners are R<tspan data-dim="corner_r">2.00</tspan>) and no lead-in chamfers are modelled on the lip, the</text>
-<text class="free" x="3.50" y="222.00" font-size="1.90" font-family="Helvetica, Arial, sans-serif" font-weight="normal" fill="#1a1a2e" text-anchor="start" dy="0.35em">   rebate, the peg tips' holes or the window: add both.</text>
+<rect x="1.50" y="1.50" width="207.00" height="267.80" rx="0.00" fill="none" stroke="#1a1a2e" stroke-width="0.50"/>
+<rect x="126.50" y="210.20" width="82.00" height="59.10" rx="0.00" fill="none" stroke="#1a1a2e" stroke-width="0.50"/>
+<line x1="126.50" y1="216.70" x2="208.50" y2="216.70" stroke="#1a1a2e" stroke-width="0.30" stroke-linecap="butt"/>
+<line x1="126.50" y1="222.90" x2="208.50" y2="222.90" stroke="#1a1a2e" stroke-width="0.30" stroke-linecap="butt"/>
+<line x1="126.50" y1="226.90" x2="208.50" y2="226.90" stroke="#1a1a2e" stroke-width="0.30" stroke-linecap="butt"/>
+<text x="128.50" y="213.60" font-size="2.90" font-family="Helvetica, Arial, sans-serif" font-weight="bold" fill="#1a1a2e" text-anchor="start" dy="0.35em">ESP32-C3 radio adapter case - both halves, closed</text>
+<text x="128.50" y="219.00" font-size="1.90" font-family="Helvetica, Arial, sans-serif" font-weight="normal" fill="#1a1a2e" text-anchor="start" dy="0.35em">End elevations from outside: the USB-C window with its plug recess, and the antenna</text>
+<text x="128.50" y="221.40" font-size="1.90" font-family="Helvetica, Arial, sans-serif" font-weight="normal" fill="#1a1a2e" text-anchor="start" dy="0.35em">   hole, each split by the seam</text>
+<text class="free" x="128.50" y="224.90" font-size="2.00" font-family="Helvetica, Arial, sans-serif" font-weight="normal" fill="#1a1a2e" text-anchor="start" dy="0.35em">Scale 2:1  |  Units mm  |  Sheet 4 of 7  |  Rev v0.1-84-g3c868f6</text>
+<text x="128.50" y="229.30" font-size="1.65" font-family="Helvetica, Arial, sans-serif" font-weight="normal" fill="#1a1a2e" text-anchor="start" dy="0.35em">Datums: A the outside bottom face, B the USB-C wall's outer face, C the J4-end outer face. Numbers</text>
+<text x="128.50" y="231.90" font-size="1.65" font-family="Helvetica, Arial, sans-serif" font-weight="normal" fill="#1a1a2e" text-anchor="start" dy="0.35em">   are in the PCB's frame:</text>
+<text x="128.50" y="234.50" font-size="1.65" font-family="Helvetica, Arial, sans-serif" font-weight="normal" fill="#1a1a2e" text-anchor="start" dy="0.35em">x right, y down from its top-left corner, z up from its top face; A is z = <tspan data-dim="out_z0">-5.10</tspan>, B is x = <tspan data-dim="out_x0">-4.50</tspan>,</text>
+<text x="128.50" y="237.10" font-size="1.65" font-family="Helvetica, Arial, sans-serif" font-weight="normal" fill="#1a1a2e" text-anchor="start" dy="0.35em">   C is y = <tspan data-dim="out_y0">-2.70</tspan>.</text>
+<text x="128.50" y="239.70" font-size="1.65" font-family="Helvetica, Arial, sans-serif" font-weight="normal" fill="#1a1a2e" text-anchor="start" dy="0.35em">Views are independent, each captioned with its viewing direction; they are not arranged in</text>
+<text x="128.50" y="242.30" font-size="1.65" font-family="Helvetica, Arial, sans-serif" font-weight="normal" fill="#1a1a2e" text-anchor="start" dy="0.35em">   projection.</text>
+<text x="128.50" y="244.90" font-size="1.65" font-family="Helvetica, Arial, sans-serif" font-weight="normal" fill="#1a1a2e" text-anchor="start" dy="0.35em">Tolerance: ±<tspan data-const="TOL_LINEAR">0.2</tspan> linear; ±<tspan data-const="TOL_SNAP">0.1</tspan> on snap and peg features; heights ±<tspan data-const="TOL_Z">0.1</tspan> (half a <tspan data-const="LAYER_H">0.2</tspan> mm layer).</text>
+<text x="128.50" y="247.50" font-size="1.65" font-family="Helvetica, Arial, sans-serif" font-weight="normal" fill="#1a1a2e" text-anchor="start" dy="0.35em">Print orientation as supplied (open side up). The Ø<tspan data-dim="bore_d_1">2.60</tspan> boss bore is a minimum limit. No draft is</text>
+<text x="128.50" y="250.10" font-size="1.65" font-family="Helvetica, Arial, sans-serif" font-weight="normal" fill="#1a1a2e" text-anchor="start" dy="0.35em">   modelled.</text>
+<text x="128.50" y="252.70" font-size="1.65" font-family="Helvetica, Arial, sans-serif" font-weight="normal" fill="#1a1a2e" text-anchor="start" dy="0.35em">Material: unspecified (modelled for FDM PLA or PETG). Files:</text>
+<text x="128.50" y="255.30" font-size="1.65" font-family="Helvetica, Arial, sans-serif" font-weight="normal" fill="#1a1a2e" text-anchor="start" dy="0.35em">   esp32c3-radio-adapter-case-bottom.stl, esp32c3-radio-adapter-case-top.stl</text>
+<text x="128.50" y="257.90" font-size="1.65" font-family="Helvetica, Arial, sans-serif" font-weight="normal" fill="#1a1a2e" text-anchor="start" dy="0.35em">Drawn by scripts/draw_case.py from scripts/case_dims.py; --check reads every number back against</text>
+<text x="128.50" y="260.50" font-size="1.65" font-family="Helvetica, Arial, sans-serif" font-weight="normal" fill="#1a1a2e" text-anchor="start" dy="0.35em">   the measured solids.</text>
+<rect x="128.50" y="263.50" width="4.00" height="1.20" rx="0.00" fill="#1a1a2e" stroke="#1a1a2e" stroke-width="0.25"/>
+<rect x="132.50" y="263.50" width="4.00" height="1.20" rx="0.00" fill="#ffffff" stroke="#1a1a2e" stroke-width="0.25"/>
+<rect x="136.50" y="263.50" width="4.00" height="1.20" rx="0.00" fill="#1a1a2e" stroke="#1a1a2e" stroke-width="0.25"/>
+<rect x="140.50" y="263.50" width="4.00" height="1.20" rx="0.00" fill="#ffffff" stroke="#1a1a2e" stroke-width="0.25"/>
+<rect x="144.50" y="263.50" width="4.00" height="1.20" rx="0.00" fill="#1a1a2e" stroke="#1a1a2e" stroke-width="0.25"/>
+<text x="128.50" y="266.70" font-size="1.80" font-family="Helvetica, Arial, sans-serif" font-weight="normal" fill="#1a1a2e" text-anchor="middle" dy="0.35em">0</text>
+<text x="148.50" y="266.70" font-size="1.80" font-family="Helvetica, Arial, sans-serif" font-weight="normal" fill="#1a1a2e" text-anchor="middle" dy="0.35em">10 mm</text>
+<text x="153.50" y="264.10" font-size="1.80" font-family="Helvetica, Arial, sans-serif" font-weight="normal" fill="#1a1a2e" text-anchor="start" dy="0.35em">at 2:1</text>
+<rect x="1.50" y="210.20" width="125.00" height="59.10" rx="0.00" fill="none" stroke="#1a1a2e" stroke-width="0.50"/>
+<text x="3.50" y="213.60" font-size="2.30" font-family="Helvetica, Arial, sans-serif" font-weight="bold" fill="#1a1a2e" text-anchor="start" dy="0.35em">NOTES for an injection-moulded or machined version (tooling notes)</text>
+<text class="free" x="3.50" y="217.60" font-size="1.90" font-family="Helvetica, Arial, sans-serif" font-weight="normal" fill="#1a1a2e" text-anchor="start" dy="0.35em">1. Tooling notes 1-8 are on sheet 1; the ones that bear on this sheet:</text>
+<text class="free" x="3.50" y="220.30" font-size="1.90" font-family="Helvetica, Arial, sans-serif" font-weight="normal" fill="#1a1a2e" text-anchor="start" dy="0.35em">2. Internal corners are sharp (only the vertical outside corners are R<tspan data-dim="corner_r">2.00</tspan>) and no lead-in chamfers are modelled on the lip, the</text>
+<text class="free" x="3.50" y="223.00" font-size="1.90" font-family="Helvetica, Arial, sans-serif" font-weight="normal" fill="#1a1a2e" text-anchor="start" dy="0.35em">   rebate, the peg tips' holes or the window: add both.</text>
 </svg>
