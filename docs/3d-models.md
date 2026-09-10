@@ -118,15 +118,20 @@ top-left corner, z up from its top surface):
 
 The script's constants live in `scripts/case_dims.py`, which
 `scripts/draw_case.py` also draws the [case drawings](case-drawings.md)
-from (six dimensioned sheets: plans of both halves, the section on the
-antenna axis, the end elevations and details of the snap joint and the
-peg stack); the numbers above are the same constants. Before the script
-writes anything it intersects both halves with a solid for every part they have
+from (seven dimensioned sheets: plans of both halves and of the slotted
+top, the section on the antenna axis, the end elevations and details of
+the snap joint and the peg stack, each with a caliper checklist behind
+it); the numbers above are the same constants. Before the script writes
+anything it intersects both halves with a solid for every part they have
 to house (the boards, the headers and a jumper cap, the pins under the
 adapter, the back-side resistors, the USB-C receptacle and a plug's
 overmoulding, both radios' antenna connectors and the pigtail's nut), with
 the cavity above the board (which only the pegs and bosses may enter), and
-with each other closed, and stops if any intersection is not empty.
+with each other closed, and stops if any intersection is not empty. It
+then measures the finished solids (every face, gap and centre the
+drawings quote, over two hundred of them) against the constants and
+writes them to `hardware/case/esp32c3-radio-adapter-case-measured.json`,
+which is what `draw_case.py --check` compares the drawings with.
 
 The SX1278 module adapter assembly (`esp32c3-sx1278-adapter-assembly-module`)
 is 24&nbsp;x&nbsp;58 mm with the SuperMini at the top, the module soldered flat
