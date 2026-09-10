@@ -426,6 +426,7 @@ def measure(bottom: cq.Workplane, top: cq.Workplane, top_slot: cq.Workplane) -> 
             row(f"groove_len_{side}{i}", f"groove {side}{i} length", TAB_W + 2 * GROOVE_Y_OVER, g[1] - g[0])
             row(f"groove_y_{side}{i}", f"groove {side}{i} centre y", ty, (g[0] + g[1]) / 2)
             row(f"groove_{side}{i}_from_back_face", f"groove {side}{i} centre from the back outside face", ty - OUT_Y0, (g[0] + g[1]) / 2 - y0)
+        row(f"groove_pitch_{side}", f"groove pitch, {side}", TAB_Y[1] - TAB_Y[0], rows[f"groove_y_{side}2"]["measured"] - rows[f"groove_y_{side}1"]["measured"])
         s = rod(top, "z", xf - 0.25 if side == "l" else xf + 0.25, TAB_Y[0])
         row(f"groove_z_{side}", f"groove centre above the seam, {side}", BUMP_Z, (s[0][1] + s[1][0]) / 2 - seam)
     row("bump_past_skirt", "bump standing past the skirt face (tab deflection)", BUMP_PROUD, rows["tab_t_at_bump_l"]["measured"] - rows["rebate"]["measured"])

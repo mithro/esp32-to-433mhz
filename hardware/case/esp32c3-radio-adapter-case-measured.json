@@ -629,6 +629,11 @@
   "expected": 52.7,
   "measured": 52.7
  },
+ "groove_pitch_l": {
+  "what": "groove pitch, l",
+  "expected": 18.0,
+  "measured": 18.0
+ },
  "groove_z_l": {
   "what": "groove centre above the seam, l",
   "expected": 4.3,
@@ -668,6 +673,11 @@
   "what": "groove r2 centre from the back outside face",
   "expected": 52.7,
   "measured": 52.7
+ },
+ "groove_pitch_r": {
+  "what": "groove pitch, r",
+  "expected": 18.0,
+  "measured": 18.0
  },
  "groove_z_r": {
   "what": "groove centre above the seam, r",
