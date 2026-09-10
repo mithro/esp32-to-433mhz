@@ -667,7 +667,32 @@ RA02_W, RA02_H, RA02_ROW_IN = 17.5, 22.5, 1.3  # Ra-02 breakout outline for the 
 E07_W, E07_H, E07_ROW_IN = 15.0, 30.0, 1.6
 
 
-def build_radio(radio: str = "e07", case: bool = False) -> Design:
+# 3D: the plugged-in radio board rides on J3 (origin = socket pin 1), on
+# top of its own header's body; the E07's model origin is its pin 1, the
+# Ra-02 breakout's is its pin 1 which sits three columns to the left.
+RADIO_MODELS = {  # build_radio(radio=...) -> the models on J3
+    "e07": [Model("cc1101-e07-m1101d.step", (0, 0, HEADER_BODY))],
+    "ra02": [Model("sx1278-ra02-breakout.step", (-3 * SM_PITCH, 0, HEADER_BODY)), Model("sx1278-ra02-pigtail.step", (-3 * SM_PITCH, 0, HEADER_BODY))],
+    "none": [],
+}
+CASE_LIFT = 16.0  # the exploded view lifts the top half this far: its skirt clears the boards and headers with room to see in
+# A half on its own: KiCad always draws the adapter, so the half is moved to
+# put its 2 mm floor (bottom half, z -9.0 to -7.0) or ceiling (top half, z 9.6
+# to 11.6) round the 1.6 mm board (z -1.6 to 0), which hides it.
+CASE_SINK_BOTTOM, CASE_SINK_TOP = 7.2, -11.4
+CASE_BOTTOM, CASE_TOP = "esp32c3-radio-adapter-case-bottom.step", "esp32c3-radio-adapter-case-top.step"
+CASE_MODELS = {  # build_radio(case=...) -> the printed case's halves on H1 (scripts/build_case.py)
+    None: [],
+    "open": [Model(CASE_BOTTOM)],
+    "closed": [Model(CASE_BOTTOM), Model(CASE_TOP)],
+    "exploded": [Model(CASE_BOTTOM), Model(CASE_TOP, (0, 0, CASE_LIFT))],
+    "bottom": [Model(CASE_BOTTOM, (0, 0, CASE_SINK_BOTTOM))],
+    "top": [Model(CASE_TOP, (0, 0, CASE_SINK_TOP))],
+}
+CASE_ALONE = ("bottom", "top")  # the case options that show a half by itself, without any board or part
+
+
+def build_radio(radio: str = "e07", case: str | None = None) -> Design:
     """SuperMini + one 2x4 socket that takes either the E07-M1101D (CC1101)
     board or the SX1278 Ra-02 breakout.  The SuperMini's right column becomes
     the top row (5V at the left) and its left column the bottom row (GPIO5 at
@@ -689,7 +714,19 @@ def build_radio(radio: str = "e07", case: bool = False) -> Design:
     rise straight into the header; GPIO21/20 reach it up the same strip,
     GPIO21 by way of the lane above J5 and GPIO20 through J5's pin 2 pad.
     GPIO5 drops to the strap.  GPIO9's pull-up R4 sits between the rows in
-    its column, fed with 3V3 from J4 pin 3 down through the power row."""
+    its column, fed with 3V3 from J4 pin 3 down through the power row.
+
+    `radio` picks the board in the socket for the 3D view ("e07", "ra02" or
+    "none"); `case` adds the printed case's halves on H1: "open" (the bottom
+    half only), "closed" (both halves snapped together), "exploded" (the top
+    half lifted CASE_LIFT clear), or "bottom" / "top" for that half by itself
+    with no board or part models at all (the adapter, which KiCad always
+    draws, is hidden inside the half's floor or ceiling).  The committed
+    board has no case."""
+    if radio not in RADIO_MODELS:
+        raise ValueError(f"radio must be one of {sorted(RADIO_MODELS)}, not {radio!r}")
+    if case not in CASE_MODELS:
+        raise ValueError(f"case must be one of {sorted(k for k in CASE_MODELS if k)} or None, not {case!r}")
     c = Carrier(
         project="esp32c3-radio-adapter",
         title="ESP32-C3 SuperMini to CC1101 (E07-M1101D, D-Sun) or SX1278 Ra-02 breakout adapter",
@@ -704,15 +741,7 @@ def build_radio(radio: str = "e07", case: bool = False) -> Design:
     sx = lambda pin: S1[0] - ((pin - 1) // 2) * SM_PITCH  # noqa: E731
     sy = lambda pin: S1[1] + ((pin - 1) % 2) * SM_PITCH  # noqa: E731
     SY0, SY1 = sy(1), sy(2)
-    # 3D: the plugged-in radio board rides on J3 (origin = socket pin 1), on
-    # top of its own header's body; the E07's model origin is its pin 1, the
-    # Ra-02 breakout's is its pin 1 which sits three columns to the left.
-    radio_models = {
-        "e07": [Model("cc1101-e07-m1101d.step", (0, 0, HEADER_BODY))],
-        "ra02": [Model("sx1278-ra02-breakout.step", (-3 * SM_PITCH, 0, HEADER_BODY)), Model("sx1278-ra02-pigtail.step", (-3 * SM_PITCH, 0, HEADER_BODY))],
-        "none": [],
-    }[radio]
-    c.add("J3", e07_socket_fp(), S1, CONN2X4, "E07-M1101D_or_Ra-02", RADIO_PINS, (127.0, 101.6), "Radio board socket (CC1101 E07-M1101D or SX1278 Ra-02 breakout)", models=radio_models)
+    c.add("J3", e07_socket_fp(), S1, CONN2X4, "E07-M1101D_or_Ra-02", RADIO_PINS, (127.0, 101.6), "Radio board socket (CC1101 E07-M1101D or SX1278 Ra-02 breakout)", models=RADIO_MODELS[radio])
     c.add("J4", pin_header_fp(len(EXP_PINS)), (ex(1), EXP_Y), CONN7, "Expansion", {str(i + 1): n for i, n in enumerate(EXP_PINS)}, (152.4, 127.0), "3V3 and the unused GPIOs", models=[Model("pin-header-1x07.step")])
     jp1_models = [Model("pin-header-1x02.step")] + ([Model("jumper-cap.step")] if radio == "ra02" else [])
     c.add("JP1", pin_header_fp(2, "y"), (JP1_X, JP1_Y), CONN2, "RA-02", {"1": "RADIO_ID", "2": "GND"}, (177.8, 127.0), "Radio-type strap: fit a jumper for the Ra-02 breakout, leave open for the CC1101", models=jp1_models)
@@ -730,10 +759,12 @@ def build_radio(radio: str = "e07", case: bool = False) -> Design:
     c.add("J5", pin_header_fp(2), (J5_X, J5_Y), CONN2, "DIO2/DATA", {"1": "GPIO21", "2": "GPIO20"}, (152.4, 152.4),
           "Fly-wire header beside the socket: pin 2 (GPIO20) is the SX1278's DIO2/DATA raw-bitstream pin, pin 1 (GPIO21) a spare",
           models=[Model("pin-header-1x02.step", (0, 0, 0), (0, 0, -90))])  # the model's pins step along +y, so turn it to lie along +x
-    # The printed case (scripts/build_case.py) hangs off H1 in the renders:
-    # the bottom half in place and the top half lifted clear so the inside
-    # stays visible.
-    c.holes([Model("esp32c3-radio-adapter-case-bottom.step"), Model("esp32c3-radio-adapter-case-top.step", (0, 0, 16.0))] if case else None)
+    # The printed case (scripts/build_case.py) hangs off H1 in the renders.
+    c.holes(CASE_MODELS[case])
+    if case in CASE_ALONE:
+        for part in c.d.parts:
+            if part.ref != "H1":
+                part.models = []
 
     g = lambda a, b: gap(px(a), px(b))  # noqa: E731  gap between two SuperMini pins
     L1, L2, L3, L4 = LANES
