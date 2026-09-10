@@ -128,6 +128,10 @@ ANT_HOLE_Z0, ANT_HOLE_Z1 = ANT_Z - ANT_HOLE_D / 2, ANT_Z + ANT_HOLE_D / 2
 # half's wall top.
 LIP_GAP_USB_Y0, LIP_GAP_USB_Y1 = USB_WIN_Y - USB_RECESS_W / 2, USB_WIN_Y + USB_RECESS_W / 2
 
+# --- the print the drawings and their caliper checklist are toleranced for ---
+LAYER_H = 0.2  # FDM layer height, each half printed as supplied (open side up)
+TOL_LINEAR, TOL_SNAP, TOL_Z = 0.2, 0.1, LAYER_H / 2  # linear; snap and peg features; heights (half a layer)
+
 
 def slots(ty: float) -> list[tuple[float, float]]:
     """The y ranges of the two slots that free the tab centred at ty."""

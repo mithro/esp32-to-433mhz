@@ -33,10 +33,10 @@ uv run scripts/verify_boards.py      # ERC + DRC with schematic parity, all boar
 uv run scripts/render_boards.py      # docs/images/*.png (bare boards)
 uv run scripts/draw_pinouts.py       # docs/images/pinout-radio-boards.svg
 uv run scripts/draw_wiring.py        # docs/images/wiring-*.svg
-uv run scripts/draw_case.py          # docs/images/case-*.svg, the case's mechanical drawings
+uv run scripts/draw_case.py          # docs/images/case-*.svg, the case's mechanical drawings, and the checklist in docs/case-drawings.md
 uv run scripts/build_3d.py           # hardware/3d/*.step (CadQuery; fetched by uv)
-uv run scripts/build_case.py         # hardware/case/*.stl and the case's STEP models (CadQuery)
-uv run scripts/draw_case.py --check  # measures the drawings' dimensions on the case solids (CadQuery)
+uv run scripts/build_case.py         # hardware/case/*.stl, the case's STEP models and its measured dimensions (CadQuery)
+uv run scripts/draw_case.py --check  # compares every number on the drawings with the measured solids (no CadQuery)
 uv run scripts/render_assemblies.py  # docs/images/*-assembly-*.png, *-model-iso.png
 uv run scripts/export_case.py        # dist/esp32c3-radio-adapter-case-<rev>.zip from the committed case files
 ```
@@ -45,16 +45,28 @@ ERC reports only "global label not connected anywhere else" warnings (each
 pin carries a single global label); DRC reports no violations on any board.
 
 The case's dimensions are the constants in `scripts/case_dims.py` (plain
-Python), shared by `build_case.py` and `draw_case.py`; `draw_case.py
---check` re-runs itself under uv with CadQuery, rebuilds both halves and
-probes 63 of the dimensions the sheets quote, failing on any mismatch.
+Python), shared by `build_case.py` and `draw_case.py`. `build_case.py`
+probes the finished solids and writes every dimension it measures to
+`hardware/case/esp32c3-radio-adapter-case-measured.json`; every number on
+the drawings is tagged with the name of one of those measurements, and
+`draw_case.py --check` reads the numbers back out of the SVG files (and the
+checklist it writes into `docs/case-drawings.md`) and compares them with
+the measurements, failing on a mismatch, an untagged number or a name the
+solids were not measured for. The sheets' revision is the `git describe`
+of the last commit that touched `hardware/case/`, so regenerate the
+drawings after committing a model change (a rebuild whose STL files and
+measurements come out identical changes nothing).
+
+The three drawing scripts (`draw_pinouts.py`, `draw_wiring.py`,
+`draw_case.py`) are standard-library only and deterministic, so CI
+regenerates their SVG files too and fails if they differ from the commit.
 
 ## CI and manufacturing packages
 
 GitHub Actions (`.github/workflows/ci.yml`, KiCad 9.0.7 container) runs on
 every push and pull request: it regenerates all boards (including zone fills)
-and fails if the result differs from the commit, runs ERC/DRC with schematic
-parity, and builds manufacturing packages with
+and the SVG drawings and fails if the result differs from the commit, runs
+ERC/DRC with schematic parity, and builds manufacturing packages with
 `scripts/export_manufacturing.py`. Every push to `main` then publishes them:
 the release attached to the most recent version tag is renamed to the build's
 `git describe` (for example `v0.1-4-g93616a6`) and its assets replaced, so the

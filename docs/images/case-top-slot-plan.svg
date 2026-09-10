@@ -1,0 +1,104 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="210mm" height="266.2mm" viewBox="0 0 210 266.2">
+<rect width="210" height="266.2" fill="#ffffff"/>
+<text x="4.00" y="8.00" font-size="3.40" font-family="Helvetica, Arial, sans-serif" font-weight="bold" fill="#1a1a2e" text-anchor="start" dy="0.35em">Sheet 7: SLOTTED TOP HALF, plan from above (the outside of the ceiling), 2:1</text>
+<text x="4.00" y="13.50" font-size="2.10" font-family="Helvetica, Arial, sans-serif" font-weight="normal" fill="#1a1a2e" text-anchor="start" dy="0.35em">x right, y down, as sheet 1: the USB-C wall (datum B) on the left, the J4 end (datum C) at the top. This half is sheet 2's top half with a slot through the ceiling</text>
+<text x="4.00" y="17.50" font-size="2.10" font-family="Helvetica, Arial, sans-serif" font-weight="normal" fill="#1a1a2e" text-anchor="start" dy="0.35em">over J4, the spare-GPIO header, for jumper wires out of the closed case. Hidden detail is omitted (see sheet 2); the header and the PCB are drawn in green for reference.</text>
+<rect x="66.00" y="64.60" width="72.40" height="133.40" rx="4.00" fill="none" stroke="#1a1a2e" stroke-width="0.35"/>
+<rect x="85.22" y="71.56" width="37.56" height="7.08" rx="0.00" fill="none" stroke="#1a1a2e" stroke-width="0.35"/>
+<line x1="79.22" y1="75.10" x2="128.78" y2="75.10" stroke="#555566" stroke-width="0.18" stroke-linecap="butt" stroke-dasharray="5 0.9 0.9 0.9"/>
+<line x1="104.00" y1="65.56" x2="104.00" y2="84.64" stroke="#555566" stroke-width="0.18" stroke-linecap="butt" stroke-dasharray="5 0.9 0.9 0.9"/>
+<rect x="75.00" y="70.00" width="58.00" height="76.00" rx="0.00" fill="none" stroke="#2e7d32" stroke-width="0.22" stroke-dasharray="3 0.8 0.6 0.8"/>
+<rect x="86.22" y="72.56" width="35.56" height="5.08" rx="0.00" fill="none" stroke="#2e7d32" stroke-width="0.22" stroke-dasharray="3 0.8 0.6 0.8"/>
+<text x="104.00" y="94.00" font-size="2.00" font-family="Helvetica, Arial, sans-serif" font-weight="normal" fill="#2e7d32" text-anchor="middle" dy="0.35em" stroke="#ffffff" stroke-width="0.56" paint-order="stroke" stroke-linejoin="round">J4 header body (reference), the slot <tspan data-const="SLOT_OVER">0.5</tspan> past it on every side</text>
+<text x="104.00" y="130.00" font-size="2.00" font-family="Helvetica, Arial, sans-serif" font-weight="normal" fill="#2e7d32" text-anchor="middle" dy="0.35em" stroke="#ffffff" stroke-width="0.56" paint-order="stroke" stroke-linejoin="round">PCB (reference)</text>
+<text x="104.00" y="170.00" font-size="2.00" font-family="Helvetica, Arial, sans-serif" font-weight="normal" fill="#1a1a2e" text-anchor="middle" dy="0.35em" stroke="#ffffff" stroke-width="0.56" paint-order="stroke" stroke-linejoin="round">top face; the antenna wall is at the bottom, the USB-C wall on the left</text>
+<line x1="66.00" y1="63.80" x2="66.00" y2="36.40" stroke="#1f4e9c" stroke-width="0.18" stroke-linecap="butt"/>
+<line x1="138.40" y1="63.80" x2="138.40" y2="36.40" stroke="#1f4e9c" stroke-width="0.18" stroke-linecap="butt"/>
+<line x1="66.00" y1="37.60" x2="138.40" y2="37.60" stroke="#1f4e9c" stroke-width="0.18" stroke-linecap="butt"/>
+<polygon points="66.00,37.60 68.00,37.25 68.00,37.95" fill="#1f4e9c"/>
+<polygon points="138.40,37.60 136.40,37.95 136.40,37.25" fill="#1f4e9c"/>
+<text x="102.20" y="36.40" font-size="2.60" font-family="Helvetica, Arial, sans-serif" font-weight="normal" fill="#1f4e9c" text-anchor="middle" dy="0.35em" stroke="#ffffff" stroke-width="0.73" paint-order="stroke" stroke-linejoin="round"><tspan data-dim="out_x_top">36.20</tspan></text>
+<line x1="66.00" y1="63.80" x2="66.00" y2="45.40" stroke="#1f4e9c" stroke-width="0.18" stroke-linecap="butt"/>
+<line x1="104.00" y1="70.76" x2="104.00" y2="45.40" stroke="#1f4e9c" stroke-width="0.18" stroke-linecap="butt"/>
+<line x1="66.00" y1="46.60" x2="104.00" y2="46.60" stroke="#1f4e9c" stroke-width="0.18" stroke-linecap="butt"/>
+<polygon points="66.00,46.60 68.00,46.25 68.00,46.95" fill="#1f4e9c"/>
+<polygon points="104.00,46.60 102.00,46.95 102.00,46.25" fill="#1f4e9c"/>
+<text x="85.00" y="45.40" font-size="2.60" font-family="Helvetica, Arial, sans-serif" font-weight="normal" fill="#1f4e9c" text-anchor="middle" dy="0.35em" stroke="#ffffff" stroke-width="0.73" paint-order="stroke" stroke-linejoin="round"><tspan data-dim="slot_from_usb_face">19.00</tspan> slot centre</text>
+<line x1="85.22" y1="70.76" x2="85.22" y2="54.40" stroke="#1f4e9c" stroke-width="0.18" stroke-linecap="butt"/>
+<line x1="122.78" y1="70.76" x2="122.78" y2="54.40" stroke="#1f4e9c" stroke-width="0.18" stroke-linecap="butt"/>
+<line x1="85.22" y1="55.60" x2="122.78" y2="55.60" stroke="#1f4e9c" stroke-width="0.18" stroke-linecap="butt"/>
+<polygon points="85.22,55.60 87.22,55.25 87.22,55.95" fill="#1f4e9c"/>
+<polygon points="122.78,55.60 120.78,55.95 120.78,55.25" fill="#1f4e9c"/>
+<text x="104.00" y="54.40" font-size="2.60" font-family="Helvetica, Arial, sans-serif" font-weight="normal" fill="#1f4e9c" text-anchor="middle" dy="0.35em" stroke="#ffffff" stroke-width="0.73" paint-order="stroke" stroke-linejoin="round"><tspan data-dim="slot_len">18.78</tspan> slot</text>
+<polygon points="66.00,35.60 67.00,34.20 65.00,34.20" fill="#1a1a2e"/>
+<line x1="66.00" y1="34.20" x2="66.00" y2="32.20" stroke="#1a1a2e" stroke-width="0.25" stroke-linecap="butt"/>
+<rect x="64.20" y="28.60" width="3.60" height="3.60" rx="0.00" fill="#ffffff" stroke="#1a1a2e" stroke-width="0.30"/>
+<text x="66.00" y="30.40" font-size="2.60" font-family="Helvetica, Arial, sans-serif" font-weight="bold" fill="#1a1a2e" text-anchor="middle" dy="0.35em">B</text>
+<line x1="65.20" y1="64.60" x2="37.80" y2="64.60" stroke="#1f4e9c" stroke-width="0.18" stroke-linecap="butt"/>
+<line x1="65.20" y1="198.00" x2="37.80" y2="198.00" stroke="#1f4e9c" stroke-width="0.18" stroke-linecap="butt"/>
+<line x1="39.00" y1="64.60" x2="39.00" y2="198.00" stroke="#1f4e9c" stroke-width="0.18" stroke-linecap="butt"/>
+<polygon points="39.00,64.60 39.35,66.60 38.65,66.60" fill="#1f4e9c"/>
+<polygon points="39.00,198.00 38.65,196.00 39.35,196.00" fill="#1f4e9c"/>
+<text x="37.80" y="131.30" font-size="2.60" font-family="Helvetica, Arial, sans-serif" font-weight="normal" fill="#1f4e9c" text-anchor="middle" dy="0.35em" transform="rotate(-90 37.80 131.30)" stroke="#ffffff" stroke-width="0.73" paint-order="stroke" stroke-linejoin="round"><tspan data-dim="out_y_top">66.70</tspan></text>
+<line x1="65.20" y1="64.60" x2="46.80" y2="64.60" stroke="#1f4e9c" stroke-width="0.18" stroke-linecap="butt"/>
+<line x1="84.42" y1="75.10" x2="46.80" y2="75.10" stroke="#1f4e9c" stroke-width="0.18" stroke-linecap="butt"/>
+<line x1="48.00" y1="64.60" x2="48.00" y2="75.10" stroke="#1f4e9c" stroke-width="0.18" stroke-linecap="butt"/>
+<polygon points="48.00,64.60 47.65,62.60 48.35,62.60" fill="#1f4e9c"/>
+<polygon points="48.00,75.10 48.35,77.10 47.65,77.10" fill="#1f4e9c"/>
+<line x1="48.00" y1="60.10" x2="48.00" y2="64.60" stroke="#1f4e9c" stroke-width="0.18" stroke-linecap="butt"/>
+<line x1="48.00" y1="75.10" x2="48.00" y2="79.60" stroke="#1f4e9c" stroke-width="0.18" stroke-linecap="butt"/>
+<text x="46.80" y="78.10" font-size="2.60" font-family="Helvetica, Arial, sans-serif" font-weight="normal" fill="#1f4e9c" text-anchor="end" dy="0.35em" transform="rotate(-90 46.80 78.10)" stroke="#ffffff" stroke-width="0.73" paint-order="stroke" stroke-linejoin="round"><tspan data-dim="slot_from_back_face">5.25</tspan> slot centre</text>
+<line x1="84.42" y1="71.56" x2="55.80" y2="71.56" stroke="#1f4e9c" stroke-width="0.18" stroke-linecap="butt"/>
+<line x1="84.42" y1="78.64" x2="55.80" y2="78.64" stroke="#1f4e9c" stroke-width="0.18" stroke-linecap="butt"/>
+<line x1="57.00" y1="71.56" x2="57.00" y2="78.64" stroke="#1f4e9c" stroke-width="0.18" stroke-linecap="butt"/>
+<polygon points="57.00,71.56 56.65,69.56 57.35,69.56" fill="#1f4e9c"/>
+<polygon points="57.00,78.64 57.35,80.64 56.65,80.64" fill="#1f4e9c"/>
+<line x1="57.00" y1="67.06" x2="57.00" y2="71.56" stroke="#1f4e9c" stroke-width="0.18" stroke-linecap="butt"/>
+<line x1="57.00" y1="78.64" x2="57.00" y2="83.14" stroke="#1f4e9c" stroke-width="0.18" stroke-linecap="butt"/>
+<text x="55.80" y="81.64" font-size="2.60" font-family="Helvetica, Arial, sans-serif" font-weight="normal" fill="#1f4e9c" text-anchor="end" dy="0.35em" transform="rotate(-90 55.80 81.64)" stroke="#ffffff" stroke-width="0.73" paint-order="stroke" stroke-linejoin="round"><tspan data-dim="slot_w">3.54</tspan> slot</text>
+<polygon points="37.00,64.60 35.60,63.60 35.60,65.60" fill="#1a1a2e"/>
+<line x1="35.60" y1="64.60" x2="33.60" y2="64.60" stroke="#1a1a2e" stroke-width="0.25" stroke-linecap="butt"/>
+<rect x="30.00" y="62.80" width="3.60" height="3.60" rx="0.00" fill="#ffffff" stroke="#1a1a2e" stroke-width="0.30"/>
+<text x="31.80" y="64.60" font-size="2.60" font-family="Helvetica, Arial, sans-serif" font-weight="bold" fill="#1a1a2e" text-anchor="middle" dy="0.35em">C</text>
+<line x1="137.20" y1="196.80" x2="145.20" y2="202.80" stroke="#1f4e9c" stroke-width="0.18" stroke-linecap="butt"/>
+<polygon points="137.20,196.80 139.01,197.72 138.59,198.28" fill="#1f4e9c"/>
+<line x1="145.20" y1="202.80" x2="148.20" y2="202.80" stroke="#1f4e9c" stroke-width="0.18" stroke-linecap="butt"/>
+<text x="149.00" y="202.80" font-size="2.60" font-family="Helvetica, Arial, sans-serif" font-weight="normal" fill="#1f4e9c" text-anchor="start" dy="0.35em" stroke="#ffffff" stroke-width="0.73" paint-order="stroke" stroke-linejoin="round">R<tspan data-dim="corner_r_top">2.00</tspan> (4 corners)</text>
+<line x1="122.78" y1="78.64" x2="132.78" y2="86.64" stroke="#1f4e9c" stroke-width="0.18" stroke-linecap="butt"/>
+<polygon points="122.78,78.64 124.56,79.62 124.12,80.16" fill="#1f4e9c"/>
+<line x1="132.78" y1="86.64" x2="135.78" y2="86.64" stroke="#1f4e9c" stroke-width="0.18" stroke-linecap="butt"/>
+<text x="136.58" y="86.64" font-size="2.10" font-family="Helvetica, Arial, sans-serif" font-weight="normal" fill="#1f4e9c" text-anchor="start" dy="0.35em" stroke="#ffffff" stroke-width="0.59" paint-order="stroke" stroke-linejoin="round">slot through the <tspan data-dim="ceiling">2.00</tspan> ceiling; everything else as sheet 2</text>
+<rect x="1.50" y="1.50" width="207.00" height="263.20" rx="0.00" fill="none" stroke="#1a1a2e" stroke-width="0.50"/>
+<rect x="126.50" y="208.00" width="82.00" height="56.70" rx="0.00" fill="none" stroke="#1a1a2e" stroke-width="0.50"/>
+<line x1="126.50" y1="214.50" x2="208.50" y2="214.50" stroke="#1a1a2e" stroke-width="0.30" stroke-linecap="butt"/>
+<line x1="126.50" y1="218.30" x2="208.50" y2="218.30" stroke="#1a1a2e" stroke-width="0.30" stroke-linecap="butt"/>
+<line x1="126.50" y1="222.30" x2="208.50" y2="222.30" stroke="#1a1a2e" stroke-width="0.30" stroke-linecap="butt"/>
+<text x="128.50" y="211.40" font-size="2.90" font-family="Helvetica, Arial, sans-serif" font-weight="bold" fill="#1a1a2e" text-anchor="start" dy="0.35em">ESP32-C3 radio adapter case - top half, slotted</text>
+<text x="128.50" y="216.80" font-size="1.90" font-family="Helvetica, Arial, sans-serif" font-weight="normal" fill="#1a1a2e" text-anchor="start" dy="0.35em">Plan from above: the J4 slot through the ceiling of the second top half</text>
+<text class="free" x="128.50" y="220.30" font-size="2.00" font-family="Helvetica, Arial, sans-serif" font-weight="normal" fill="#1a1a2e" text-anchor="start" dy="0.35em">Scale 2:1  |  Units mm  |  Sheet 7 of 7  |  Rev v0.1-79-ga42670a</text>
+<text x="128.50" y="224.70" font-size="1.65" font-family="Helvetica, Arial, sans-serif" font-weight="normal" fill="#1a1a2e" text-anchor="start" dy="0.35em">Datums: A the outside bottom face, B the USB-C wall's outer face, C the J4-end outer face. Numbers</text>
+<text x="128.50" y="227.30" font-size="1.65" font-family="Helvetica, Arial, sans-serif" font-weight="normal" fill="#1a1a2e" text-anchor="start" dy="0.35em">   are in the PCB's frame:</text>
+<text x="128.50" y="229.90" font-size="1.65" font-family="Helvetica, Arial, sans-serif" font-weight="normal" fill="#1a1a2e" text-anchor="start" dy="0.35em">x right, y down from its top-left corner, z up from its top face; A is z = <tspan data-dim="out_z0">-4.60</tspan>, B is x = <tspan data-dim="out_x0">-4.50</tspan>,</text>
+<text x="128.50" y="232.50" font-size="1.65" font-family="Helvetica, Arial, sans-serif" font-weight="normal" fill="#1a1a2e" text-anchor="start" dy="0.35em">   C is y = <tspan data-dim="out_y0">-2.70</tspan>.</text>
+<text x="128.50" y="235.10" font-size="1.65" font-family="Helvetica, Arial, sans-serif" font-weight="normal" fill="#1a1a2e" text-anchor="start" dy="0.35em">Views are independent, each captioned with its viewing direction; they are not arranged in</text>
+<text x="128.50" y="237.70" font-size="1.65" font-family="Helvetica, Arial, sans-serif" font-weight="normal" fill="#1a1a2e" text-anchor="start" dy="0.35em">   projection.</text>
+<text x="128.50" y="240.30" font-size="1.65" font-family="Helvetica, Arial, sans-serif" font-weight="normal" fill="#1a1a2e" text-anchor="start" dy="0.35em">Tolerance: ±<tspan data-const="TOL_LINEAR">0.2</tspan> linear; ±<tspan data-const="TOL_SNAP">0.1</tspan> on snap and peg features; heights ±<tspan data-const="TOL_Z">0.1</tspan> (half a <tspan data-const="LAYER_H">0.2</tspan> mm layer).</text>
+<text x="128.50" y="242.90" font-size="1.65" font-family="Helvetica, Arial, sans-serif" font-weight="normal" fill="#1a1a2e" text-anchor="start" dy="0.35em">Print orientation as supplied (open side up). The Ø<tspan data-dim="bore_d_1">2.60</tspan> boss bore is a minimum limit. No draft is</text>
+<text x="128.50" y="245.50" font-size="1.65" font-family="Helvetica, Arial, sans-serif" font-weight="normal" fill="#1a1a2e" text-anchor="start" dy="0.35em">   modelled.</text>
+<text x="128.50" y="248.10" font-size="1.65" font-family="Helvetica, Arial, sans-serif" font-weight="normal" fill="#1a1a2e" text-anchor="start" dy="0.35em">Material: unspecified (modelled for FDM PLA or PETG). Files:</text>
+<text x="128.50" y="250.70" font-size="1.65" font-family="Helvetica, Arial, sans-serif" font-weight="normal" fill="#1a1a2e" text-anchor="start" dy="0.35em">   esp32c3-radio-adapter-case-top-slot.stl, hardware/3d/esp32c3-radio-adapter-case-top-slot.step</text>
+<text x="128.50" y="253.30" font-size="1.65" font-family="Helvetica, Arial, sans-serif" font-weight="normal" fill="#1a1a2e" text-anchor="start" dy="0.35em">Drawn by scripts/draw_case.py from scripts/case_dims.py; --check reads every number back against</text>
+<text x="128.50" y="255.90" font-size="1.65" font-family="Helvetica, Arial, sans-serif" font-weight="normal" fill="#1a1a2e" text-anchor="start" dy="0.35em">   the measured solids.</text>
+<rect x="128.50" y="258.90" width="4.00" height="1.20" rx="0.00" fill="#1a1a2e" stroke="#1a1a2e" stroke-width="0.25"/>
+<rect x="132.50" y="258.90" width="4.00" height="1.20" rx="0.00" fill="#ffffff" stroke="#1a1a2e" stroke-width="0.25"/>
+<rect x="136.50" y="258.90" width="4.00" height="1.20" rx="0.00" fill="#1a1a2e" stroke="#1a1a2e" stroke-width="0.25"/>
+<rect x="140.50" y="258.90" width="4.00" height="1.20" rx="0.00" fill="#ffffff" stroke="#1a1a2e" stroke-width="0.25"/>
+<rect x="144.50" y="258.90" width="4.00" height="1.20" rx="0.00" fill="#1a1a2e" stroke="#1a1a2e" stroke-width="0.25"/>
+<text x="128.50" y="262.10" font-size="1.80" font-family="Helvetica, Arial, sans-serif" font-weight="normal" fill="#1a1a2e" text-anchor="middle" dy="0.35em">0</text>
+<text x="148.50" y="262.10" font-size="1.80" font-family="Helvetica, Arial, sans-serif" font-weight="normal" fill="#1a1a2e" text-anchor="middle" dy="0.35em">10 mm</text>
+<text x="153.50" y="259.50" font-size="1.80" font-family="Helvetica, Arial, sans-serif" font-weight="normal" fill="#1a1a2e" text-anchor="start" dy="0.35em">at 2:1</text>
+<rect x="1.50" y="208.00" width="125.00" height="56.70" rx="0.00" fill="none" stroke="#1a1a2e" stroke-width="0.50"/>
+<text x="3.50" y="211.40" font-size="2.30" font-family="Helvetica, Arial, sans-serif" font-weight="bold" fill="#1a1a2e" text-anchor="start" dy="0.35em">NOTES for an injection-moulded or machined version (tooling notes)</text>
+<text class="free" x="3.50" y="215.40" font-size="1.90" font-family="Helvetica, Arial, sans-serif" font-weight="normal" fill="#1a1a2e" text-anchor="start" dy="0.35em">1. Tooling notes 1-8 are on sheet 1; the ones that bear on this sheet:</text>
+<text class="free" x="3.50" y="218.10" font-size="1.90" font-family="Helvetica, Arial, sans-serif" font-weight="normal" fill="#1a1a2e" text-anchor="start" dy="0.35em">2. No draft is modelled: add draft on every face parallel to the pull (walls, standoffs, bosses, pegs).</text>
+</svg>
