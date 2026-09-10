@@ -33,7 +33,10 @@ PIN_TIPS = -6.0  # the module headers' pins under the board (J4/JP1/J5 reach -3.
 HIGHEST = 8.5  # J4/J5 pins and a jumper on JP1
 SOCKET_MID_X = (ga.CC_S1[0] + ga.CC_S1[0] - 3 * ga.SM_PITCH) / 2  # 12.67: the antenna axis, both radios
 ANT_Z = ga.HEADER_BODY + 0.8  # 3.3: the plugged-in radio board's mid-plane
-E07_JACK_Y1 = ga.SOCKET_Y - ga.E07_ROW_IN + ga.E07_H + 3.0  # 61.9: the far face of the E07's square SMA body
+E07_JACK_BODY, E07_JACK_LEN = 6.4, 3.0  # the E07's square SMA jack body: across, and along y past the board edge
+E07_JACK_Y1 = ga.SOCKET_Y - ga.E07_ROW_IN + ga.E07_H + E07_JACK_LEN  # 61.9: the far face of the E07's square SMA body
+SMA_BARREL_D, E07_BARREL_LEN = 6.35, 6.5  # the threaded SMA barrel (jack and pigtail bulkhead), and the E07's length of it
+PIGTAIL_HEX_AF, PIGTAIL_FLANGE_T, PIGTAIL_BARREL_LEN, PIGTAIL_NUT_T = 8.0, 2.5, 9.5, 2.4  # the U.FL-to-SMA bulkhead (see build_3d.build_pigtail)
 ANT_WALL_Y0 = 61.5  # inner face of the antenna wall: the pigtail's flange seats here (see build_3d.build_pigtail)
 
 # --- case geometry ---
@@ -70,8 +73,9 @@ BUMP_R, GROOVE_R, BUMP_Z = 0.35, 0.42, 5.3  # bump/groove centre height above th
 SKIRT_H = TAB_H + 0.3  # the rebate reaches this far above the parting line
 TAB_Y = (32.0, 50.0)  # tab centres along the long walls: clear of the USB-C window and the corners
 USB_WIN_W, USB_WIN_H = 13.0, 7.5  # a USB-C plug's overmoulding, so the plug can seat fully
-ANT_HOLE_D = 6.6  # SMA barrel 6.35
+ANT_HOLE_D = 6.6  # clears the SMA barrel
 E07_POCKET, E07_POCKET_DEPTH = 7.4, E07_JACK_Y1 - ANT_WALL_Y0 + 0.2  # 0.6: the jack body reaches 0.4 into the wall
+LIP_GAP_OVER = 0.5  # the lip's gap in the antenna wall runs this far past the pocket on each side
 NOTCH_W, NOTCH_DEPTH = 10.0, 1.2  # pry notch in the top half's skirt, on the near (J4) end
 CORNER_R = 2.0
 
@@ -85,10 +89,14 @@ LIP_X0, LIP_X1 = CAV_X0 - LIP_T, CAV_X1 + LIP_T  # the lip's outer faces
 LIP_Y0, LIP_Y1 = CAV_Y0 - LIP_T, CAV_Y1 + LIP_T
 REBATE = LIP_T + FIT  # 0.95: the rebate's depth into the top half's wall, from the cavity boundary
 SKIRT_T = WALL - REBATE  # 1.25: what is left of the top half's wall beside the lip
-LIP_GAP_X0, LIP_GAP_X1 = SOCKET_MID_X - E07_POCKET / 2 - 0.5, SOCKET_MID_X + E07_POCKET / 2 + 0.5  # the lip's gap in the antenna wall
+LIP_GAP_X0, LIP_GAP_X1 = SOCKET_MID_X - E07_POCKET / 2 - LIP_GAP_OVER, SOCKET_MID_X + E07_POCKET / 2 + LIP_GAP_OVER  # the lip's gap in the antenna wall
 BUMP_PROUD = BUMP_R - FIT  # 0.2: how far the bump stands past the skirt's face, i.e. the tab's deflection
 GROOVE_Y_OVER = 0.5  # the groove runs this far past each end of the tab
-NOTCH_X0, NOTCH_X1 = W / 2 - NOTCH_W / 2, W / 2 + NOTCH_W / 2
+NOTCH_X, NOTCH_X0, NOTCH_X1 = W / 2, W / 2 - NOTCH_W / 2, W / 2 + NOTCH_W / 2  # centred on the PCB
+SOLID_BOSS = BOSS_AT[2]  # (x, y, diameter, bored): the small solid boss beside H3
+SECTION_CC_Y, SECTION_DD_Y = TAB_Y[0], 44.0  # the drawings' section planes through a tab and through the plain lip
+POCKET_Z0, POCKET_Z1 = ANT_Z - E07_POCKET / 2, ANT_Z + E07_POCKET / 2  # the E07 pocket's z span
+ANT_HOLE_Z0, ANT_HOLE_Z1 = ANT_Z - ANT_HOLE_D / 2, ANT_Z + ANT_HOLE_D / 2
 
 
 def slots(ty: float) -> list[tuple[float, float]]:
