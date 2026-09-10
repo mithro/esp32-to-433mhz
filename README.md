@@ -304,6 +304,19 @@ measurements for a printed part, are in [Case drawings](docs/case-drawings.md).
   from the scripts, running ERC/DRC, and how CI builds the release
   packages.
 
+Not part of this repository, but worth a look before writing firmware from
+scratch:
+[OpenMQTTGateway's RF gateway](https://docs.openmqttgateway.com/use/rf.html#what-is-an-rf-gateway)
+is ESP32 firmware that bridges 433&nbsp;MHz to MQTT and already supports both
+radio families this adapter takes: CC1101 boards and SX127x modules. It
+offers four receiver flavours -- RCSwitch, Pilight and RF2 receive and
+transmit, RTL_433 receives only but knows the most devices. Its documented
+ESP32 + CC1101 builds are named as whole boards (Heltec WiFi LoRa 32,
+LilyGo LoRa 32, ESP32 DOIT DevKit, Ai-Thinker R01) rather than as a pin
+map, so this adapter's GPIOs would have to be mapped onto it, and the
+SX1278's DIO2 fly wire has no obvious counterpart there. **Nothing here has
+been tried against it yet** -- this is a lead to follow, not a tested route.
+
 ## Licence
 
 Apache License 2.0, see `LICENSE`.
