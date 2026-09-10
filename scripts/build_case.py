@@ -373,6 +373,7 @@ def measure(bottom: cq.Workplane, top: cq.Workplane, top_slot: cq.Workplane) -> 
     row("peg_proud", "peg tip above the PCB top (H1)", PEG_Z1, tips[0])
     row("peg_tip_from_bottom", "peg tip above the outside bottom face (H1)", PEG_Z1 - OUT_Z0, tips[0] - z0)
     row("peg_tip_H3_from_bottom", "peg tip above the outside bottom face (H3)", 0.0 - OUT_Z0, tips[2] - z0)
+    row("pcb_top_from_bottom", "the PCB's top face (z = 0, where the H3 peg tip is) above the outside bottom face", 0.0 - OUT_Z0, tips[2] - z0)
     # the lip, its gap, and the tabs on both long walls
     s = rod(bottom, "x", 41.0, PART_Z + 0.5)
     row("lip_t", "lip thickness", LIP_T, s[0][1] - s[0][0])
@@ -428,6 +429,7 @@ def measure(bottom: cq.Workplane, top: cq.Workplane, top_slot: cq.Workplane) -> 
         s = rod(top, "z", xf - 0.25 if side == "l" else xf + 0.25, TAB_Y[0])
         row(f"groove_z_{side}", f"groove centre above the seam, {side}", BUMP_Z, (s[0][1] + s[1][0]) / 2 - seam)
     row("bump_past_skirt", "bump standing past the skirt face (tab deflection)", BUMP_PROUD, rows["tab_t_at_bump_l"]["measured"] - rows["rebate"]["measured"])
+    row("skirt_behind_groove", "skirt left behind the groove", SKIRT_T - GROOVE_R, rows["skirt_t"]["measured"] - rows["groove_depth_l"]["measured"])
     row("groove_bottom_clear", "bump tip to the groove bottom", GROOVE_R - BUMP_PROUD, rows["groove_depth_l"]["measured"] - rows["bump_past_skirt"]["measured"])
     # bosses
     for i, (bx_, by_, dia, bored) in enumerate(BOSS_AT, 1):
@@ -467,6 +469,7 @@ def measure(bottom: cq.Workplane, top: cq.Workplane, top_slot: cq.Workplane) -> 
     row("window_from_back_face", "window centre from the back outside face", USB_WIN_Y - OUT_Y0, wy - y0)
     row("window_sill_from_bottom", "window sill above the outside bottom face", USB_WIN_Z0 - OUT_Z0, sill - z0)
     row("window_head_from_bottom", "window head above the outside bottom face", USB_WIN_Z1 - OUT_Z0, head - z0)
+    row("wall_above_window", "window head to the outside top face", OUT_Z1 - USB_WIN_Z1, z1 - head)
     ry = USB_WIN_Y + USB_RECESS_W / 2 - 0.7  # inside the recess, beside the window
     s = rod(top, "x", ry, PART_Z + 1.0, lo=-10, hi=0)
     row("recess_floor_x", "plug recess floor x", USB_RECESS_X, s[0][0])

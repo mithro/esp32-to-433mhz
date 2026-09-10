@@ -379,6 +379,11 @@
   "expected": 4.6,
   "measured": 4.6
  },
+ "pcb_top_from_bottom": {
+  "what": "the PCB's top face (z = 0, where the H3 peg tip is) above the outside bottom face",
+  "expected": 4.6,
+  "measured": 4.6
+ },
  "lip_t": {
   "what": "lip thickness",
   "expected": 0.8,
@@ -674,6 +679,11 @@
   "expected": 0.2,
   "measured": 0.2
  },
+ "skirt_behind_groove": {
+  "what": "skirt left behind the groove",
+  "expected": 0.83,
+  "measured": 0.8301
+ },
  "groove_bottom_clear": {
   "what": "bump tip to the groove bottom",
   "expected": 0.22,
@@ -883,6 +893,11 @@
   "what": "window head above the outside bottom face",
   "expected": 11.6,
   "measured": 11.6
+ },
+ "wall_above_window": {
+  "what": "window head to the outside top face",
+  "expected": 4.6,
+  "measured": 4.6
  },
  "recess_floor_x": {
   "what": "plug recess floor x",
