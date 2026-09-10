@@ -48,7 +48,7 @@ from export_manufacturing import git_describe  # noqa: E402
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 NAME = "esp32c3-radio-adapter-case"
-HALVES = ("bottom", "top")
+HALVES = ("bottom", "top", "top-slot")  # the top half comes plain or with the slot over J4: print one of the two
 STL_DIR = ROOT / "hardware" / "case"
 STEP_DIR = ROOT / "hardware" / "3d"
 MIN_TRIANGLES, MAX_TRIANGLES = 100, 5_000_000  # each half is a few thousand
@@ -62,7 +62,8 @@ CASE = {k: round(v, 4) for k, v in {
     "OUT_X1 - OUT_X0": cd.OUT_X1 - cd.OUT_X0,  # footprint across the board
     "OUT_Y1 - OUT_Y0": cd.OUT_Y1 - cd.OUT_Y0,  # footprint along the board
     "PART_Z - OUT_Z0": cd.PART_Z - cd.OUT_Z0,  # the bottom half's wall, floor to parting line
-    "OUT_Z1 - PART_Z": cd.OUT_Z1 - cd.PART_Z,  # the top half
+    "OUT_Z1 - PART_Z": cd.OUT_Z1 - cd.PART_Z,  # the top half's wall, seam to ceiling
+    "OUT_Z1 - BOSS_Z0": cd.OUT_Z1 - cd.BOSS_Z0,  # the top half overall: its bosses reach below the seam
     "WALL": cd.WALL,
     "OUT_Y1 - CAV_Y1": cd.ANT_WALL_T,  # the antenna wall
     "FLOOR": cd.FLOOR,
@@ -78,6 +79,9 @@ CASE = {k: round(v, 4) for k, v in {
     "BUMP_R - FIT": cd.BUMP_PROUD,  # how far the bump stands proud of the skirt's face
     "ANT_HOLE_D": cd.ANT_HOLE_D,
     "OUT_Z0": cd.OUT_Z0,  # the bottom half's floor, in the STL's z
+    "PIN_STUBS": cd.PIN_STUBS,  # what is left of a trimmed pin under the board
+    "J4_SLOT_X1 - J4_SLOT_X0": cd.J4_SLOT_X1 - cd.J4_SLOT_X0,  # the optional slot over J4
+    "J4_SLOT_Y1 - J4_SLOT_Y0": cd.J4_SLOT_Y1 - cd.J4_SLOT_Y0,
 }.items()}
 
 
@@ -173,7 +177,8 @@ def measure() -> dict[str, dict]:
         print(f"checked {step.relative_to(ROOT)}: STEP")
     expected = {
         "bottom": (CASE["OUT_X1 - OUT_X0"], CASE["OUT_Y1 - OUT_Y0"], CASE["PART_Z - OUT_Z0"] + CASE["TAB_H"]),
-        "top": (CASE["OUT_X1 - OUT_X0"], CASE["OUT_Y1 - OUT_Y0"], CASE["OUT_Z1 - PART_Z"]),
+        "top": (CASE["OUT_X1 - OUT_X0"], CASE["OUT_Y1 - OUT_Y0"], CASE["OUT_Z1 - BOSS_Z0"]),
+        "top-slot": (CASE["OUT_X1 - OUT_X0"], CASE["OUT_Y1 - OUT_Y0"], CASE["OUT_Z1 - BOSS_Z0"]),
     }
     for half, exp in expected.items():
         got = parts[half]["size"]
@@ -202,7 +207,8 @@ def readme_text(rev: str, parts: dict[str, dict]) -> str:
 
 Quick start
 -----------
-Print or upload the two .stl files, one of each, at 100 % in millimetres,
+Print or upload the bottom .stl and one of the two top .stl files (plain,
+or with the slot over J4), at 100 % in millimetres,
 as supplied (open side up), no supports.
 Home FDM: PLA or PETG, 0.2 mm layers, 3 perimeters.
 Service: MJF in PA12 nylon ("PA12-HP" at JLC3DP as of 2026-09), not
@@ -220,7 +226,14 @@ was designed around the two radios the case's collision check models: the
 Ebyte E07-M1101D, whose SMA jack pokes through the hole in the far wall,
 and the Ai-Thinker Ra-02 breakout, whose U.FL-to-SMA bulkhead pigtail is
 clamped in the same hole by its nut.  The SuperMini's USB-C plug goes
-through a window in the left wall.
+through a window in the left wall.  The case parts along the connectors'
+axis: the antenna hole and the USB-C window are each half in one half, so
+the connectors sit in the bottom half's cut-outs and the top half closes
+over them.  The SuperMini may be on its pin headers or soldered flat by its
+castellations; the window takes its USB-C at either height.  Every
+through-hole pin is assumed trimmed under the board to about {-c['PIN_STUBS']:.0f} mm, which
+is what lets the case be only {closed:.1f} mm tall.  It is not water-tight and does
+not try to be.
 
 The two halves snap together; there are no screws.  The board presses onto
 four {c['PEG_D']} mm pegs in the bottom half (they take the board's {c['HOLE_D']} mm M2
@@ -233,12 +246,17 @@ Parts
 -----
 Print one of each:
 
-  bottom   {NAME}-bottom.stl   1 off   {size_mm(parts, 'bottom')} mm
-  top      {NAME}-top.stl      1 off   {size_mm(parts, 'top')} mm
+  bottom   {NAME}-bottom.stl     1 off   {size_mm(parts, 'bottom')} mm
+  top      {NAME}-top.stl        1 off   {size_mm(parts, 'top')} mm
+     or    {NAME}-top-slot.stl   the same top half with a slot in the
+                                                   ceiling over the spare-GPIO header
+                                                   J4, for jumper wires out of the
+                                                   closed case; print one or the other
 
 Sizes are the overall bounding box of each STL, measured from its
 triangles; the bottom half's includes the {c['TAB_H']:.0f} mm snap tabs standing above
-its {c['PART_Z - OUT_Z0']} mm wall.  The case is {c['OUT_X1 - OUT_X0']} x {c['OUT_Y1 - OUT_Y0']} mm outside and {closed:.1f} mm tall when
+its {c['PART_Z - OUT_Z0']} mm wall, and the top half's the bosses that reach {c['OUT_Z1 - BOSS_Z0'] - c['OUT_Z1 - PART_Z']:.1f} mm below
+its {c['OUT_Z1 - PART_Z']} mm skirt.  The case is {c['OUT_X1 - OUT_X0']} x {c['OUT_Y1 - OUT_Y0']} mm outside and {closed:.1f} mm tall when
 closed, with {c['WALL']} mm walls ({c['OUT_Y1 - CAV_Y1']} mm at the antenna end) and a {c['FLOOR']} mm
 floor and ceiling.
 
@@ -251,13 +269,15 @@ Files
   {NAME}-top.stl       {kind['top']}, print orientation (open side up,
                                            i.e. upside down compared with
                                            how it sits on the board)
+  {NAME}-top-slot.stl  {kind['top-slot']}, the top half with the J4 slot
   {NAME}-bottom.step   STEP AP214, as modelled (see below)
   {NAME}-top.step      STEP AP214, as modelled
+  {NAME}-top-slot.step STEP AP214, as modelled
 
 The STL files are the ones to print or upload: each half already lies the
 way it prints, open side up, so no support is needed.  Their coordinates
 are not zeroed to the build plate (the bottom half's floor is at
-z = {c['OUT_Z0']:.0f}); slicers put a part on the plate when they import it, so this
+z = {c['OUT_Z0']:.1f}); slicers put a part on the plate when they import it, so this
 needs no attention unless a tool complains.
 
 You do not need the STEP files to print.  They are the KiCad 3D models of
@@ -300,14 +320,16 @@ What to look at after printing:
     One peg, the one at the antenna end on the USB-C side (beside JP1),
     is flush with the board's top instead of standing proud; that is by
     design, to leave room for a jumper cap on JP1.
-  * The hole in the antenna wall ({c['ANT_HOLE_D']} mm) and the USB-C window in the left
-    wall of the top half print unsupported; clean any sag from their upper
-    edges with a knife.
+  * The antenna hole ({c['ANT_HOLE_D']} mm) and the USB-C window are U-shaped cut-outs in
+    each half, so they print unsupported; clean any stringing from their
+    edges with a knife.  If you print the slotted top, the {c['J4_SLOT_X1 - J4_SLOT_X0']:.1f} x {c['J4_SLOT_Y1 - J4_SLOT_Y0']:.1f} mm slot
+    is a plain hole in the ceiling.
 
-To assemble: press the board onto the pegs (SuperMini's USB-C into the
-window side, radio's antenna connector towards the hole in the far wall),
-fit the antenna connector or pigtail bulkhead through the hole, and press
-the top half on until the four tabs click.
+To assemble: trim every pin under the board to about {-c['PIN_STUBS']:.0f} mm, press the
+board onto the pegs (SuperMini's USB-C into the window side, radio's
+antenna connector into the cut-out in the far wall), lay the pigtail's
+bulkhead in the same cut-out if it is the Ra-02, and press the top half
+on until the four tabs click; its nut goes on outside afterwards.
 
 Ordering from a 3D-printing service (JLCPCB / JLC3DP)
 ----------------------------------------------------
@@ -366,16 +388,16 @@ def notes_text(rev: str, zip_name: str, parts: dict[str, dict]) -> str:
         "",
         "The printable case for the socket adapter, two snap-together halves with no screws (the board presses",
         "onto pegs; the E07-M1101D's SMA jack or the Ra-02's pigtail bulkhead goes through the hole in the far",
-        f"wall), is `{zip_name}`. It holds the two STL files in print orientation (open side up,",
-        "no supports), the two STEP models (KiCad frame, origin at mounting hole H1) and a README.txt with the",
-        "sizes, FDM print settings and how to order it from a 3D-printing service. The same two `.stl` files are",
+        f"wall), is `{zip_name}`. It holds the STL files in print orientation (open side up,",
+        "no supports), the STEP models (KiCad frame, origin at mounting hole H1) and a README.txt with the",
+        "sizes, FDM print settings and how to order it from a 3D-printing service. The same `.stl` files are",
         "also attached loose, for dropping straight into a slicer. In short: at home, PLA or PETG, no supports,",
         "as supplied; at a service, MJF PA12 nylon, not standard resin; details in the zip's README.txt. See",
         "docs/3d-models.md.",
         "",
         "| Package | Parts (1 each) | Size (mm) | Files |",
         "| --- | --- | --- | --- |",
-        f"| `{zip_name}` | `{NAME}-bottom.stl`, `{NAME}-top.stl` | {size_mm(parts, 'bottom')}, {size_mm(parts, 'top')} | 2 STL, 2 STEP, README.txt |",
+        f"| `{zip_name}` | `{NAME}-bottom.stl`, `{NAME}-top.stl` (or `{NAME}-top-slot.stl`, with a slot over J4) | {size_mm(parts, 'bottom')}, {size_mm(parts, 'top')} | 3 STL, 3 STEP, README.txt |",
         "",
         SECTION_END,
         "",

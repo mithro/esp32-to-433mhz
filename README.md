@@ -247,11 +247,11 @@ beside the breakout):
 
 ![The bottom half of the case with the adapter and the Ra-02 breakout: isometric, top, bottom, front (antenna), back (SuperMini end), left (USB-C) and right views](docs/images/esp32c3-radio-adapter-assembly-ra02-case-open-sheet.png)
 
-The halves on their own:
+The halves on their own, and the slotted top:
 
-| Bottom half: pegs, lip and the four snap tabs | Top half from below: bosses, grooved skirt, USB-C window, antenna hole |
-| --- | --- |
-| ![The empty bottom half from above: the four pegged standoffs, the lip round the rim and the four snap tabs with their bumps](docs/images/esp32c3-radio-adapter-assembly-case-bottom-iso.png) | ![The top half turned over: three bored bosses and one solid one, the rebated skirt with its four grooves, the USB-C window and the antenna hole with its square pocket](docs/images/esp32c3-radio-adapter-assembly-case-top-underside.png) |
+| Bottom half: pegs, lip and the four snap tabs | Top half from below: bosses, grooved skirt, USB-C window, antenna hole | The slotted top half closed over the E07 |
+| --- | --- | --- |
+| ![The empty bottom half from above: the four pegged standoffs, the lip round the rim and the four snap tabs with their bumps](docs/images/esp32c3-radio-adapter-assembly-case-bottom-iso.png) | ![The top half turned over: three bored bosses and one solid one, the rebated skirt with its four grooves, the USB-C window and the antenna hole with its square pocket](docs/images/esp32c3-radio-adapter-assembly-case-top-underside.png) | ![The closed case with the slotted top half: J4's pins reach up through the slot in the ceiling](docs/images/esp32c3-radio-adapter-assembly-e07-case-closed-slot-iso.png) |
 
 The same views with the other radio (the Ra-02 closed, the E07-M1101D
 open) and the exploded views are in
@@ -259,18 +259,25 @@ open) and the exploded views are in
 
 * Two halves that snap together: `esp32c3-radio-adapter-case-bottom.stl`
   and `esp32c3-radio-adapter-case-top.stl`, each printed open side up. No
-  supports, no screws; 2.2 mm walls; 36.2&nbsp;x&nbsp;66.7&nbsp;x&nbsp;20.6 mm
-  outside.
+  supports, no screws; 2.2 mm walls; 36.2&nbsp;x&nbsp;66.7&nbsp;x&nbsp;16.2 mm
+  outside. Trim every pin under the board to about 1 mm first: the floor
+  counts on it.
 * The board presses onto four 2.15 mm pegs in the bottom half (they fit
   the 2.2 mm M2 corner holes), and bosses in the top half hold it there
-  once the case is shut. The USB-C plug goes through the window in the
-  left wall.
-* One 6.6 mm hole in the front wall serves both radios: the E07-M1101D's
-  SMA jack pokes through it, and the Ra-02's U.FL-to-SMA pigtail bulkhead
-  is clamped in it by its nut, with the spare cable stowed beside the
-  breakout.
+  once the case is shut. The SuperMini can be on its headers or soldered
+  flat by its castellations.
+* The seam runs through the connectors: the antenna hole and the USB-C
+  window are half in each half, so the connectors lie in the bottom half's
+  cut-outs and the top closes over them. One 6.6 mm hole in the front wall
+  serves both radios: the E07-M1101D's SMA jack pokes through it, and the
+  Ra-02's U.FL-to-SMA pigtail bulkhead is clamped in it by its nut, with
+  the spare cable stowed beside the breakout.
 * Four snap tabs on the bottom half click into grooves in the top half's
   skirt; the notch at the seam on the back takes a fingernail to open it.
+  It is not water-tight and does not try to be.
+* `esp32c3-radio-adapter-case-top-slot.stl` is the same top half with a
+  slot over the spare-GPIO header J4, for jumper wires out of the closed
+  case; print it instead of the plain top if you want that.
 * The package's README.txt has the print settings, what to inspect (the
   0.8 mm snap tabs, the peg fit, which depends on the printer's
   calibration) and the material to pick at a service.

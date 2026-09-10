@@ -104,15 +104,16 @@ top-left corner, z up from its top surface):
 
 | Feature | Value |
 | --- | --- |
-| Cavity | x -2.3 to 29.5, y -0.5 to 61.5, z -7.0 to 9.6 (the USB-C face, the pin tips under the board and the J4/J5 pins with 0.3 to 1.1 mm to spare) |
+| Cavity | x -2.3 to 29.5, y -0.5 to 61.5, z -2.6 to 9.6 (the USB-C face, the trimmed pin stubs and back-side 0805s under the board, and the J4/J5 pins, with 0.3 to 1.1 mm to spare). Every through-hole pin is assumed trimmed to a 1 mm stub under the board |
 | Walls, floor, ceiling | 2.2 / 2.0 / 2.0 mm; the antenna wall 2.5 mm, y 61.5 to 64.0 |
-| Outside | 36.2&nbsp;x&nbsp;66.7&nbsp;x&nbsp;20.6 mm, vertical corners R2 |
-| Parting line | z = -0.5, just under the board's top, so the USB-C window and the antenna hole are whole in the top half. Bottom half 8.5 mm tall, top half 12.1 |
-| Standoffs and pegs | 4.0 mm standoffs under the four M2 holes, floor to the board's underside (5.4 mm), each with a 2.15 mm peg, chamfered, standing 0.4 mm proud of the board (flush at the bottom-left hole). FDM pegs print a touch oversize, which is the press fit into the 2.2 mm holes. 4 mm rather than 5 so the bottom-left one clears JP1's pin 2. |
+| Outside | 36.2&nbsp;x&nbsp;66.7&nbsp;x&nbsp;16.2 mm, vertical corners R2 |
+| Parting line | z = 3.3, on the antenna axis, so the antenna hole and the USB-C window are half in each half: the connectors lie in the bottom half's cut-outs and the top half closes over them. Bottom half 7.9 mm tall (12.9 with its tabs), top half 8.3 (11.4 with its bosses) |
+| Standoffs and pegs | 4.0 mm standoffs under the four M2 holes, floor to the board's underside (1.0 mm), each with a 2.15 mm peg, chamfered, standing 0.4 mm proud of the board (flush at the bottom-left hole). FDM pegs print a touch oversize, which is the press fit into the 2.2 mm holes. 4 mm rather than 5 so the bottom-left one clears JP1's pin 2. |
 | Hold-down bosses | from the ceiling to 0.2 mm above the board: 4.4 mm bosses bored 2.6 mm over three pegs, and a 3.0 mm solid one at (2.2, 36.6) in the bottom-left corner, beside its hole, because a jumper cap on JP1 and the Ra-02's overhang leave no room over it |
-| Snap fit | the bottom half's lip (the inner 0.8 mm of the wall) rises 1.5 mm into a rebate in the top half's skirt, 0.15 mm clear, gapped at the antenna hole. Two tabs per long wall (at y 32 and 50), 8 mm wide, 6 mm tall, cut free of the lip by 1 mm slots, each with a 0.35 mm half-round bump at 5.3 mm that clicks into a 0.42 mm groove in the skirt. The bump stands 0.2 mm proud of the skirt face, about 1 % strain over the tab |
-| USB-C window | left wall, 13&nbsp;x&nbsp;7.5 mm centred on the receptacle (y 14.6, z 5.1): room for a plug's overmoulding, so it seats fully |
-| Antenna hole | 6.6 mm at x 12.67, z 3.3, with a 7.4 mm square pocket 0.6 mm deep on the inside for the E07 jack's body, which reaches 0.4 mm into the wall |
+| Snap fit | the bottom half's lip (the inner 0.8 mm of the wall) rises 1.5 mm into a rebate in the top half's skirt, 0.15 mm clear, gapped at the antenna hole and across the USB-C recess (where the rebate would leave a 0.25 mm sliver of skirt, so there the top half's wall stays full thickness). Two tabs per long wall (at y 32 and 50), 8 mm wide, 5 mm tall, cut free of the lip by 1 mm slots, each with a 0.35 mm half-round bump at 4.3 mm that clicks into a 0.42 mm groove in the skirt. The bump stands 0.2 mm proud of the skirt face, about 1 % strain over the tab |
+| USB-C window | left wall, 10 mm wide, z 0.7 to 7.0 (y 14.6 centre): the receptacle at either height, whether the SuperMini is soldered flat (receptacle z 1.0 to 4.2) or on its headers (3.5 to 6.7); split by the seam, so the bottom half's U cradles a flat-mounted receptacle. Outside it a 13&nbsp;x&nbsp;10 mm recess 1 mm deep takes the plug's overmoulding, leaving 1.2 mm of wall for the plug's shell to pass |
+| Antenna hole | 6.6 mm at x 12.67, z 3.3, half in each half, with a 7.4 mm square pocket 0.6 mm deep on the inside of the bottom half for the E07 jack's body, which reaches 0.4 mm into the wall (in the top half the rebate already clears it) |
+| J4 slot | in the second top half only: 18.8&nbsp;x&nbsp;3.5 mm through the ceiling over the spare-GPIO header, 0.5 mm past its body all round |
 | Pry notch | 10&nbsp;x&nbsp;1.2 mm in the top half's skirt at the y = 0 end, on the seam |
 
 The script's constants live in `scripts/case_dims.py`, which
