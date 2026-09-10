@@ -147,9 +147,9 @@ with the measured solids.
 | 9 | Bottom half: lip gaps, in the antenna wall (centred on the antenna axis) and in the USB-C wall (across the plug recess) | 8.40; 13.00 | ±0.20 |
 | 10 | Bottom half: tab width; tab height above the rim; tab thickness through the bump; pitch of the two tabs | 8.00; 5.00; 1.15; 18.00 | ±0.10 |
 | 11 | Bottom half: first tab's centre from the J4-end outside face (C); bump centre above the rim | 34.70; 4.30 | ±0.20 |
-| 12 | Bottom half, depth rod with the base across both lips at y = 44 (section D-D, no tab there), so from 1.50 above the rim: floor; standoff top; peg tip (H1, H2, H4); peg tip H3 | 7.40; 6.40; 4.40; 4.80 | ±0.10 |
+| 12 | Bottom half, depth rod with its base across both lips at y = 44 (section D-D, no tab there), the lips 1.50 above the rim: floor; standoff top; peg tip (H1, H2, H4); peg tip H3 | 7.40; 6.40; 4.40; 4.80 | ±0.10 |
 | 13 | Bottom half: floor thickness (bottom half height less the floor depth from the rim) | 2.00 | ±0.10 |
-| 14 | Bottom half: standoff diameter; standoff height, floor to the PCB's underside (the trimmed pin stubs' room); pitch across x along | 4.00; 1.00; 24.20 x 33.20 | ±0.20 |
+| 14 | Bottom half: standoff diameter; standoff height, floor to the PCB's underside (the trimmed pin stubs' room); standoff pitch, across x along | 4.00; 1.00; 24.20 x 33.20 | ±0.20 |
 | 15 | Bottom half: H1 standoff centre from the USB-C wall's outside face (B) and from the J4-end face (C) | 6.90; 5.10 | ±0.20 |
 | 16 | Bottom half: peg diameter below the chamfer; peg above the standoff (H1, H2, H4); H3 | 2.15; 2.00; 1.60 | ±0.10 |
 | 17 | Bottom half: USB-C window width; its sill below the rim; window centre from C | 10.00; 2.60; 17.30 | ±0.20 |
