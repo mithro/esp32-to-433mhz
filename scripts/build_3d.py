@@ -67,6 +67,13 @@ CABLE = cq.Color(0.20, 0.20, 0.22)
 
 PITCH = 2.54
 HDR_BODY, PIN_SHORT, PIN_LONG, PIN_SQ = 2.5, 3.0, 6.0, 0.64
+# On the adapter every through-hole pin is trimmed under the board to this
+# much of stub and solder (the printed case counts on it: scripts/case_dims.py
+# PIN_STUBS).  The full-board models, which plug into the adapter, and the
+# adapter's own headers are drawn trimmed; the "-components" models of the
+# reference boards keep the pins as the products come.
+ADAPTER_T, PIN_STUB = 1.6, 1.0
+PIN_TRIMMED = ADAPTER_T + PIN_STUB  # a trimmed pin below the header body: through the adapter and the stub
 
 
 # ---------------------------------------------------------------------------
@@ -104,9 +111,9 @@ def pin_header(pins: list[tuple[float, float]], body_z0: float, up: float, down:
     return [("body", body, PLASTIC), ("pins", pin, METAL)]
 
 
-def module_header(pins: list[tuple[float, float]]) -> list[tuple[str, cq.Workplane, cq.Color]]:
+def module_header(pins: list[tuple[float, float]], trimmed: bool = False) -> list[tuple[str, cq.Workplane, cq.Color]]:
     """Header soldered to a module's back: body under the PCB, long pins down."""
-    return pin_header(pins, -HDR_BODY, PIN_SHORT, PIN_LONG)
+    return pin_header(pins, -HDR_BODY, PIN_SHORT, PIN_TRIMMED if trimmed else PIN_LONG)
 
 
 def pcb(w: float, h: float, t: float, colour: cq.Color, holes: list[tuple[float, float, float]] = ()) -> tuple[str, cq.Workplane, cq.Color]:
@@ -189,7 +196,7 @@ def build_supermini() -> None:
     board = pcb(W, H, t, PCB_BLACK)
     b = castellations(board[1], pins_l, 0, sm.DRILL, t)
     b = castellations(b, pins_r, W, sm.DRILL, t)
-    save("esp32-c3-supermini", [("pcb", b, PCB_BLACK)] + comps + module_header(pins_l + pins_r), *origin)
+    save("esp32-c3-supermini", [("pcb", b, PCB_BLACK)] + comps + module_header(pins_l + pins_r, trimmed=True), *origin)
 
 
 def build_e07() -> None:
@@ -205,8 +212,8 @@ def build_e07() -> None:
     for (x, y) in ((3.5, 11.0), (3.5, 12.6), (11.5, 11.0), (11.5, 12.6), (5.0, 16.5), (10.0, 16.5)):
         comps.append(("passive", box(x - 0.8, y - 0.4, x + 0.8, y + 0.4, t, t + 0.5), CERAMIC))
     comps += sma_edge_jack(W / 2, H, t / 2)
-    comps += module_header(pins)
-    save("cc1101-e07-m1101d-components", comps, *origin)
+    save("cc1101-e07-m1101d-components", comps + module_header(pins), *origin)
+    comps += module_header(pins, trimmed=True)
     board = pcb(W, H, t, PCB_BLUE, [(e07.HOLE_X, hole_y, e07.HOLE_D), (W - e07.HOLE_X, hole_y, e07.HOLE_D)])
     save("cc1101-e07-m1101d", [board] + comps, *origin)
 
@@ -225,8 +232,8 @@ def build_dsun() -> None:
     for (x, y) in ((9.5, 9.0), (9.5, 11.0), (11.5, 9.0), (11.5, 11.0), (3.0, 19.5), (4.6, 19.5), (6.2, 19.5), (9.0, 15.5), (10.6, 15.5), (12.2, 15.5), (11.0, 21.0), (5.0, 24.0)):
         comps.append(("passive", box(x - 0.8, y - 0.5, x + 0.8, y + 0.5, t, t + 0.5), CERAMIC))
     comps += sma_edge_jack(W / 2, H, t / 2)
-    comps += module_header(pins)
-    save("cc1101-dsun-components", comps, *origin)
+    save("cc1101-dsun-components", comps + module_header(pins), *origin)
+    comps += module_header(pins, trimmed=True)
     board = pcb(W, H, t, PCB_GREEN, [(dsun.HOLE_X, hole_y, dsun.HOLE_D), (W - dsun.HOLE_X, hole_y, dsun.HOLE_D)])
     save("cc1101-dsun", [board] + comps, *origin)
 
@@ -248,9 +255,9 @@ def build_ra02_breakout() -> None:
     W, H, t = rb.BOARD_W, rb.BOARD_H, 1.6
     pins = [(rb.hdr_x(n), rb.hdr_y(n)) for n in range(1, 9)]
     origin = pins[0]
-    comps = ra02_module(rb.MOD_X, rb.MOD_Y, t) + module_header(pins)
-    save("sx1278-ra02-breakout-components", comps, *origin)
-    save("sx1278-ra02-breakout", [pcb(W, H, t, PCB_BLUE)] + comps, *origin)
+    comps = ra02_module(rb.MOD_X, rb.MOD_Y, t)
+    save("sx1278-ra02-breakout-components", comps + module_header(pins), *origin)
+    save("sx1278-ra02-breakout", [pcb(W, H, t, PCB_BLUE)] + comps + module_header(pins, trimmed=True), *origin)
     build_pigtail(origin, (rb.MOD_X + rb.IPEX[0], rb.MOD_Y + rb.IPEX[1], t + 2.05))
 
 
@@ -301,9 +308,9 @@ def build_sx1278_module() -> None:
 
 
 def build_small_parts() -> None:
-    # Adapter headers: body on top, long pins up; pins stepping along +x or +y (board).
-    save("pin-header-1x07", pin_header([(i * PITCH, 0) for i in range(7)], 0, PIN_LONG, PIN_SHORT))
-    save("pin-header-1x02", pin_header([(0, i * PITCH) for i in range(2)], 0, PIN_LONG, PIN_SHORT))
+    # Adapter headers: body on top, long pins up, the short pins trimmed under the board; pins stepping along +x or +y (board).
+    save("pin-header-1x07", pin_header([(i * PITCH, 0) for i in range(7)], 0, PIN_LONG, PIN_TRIMMED))
+    save("pin-header-1x02", pin_header([(0, i * PITCH) for i in range(2)], 0, PIN_LONG, PIN_TRIMMED))
     # Jumper cap on a 1x2 header (pins along +y), seated on the header body.
     cap = box(-1.25, -1.27, 1.25, PITCH + 1.27, HDR_BODY, HDR_BODY + 6.0)
     save("jumper-cap", [("cap", cap, PLASTIC)])

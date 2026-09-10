@@ -675,16 +675,17 @@ RADIO_MODELS = {  # build_radio(radio=...) -> the models on J3
     "ra02": [Model("sx1278-ra02-breakout.step", (-3 * SM_PITCH, 0, HEADER_BODY)), Model("sx1278-ra02-pigtail.step", (-3 * SM_PITCH, 0, HEADER_BODY))],
     "none": [],
 }
-CASE_LIFT = 16.0  # the exploded view lifts the top half this far: its skirt clears the boards and headers with room to see in
+CASE_LIFT = 12.0  # the exploded view lifts the top half this far: its skirt (at z 3.3) clears the headers (8.5) with room to see in
 # A half on its own: KiCad always draws the adapter, so the half is moved to
-# put its 2 mm floor (bottom half, z -9.0 to -7.0) or ceiling (top half, z 9.6
+# put its 2 mm floor (bottom half, z -4.6 to -2.6) or ceiling (top half, z 9.6
 # to 11.6) round the 1.6 mm board (z -1.6 to 0), which hides it.
-CASE_SINK_BOTTOM, CASE_SINK_TOP = 7.2, -11.4
-CASE_BOTTOM, CASE_TOP = "esp32c3-radio-adapter-case-bottom.step", "esp32c3-radio-adapter-case-top.step"
+CASE_SINK_BOTTOM, CASE_SINK_TOP = 2.8, -11.4
+CASE_BOTTOM, CASE_TOP, CASE_TOP_SLOT = "esp32c3-radio-adapter-case-bottom.step", "esp32c3-radio-adapter-case-top.step", "esp32c3-radio-adapter-case-top-slot.step"
 CASE_MODELS = {  # build_radio(case=...) -> the printed case's halves on H1 (scripts/build_case.py)
     None: [],
     "open": [Model(CASE_BOTTOM)],
     "closed": [Model(CASE_BOTTOM), Model(CASE_TOP)],
+    "closed-slot": [Model(CASE_BOTTOM), Model(CASE_TOP_SLOT)],  # the top half with the slot over J4
     "exploded": [Model(CASE_BOTTOM), Model(CASE_TOP, (0, 0, CASE_LIFT))],
     "bottom": [Model(CASE_BOTTOM, (0, 0, CASE_SINK_BOTTOM))],
     "top": [Model(CASE_TOP, (0, 0, CASE_SINK_TOP))],

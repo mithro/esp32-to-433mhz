@@ -87,6 +87,8 @@ CASE_VIEWS = {
     "left": (["--side", "left", "--zoom", "1.15", *FLAT_WALL, *CASE_PIVOT], 1800, 700),
     "right": (["--side", "right", "--zoom", "1.15", *FLAT_WALL, *CASE_PIVOT], 1800, 700),
 }
+# The slotted top half, from above and a little behind, so the jumper-wire slot over J4 reads.
+SLOT_VIEWS = {"iso": (["--perspective", "--rotate", "'-55,0,208'", "--zoom", "0.45", "--light-side", "0.35", "--light-camera", "0.5", *CASE_PIVOT], 1800, 1400)}
 # The exploded case is taller (the top half floats CASE_LIFT above the bottom), so it zooms out and pivots a little higher.
 EXPLODED_VIEWS = {
     "iso": (["--perspective", "--rotate", "'-55,0,28'", "--zoom", "0.42", "--pivot", "'0,-1.5,0.6'"], 1800, 1500),
@@ -123,6 +125,7 @@ VARIANTS = {
     "radio-ra02-case-exploded": Variant(RADIO, lambda: ga.build_radio("ra02", case="exploded"), "ra02-case-exploded", EXPLODED_VIEWS),
     "case-bottom": Variant(RADIO, lambda: ga.build_radio("none", case="bottom"), "case-bottom", BOTTOM_ALONE_VIEWS),
     "case-top": Variant(RADIO, lambda: ga.build_radio("none", case="top"), "case-top", TOP_ALONE_VIEWS),
+    "radio-e07-case-closed-slot": Variant(RADIO, lambda: ga.build_radio("e07", case="closed-slot"), "e07-case-closed-slot", SLOT_VIEWS),
     "sx1278": Variant("esp32c3-sx1278-adapter", ga.build_sx1278, "module", VIEWS, export=True),
 }
 

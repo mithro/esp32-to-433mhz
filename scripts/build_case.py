@@ -57,10 +57,13 @@ from case_dims import (  # noqa: E402
     HIGHEST, HOLES, HOLE_D, HOLE_IN, LIP_GAP_X0, LIP_GAP_X1, LIP_H, LIP_T, LIP_X0, LIP_X1, LIP_Y1,
     NOTCH_DEPTH, NOTCH_W, NOTCH_X, NOTCH_X0, NOTCH_X1, OUT_X0, OUT_X1, OUT_Y0, OUT_Y1, OUT_Z0,
     OUT_Z1, PART_Z, PEG_CHAMFER, PEG_D, PEG_H, PEG_Z1, PIGTAIL_BARREL_LEN, PIGTAIL_FLANGE_T,
-    PIGTAIL_HEX_AF, PIGTAIL_NUT_T, PIN_TIPS, POCKET_Z0, POCKET_Z1, REBATE, SKIRT_H, SKIRT_T, SLOT,
+    PIGTAIL_HEX_AF, PIGTAIL_NUT_T, POCKET_Z0, POCKET_Z1, REBATE, SKIRT_H, SKIRT_T, SLOT,
     SMA_BARREL_D, SOCKET_MID_X, SOLID_BOSS, STANDOFF_D, STANDOFF_Z0, STANDOFF_Z1, TAB_H, TAB_W,
     TAB_Y, TOP_T, USB_WIN_H, USB_WIN_W, USB_WIN_Y, USB_WIN_Z, USB_X0, USB_Y0, USB_Y1, USB_Z0,
     USB_Z1, W, WALL, slots,
+    J4_SLOT_X0, J4_SLOT_X1, J4_SLOT_Y0, J4_SLOT_Y1, LIP_GAP_USB_Y0, LIP_GAP_USB_Y1, PIN_STUBS, PLUG_H, PLUG_SHELL_H,
+    PLUG_SHELL_W, PLUG_W, SM_FLAT_Z0, SM_HDR_Z0, SM_PCB_T, USB_FLAT_Z0, USB_H, USB_HDR_Z0, USB_RECESS_H,
+    ANT_HOLE_Z0, USB_RECESS_DEPTH, USB_RECESS_W, USB_RECESS_X, USB_RECESS_Z0, USB_RECESS_Z1, USB_WIN_Z0, USB_WIN_Z1,
 )
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
@@ -87,6 +90,19 @@ def along_y_at(profile: cq.Workplane, x: float, y0: float, length: float, z: flo
     return profile.extrude(length).translate((x, -y0, z))
 
 
+def connector_cuts() -> list[cq.Workplane]:
+    """The openings the connectors need, cut from both halves: they straddle
+    the seam.  The USB-C window through the left wall with the recess for
+    the plug's overmoulding outside it; the antenna hole through the far wall
+    with the pocket for the E07 jack's square body inside it."""
+    return [
+        box(OUT_X0 - 1, USB_WIN_Y - USB_WIN_W / 2, CAV_X0 + 0.1, USB_WIN_Y + USB_WIN_W / 2, USB_WIN_Z0, USB_WIN_Z1),
+        box(OUT_X0 - 1, USB_WIN_Y - USB_RECESS_W / 2, USB_RECESS_X, USB_WIN_Y + USB_RECESS_W / 2, USB_RECESS_Z0, USB_RECESS_Z1),
+        along_y_at(cq.Workplane("XZ").circle(ANT_HOLE_D / 2), SOCKET_MID_X, CAV_Y1 - 1, OUT_Y1 - CAV_Y1 + 2, ANT_Z),
+        box(SOCKET_MID_X - E07_POCKET / 2, CAV_Y1 - 0.1, SOCKET_MID_X + E07_POCKET / 2, CAV_Y1 + E07_POCKET_DEPTH, POCKET_Z0, POCKET_Z1),
+    ]
+
+
 def build_bottom() -> cq.Workplane:
     b = rounded_box(OUT_X0, OUT_Y0, OUT_X1, OUT_Y1, OUT_Z0, PART_Z, CORNER_R)
     b = b.cut(box(CAV_X0, CAV_Y0, CAV_X1, CAV_Y1, CAV_Z0, PART_Z + 1))
@@ -96,11 +112,12 @@ def build_bottom() -> cq.Workplane:
         top_z = 0.0 if (hx, hy) == FLUSH_PEG else PEG_Z1
         peg = cyl(hx, hy, PEG_D / 2, STANDOFF_Z1 - 0.1, top_z).faces(">Z").chamfer(PEG_CHAMFER)
         b = b.union(peg)
-    # The lip, gapped where the antenna connectors pass through the far
-    # wall (the E07's jack body and the pigtail's flange sit right on the
-    # parting line there), and the snap tabs cut free of it.
+    # The lip, gapped where the connectors pass through the walls on the
+    # seam (the E07's jack body and the pigtail's flange sit right there; the
+    # USB-C window is cut through it below), and the snap tabs cut free of it.
     lip = ring(LIP_T, PART_Z, PART_Z + LIP_H)
     lip = lip.cut(box(LIP_GAP_X0, CAV_Y1 - 0.1, LIP_GAP_X1, LIP_Y1 + 0.1, PART_Z - 0.1, PART_Z + LIP_H + 0.1))
+    lip = lip.cut(box(LIP_X0 - 0.1, LIP_GAP_USB_Y0, CAV_X0 + 0.1, LIP_GAP_USB_Y1, PART_Z - 0.1, PART_Z + LIP_H + 0.1))
     for ty in TAB_Y:
         for x_in, side in ((CAV_X0, -1), (CAV_X1, +1)):  # left wall (tab faces -x), right wall (+x)
             x_out = x_in + side * LIP_T
@@ -110,13 +127,18 @@ def build_bottom() -> cq.Workplane:
             for sy0, sy1 in slots(ty):
                 lip = lip.cut(box(min(x_in, x_out) - 0.1, sy0, max(x_in, x_out) + 0.1, sy1, PART_Z - 0.1, PART_Z + LIP_H + 1))
             lip = lip.union(tab)
-    return b.union(lip)
+    b = b.union(lip)
+    for c in connector_cuts():
+        b = b.cut(c)
+    return b
 
 
-def build_top() -> cq.Workplane:
+def build_top(slot: bool = False) -> cq.Workplane:
     b = rounded_box(OUT_X0, OUT_Y0, OUT_X1, OUT_Y1, PART_Z, OUT_Z1, CORNER_R)
     b = b.cut(box(CAV_X0, CAV_Y0, CAV_X1, CAV_Y1, PART_Z - 1, CAV_Z1))
-    b = b.cut(ring(REBATE, PART_Z - 1, PART_Z + SKIRT_H))  # the rebate the lip and tabs sit in
+    rebate = ring(REBATE, PART_Z - 1, PART_Z + SKIRT_H)  # the rebate the lip and tabs sit in ...
+    rebate = rebate.cut(box(CAV_X0 - REBATE - 0.1, LIP_GAP_USB_Y0, CAV_X0 + 0.1, LIP_GAP_USB_Y1, PART_Z - 2, PART_Z + SKIRT_H + 1))  # ... except across the USB-C recess
+    b = b.cut(rebate)
     # Grooves for the bumps, in the skirt's inner face.
     for ty in TAB_Y:
         for x_in, side in ((CAV_X0, -1), (CAV_X1, +1)):
@@ -128,13 +150,12 @@ def build_top() -> cq.Workplane:
         if bored:
             boss = boss.cut(cyl(bx_, by_, BOSS_BORE_D / 2, BOSS_Z0 - 0.1, BOSS_Z0 + BOSS_BORE_DEPTH))
         b = b.union(boss)
-    # USB-C window in the left wall, centred on the receptacle.
-    b = b.cut(box(OUT_X0 - 1, USB_WIN_Y - USB_WIN_W / 2, CAV_X0 + 0.1, USB_WIN_Y + USB_WIN_W / 2, USB_WIN_Z - USB_WIN_H / 2, USB_WIN_Z + USB_WIN_H / 2))
-    # Antenna hole through the far wall, and the pocket for the E07's jack body.
-    b = b.cut(along_y_at(cq.Workplane("XZ").circle(ANT_HOLE_D / 2), SOCKET_MID_X, CAV_Y1 - 1, OUT_Y1 - CAV_Y1 + 2, ANT_Z))
-    b = b.cut(box(SOCKET_MID_X - E07_POCKET / 2, CAV_Y1 - 0.1, SOCKET_MID_X + E07_POCKET / 2, CAV_Y1 + E07_POCKET_DEPTH, POCKET_Z0, POCKET_Z1))
+    for c in connector_cuts():
+        b = b.cut(c)
     # Pry notch in the skirt's bottom edge at the near (J4) end.
     b = b.cut(box(NOTCH_X0, OUT_Y0 - 1, NOTCH_X1, CAV_Y0 - REBATE - 0.01, PART_Z - 1, PART_Z + NOTCH_DEPTH))
+    if slot:  # the optional slot in the ceiling over J4, the spare-GPIO header
+        b = b.cut(box(J4_SLOT_X0, J4_SLOT_Y0, J4_SLOT_X1, J4_SLOT_Y1, CAV_Z1 - 0.1, OUT_Z1 + 1))
     return b
 
 
@@ -170,13 +191,18 @@ def obstacles() -> dict[str, cq.Workplane]:
         "jumper cap on JP1": box(ga.JP1_X - 1.25, ga.JP1_Y - 1.27, ga.JP1_X + 1.25, ga.JP1_Y + ga.SM_PITCH + 1.27, ga.HEADER_BODY, ga.HEADER_BODY + 6.0),
         "J4 header body and pins": box(ga.EXP_X1 - 1.27, ga.EXP_Y - 1.27, ga.EXP_X1 + 6 * ga.SM_PITCH + 1.27, ga.EXP_Y + 1.27, 0, HIGHEST),
         "J5 header body and pins": box(ga.J5_X - 1.27, ga.J5_Y - 1.27, ga.J5_X + ga.SM_PITCH + 1.27, ga.J5_Y + 1.27, 0, HIGHEST),
-        "module header pins under the board": pins(sm_pins + sock, PIN_TIPS),
-        "J4, J5 and JP1 pins under the board": pins(j4 + j5 + jp1, -3.0),
+        "trimmed pin stubs under the board": pins(sm_pins + sock + j4 + j5 + jp1, PIN_STUBS),
         "R1 on the back": box(ga.R1_X - 0.7, ga.R1_Y - 2.0, ga.R1_X + 0.7, ga.R1_Y + 2.0, -BOARD_T - 0.6, -BOARD_T),
         "R4 on the back": box(ga.R4_X - 0.7, ga.R4_Y - 1.6, ga.R4_X + 0.7, ga.R4_Y + 1.6, -BOARD_T - 0.6, -BOARD_T),
-        "SuperMini PCB": box(-0.5, 5.6, 22.0, 23.6, 2.5, 3.5),
-        "USB-C receptacle": box(USB_X0, USB_Y0, 5.4, USB_Y1, USB_Z0, USB_Z1),
-        "USB-C plug overmoulding outside the wall": box(OUT_X0 - 30, USB_WIN_Y - 6.0, USB_X0, USB_WIN_Y + 6.0, USB_WIN_Z - 3.25, USB_WIN_Z + 3.25),
+        "SuperMini PCB on its headers": box(-0.5, 5.6, 22.0, 23.6, SM_HDR_Z0, SM_HDR_Z0 + SM_PCB_T),
+        "SuperMini PCB soldered flat": box(-0.5, 5.6, 22.0, 23.6, SM_FLAT_Z0, SM_FLAT_Z0 + SM_PCB_T),
+        "USB-C receptacle (SuperMini on headers)": box(USB_X0, USB_Y0, 5.4, USB_Y1, USB_HDR_Z0, USB_HDR_Z0 + USB_H),
+        "USB-C receptacle (SuperMini flat)": box(USB_X0, USB_Y0, 5.4, USB_Y1, USB_FLAT_Z0, USB_FLAT_Z0 + USB_H),
+        # A cable's plug at either height: its overmoulding stops in the recess, its shell goes on to the receptacle.
+        "USB-C plug overmoulding in the recess (headers)": box(OUT_X0 - 30, USB_WIN_Y - PLUG_W / 2, USB_RECESS_X - 0.01, USB_WIN_Y + PLUG_W / 2, USB_HDR_Z0 + USB_H / 2 - PLUG_H / 2, USB_HDR_Z0 + USB_H / 2 + PLUG_H / 2),
+        "USB-C plug overmoulding in the recess (flat)": box(OUT_X0 - 30, USB_WIN_Y - PLUG_W / 2, USB_RECESS_X - 0.01, USB_WIN_Y + PLUG_W / 2, USB_FLAT_Z0 + USB_H / 2 - PLUG_H / 2, USB_FLAT_Z0 + USB_H / 2 + PLUG_H / 2),
+        "USB-C plug shell through the wall (headers)": box(OUT_X0 - 30, USB_WIN_Y - PLUG_SHELL_W / 2, USB_X0 - 0.01, USB_WIN_Y + PLUG_SHELL_W / 2, USB_HDR_Z0 + USB_H / 2 - PLUG_SHELL_H / 2, USB_HDR_Z0 + USB_H / 2 + PLUG_SHELL_H / 2),
+        "USB-C plug shell through the wall (flat)": box(OUT_X0 - 30, USB_WIN_Y - PLUG_SHELL_W / 2, USB_X0 - 0.01, USB_WIN_Y + PLUG_SHELL_W / 2, USB_FLAT_Z0 + USB_H / 2 - PLUG_SHELL_H / 2, USB_FLAT_Z0 + USB_H / 2 + PLUG_SHELL_H / 2),
         "cavity above the board, which the lip and tabs must stay out of": cavity,
         "E07-M1101D PCB": box(mx - ga.E07_W / 2, ga.SOCKET_Y - ga.E07_ROW_IN, mx + ga.E07_W / 2, ga.SOCKET_Y - ga.E07_ROW_IN + ga.E07_H, ga.HEADER_BODY, ga.HEADER_BODY + 1.6),
         "E07 SMA jack body": box(mx - E07_JACK_BODY / 2, E07_JACK_Y1 - E07_JACK_LEN, mx + E07_JACK_BODY / 2, E07_JACK_Y1, az - E07_JACK_BODY / 2, az + E07_JACK_BODY / 2),
@@ -189,13 +215,13 @@ def obstacles() -> dict[str, cq.Workplane]:
     }
 
 
-def check(bottom: cq.Workplane, top: cq.Workplane) -> None:
+def check(bottom: cq.Workplane, top: cq.Workplane, top_slot: cq.Workplane) -> None:
     """Refuse to write a case that collides with anything it has to house,
     or whose two halves collide with each other when closed."""
     bad = []
     for name, part in {**obstacles(), "the other half (closed)": top}.items():
-        for label, shape in (("bottom", bottom), ("top", top)):
-            if part is top and shape is top:
+        for label, shape in (("bottom", bottom), ("top", top), ("top with the J4 slot", top_slot)):
+            if part is top and shape is not bottom:
                 continue
             hit = shape.intersect(part)
             vol = hit.val().Volume() if hit.vals() else 0.0
@@ -203,10 +229,16 @@ def check(bottom: cq.Workplane, top: cq.Workplane) -> None:
                 bad.append(f"{label} collides with the {name}: {vol:.2f} mm^3")
     if bad:
         raise SystemExit("case check failed:\n  " + "\n  ".join(bad))
+    # The slot must sit over J4 and nothing else: a jumper-wire housing on
+    # every pin must pass through it.
+    housings = box(J4_SLOT_X0 + 0.5, J4_SLOT_Y0 + 0.5, J4_SLOT_X1 - 0.5, J4_SLOT_Y1 - 0.5, CAV_Z1 - 0.5, OUT_Z1 + 5)
+    hit = top_slot.intersect(housings)
+    if hit.vals() and hit.val().Volume() > 1e-6:
+        raise SystemExit("case check failed: the J4 slot does not clear the header's jumper-wire housings")
     print(f"case check: clear of all {len(obstacles())} parts")
 
 
-def measure(bottom: cq.Workplane, top: cq.Workplane) -> dict[str, dict]:
+def measure(bottom: cq.Workplane, top: cq.Workplane, top_slot: cq.Workplane) -> dict[str, dict]:
     """Probe the finished solids and compare what the case measures with what
     case_dims says it should, so every rebuild proves the STL files match
     the constants (and the drawings, which draw_case.py --check reads
@@ -239,6 +271,10 @@ def measure(bottom: cq.Workplane, top: cq.Workplane) -> dict[str, dict]:
     def gap(sp, i=0):
         return sp[i + 1][0] - sp[i][1]
 
+    def gap_at(sp, at):
+        """The gap between spans that contains the coordinate `at`: (start, end)."""
+        return next((a[1], b_[0]) for a, b_ in zip(sp, sp[1:]) if a[1] <= at <= b_[0])
+
     def mid(sp):
         return (sp[0] + sp[1]) / 2
 
@@ -270,15 +306,16 @@ def measure(bottom: cq.Workplane, top: cq.Workplane) -> dict[str, dict]:
     row("out_y_top", "outside length, top half", OUT_Y1 - OUT_Y0, t["y"][1] - t["y"][0])
     row("tab_tips_z", "highest point of the bottom half (tab tips)", PART_Z + TAB_H, b["z"][1])
     seam = row("seam_z", "the seam: the bottom half's wall top and the top half's skirt edge", PART_Z, rod(bottom, "z", -3.9, 41.0)[0][1])
-    row("seam_z_top", "the top half's lowest point (skirt edge)", PART_Z, t["z"][0])
+    row("seam_z_top", "the top half's skirt edge", PART_Z, rod(top, "z", -3.9, 41.0)[0][0])
+    row("top_lowest", "the top half's lowest point (the boss faces)", BOSS_Z0, t["z"][0])
     row("bottom_h", "bottom half, outside bottom face to the seam", PART_Z - OUT_Z0, seam - z0)
     row("top_h", "top half, seam to the outside top face", OUT_Z1 - PART_Z, z1 - seam)
     row("overall_h", "closed case height", OUT_Z1 - OUT_Z0, z1 - z0)
-    s = rod(top, "x", 41.0, 7.5)  # through both long walls above the rebate
+    s = rod(top, "x", 41.0, CAV_Z1 - 0.2)  # through both long walls above the rebate
     row("wall", "long wall thickness (top half, above the rebate)", WALL, s[0][1] - s[0][0])
     cav_x0 = s[0][1]
     row("cav_x", "cavity width", CAV_X1 - CAV_X0, gap(s))
-    s = rod(bottom, "y", 12.0, -4.0)  # through both end walls below the seam
+    s = rod(bottom, "y", 5.0, -1.0)  # through both end walls below the seam, clear of the antenna hole
     row("back_wall", "back wall thickness", WALL, s[0][1] - s[0][0])
     row("front_wall", "front (antenna) wall thickness", ANT_WALL_T, s[-1][1] - s[-1][0])
     row("cav_y", "cavity length", CAV_Y1 - CAV_Y0, gap(s))
@@ -299,10 +336,11 @@ def measure(bottom: cq.Workplane, top: cq.Workplane) -> dict[str, dict]:
     # standoffs and pegs at the four holes
     sx, sy, tips = [], [], []
     for i, (hx, hy) in enumerate(HOLES, 1):
-        s = spans(bottom, "x", hx - 2.3, hy - 0.01, hx + 2.3, hy + 0.01, -4.01, -3.99)  # clear of the walls
+        sz = STANDOFF_Z0 + 0.5  # half way up the standoff
+        s = spans(bottom, "x", hx - 2.3, hy - 0.01, hx + 2.3, hy + 0.01, sz - 0.01, sz + 0.01)  # clear of the walls
         sx.append(row(f"standoff_x_H{i}", f"standoff H{i} centre x", hx, mid(s[0])))
         row(f"standoff_d_H{i}", f"standoff H{i} diameter", STANDOFF_D, s[0][1] - s[0][0])
-        s = spans(bottom, "y", hx - 0.01, hy - 2.3, hx + 0.01, hy + 2.3, -4.01, -3.99)
+        s = spans(bottom, "y", hx - 0.01, hy - 2.3, hx + 0.01, hy + 2.3, sz - 0.01, sz + 0.01)
         sy.append(row(f"standoff_y_H{i}", f"standoff H{i} centre y", hy, mid(s[0])))
         s = rod(bottom, "z", hx + 1.5, hy)
         row(f"standoff_top_H{i}", f"standoff H{i} top z (PCB underside)", STANDOFF_Z1, s[0][1])
@@ -327,14 +365,14 @@ def measure(bottom: cq.Workplane, top: cq.Workplane) -> dict[str, dict]:
     row("peg_tip_from_bottom", "peg tip above the outside bottom face (H1)", PEG_Z1 - OUT_Z0, tips[0] - z0)
     row("peg_tip_H3_from_bottom", "peg tip above the outside bottom face (H3)", 0.0 - OUT_Z0, tips[2] - z0)
     # the lip, its gap, and the tabs on both long walls
-    s = rod(bottom, "x", 41.0, 0.5)
+    s = rod(bottom, "x", 41.0, PART_Z + 0.5)
     row("lip_t", "lip thickness", LIP_T, s[0][1] - s[0][0])
     row("lip_h", "lip height above the seam", LIP_H, rod(bottom, "z", -2.7, 41.0)[0][1] - seam)
-    s = rod(bottom, "x", LIP_Y1 - 0.4, 0.5)  # along the front wall's lip
+    s = rod(bottom, "x", LIP_Y1 - 0.4, PART_Z + 0.5)  # along the front wall's lip
     row("lip_gap_w", "lip gap in the front wall", LIP_GAP_X1 - LIP_GAP_X0, gap(s))
     row("lip_gap_from_usb_face", "lip gap centre from the USB-C wall's outside face", SOCKET_MID_X - OUT_X0, (s[0][1] + s[1][0]) / 2 - x0)
     for side, xr, xb in (("l", CAV_X0 - 0.4, LIP_X0 - BUMP_R / 2), ("r", CAV_X1 + 0.4, LIP_X1 + BUMP_R / 2)):
-        s = rod(bottom, "y", xr, 3.0)  # above the lip: only the tabs
+        s = rod(bottom, "y", xr, PART_Z + LIP_H + 1.0)  # above the lip: only the tabs
         row(f"tab_count_{side}", f"tabs on the {'USB-C' if side == 'l' else 'plain'} wall", len(TAB_Y), len(s))
         for i, ty in enumerate(TAB_Y, 1):
             row(f"tab_w_{side}{i}", f"tab {side}{i} width", TAB_W, s[i - 1][1] - s[i - 1][0])
@@ -342,7 +380,7 @@ def measure(bottom: cq.Workplane, top: cq.Workplane) -> dict[str, dict]:
             row(f"tab_{side}{i}_from_back_face", f"tab {side}{i} centre from the back outside face", ty - OUT_Y0, mid(s[i - 1]) - y0)
         row(f"tab_pitch_{side}", f"tab pitch, {side}", TAB_Y[1] - TAB_Y[0], mid(s[1]) - mid(s[0]))
         row(f"tab_h_{side}", f"tab height above the seam, {side}", TAB_H, rod(bottom, "z", xr, TAB_Y[0])[0][1] - seam)
-        s2 = rod(bottom, "y", xr, 0.5)  # through the lip: the slots either side of the first tab
+        s2 = rod(bottom, "y", xr, PART_Z + 0.5)  # through the lip: the slots either side of the first tab
         i = next(i for i, (a, b_) in enumerate(s2) if abs((a + b_) / 2 - TAB_Y[0]) < 0.1)
         row(f"slot_before_{side}1", f"slot before tab {side}1", SLOT, gap(s2, i - 1))
         row(f"slot_after_{side}1", f"slot after tab {side}1", SLOT, gap(s2, i))
@@ -351,7 +389,7 @@ def measure(bottom: cq.Workplane, top: cq.Workplane) -> dict[str, dict]:
         s4 = rod(bottom, "z", xb, TAB_Y[0])  # the wall below the seam, then the bump
         row(f"bump_z_{side}", f"bump centre above the seam, {side}", BUMP_Z, mid(s4[-1]) - seam)
     # the top half: skirt, rebate, grooves on both walls
-    s = rod(top, "x", 41.0, 3.0)
+    s = rod(top, "x", 41.0, PART_Z + 2.0)
     row("skirt_t", "skirt thickness", SKIRT_T, s[0][1] - s[0][0])
     row("skirt_faces", "between the skirt's inner faces", CAV_X1 - CAV_X0 + 2 * REBATE, gap(s))
     row("rebate", "rebate depth (skirt face to cavity wall)", REBATE, cav_x0 - s[0][1])
@@ -395,44 +433,76 @@ def measure(bottom: cq.Workplane, top: cq.Workplane) -> dict[str, dict]:
     row("solid_boss_from_usb_face", "solid boss centre from the USB-C wall's outside face", sbx - OUT_X0, rows["boss_x_3"]["measured"] - x0)
     row("solid_boss_from_back_face", "solid boss centre from the back outside face", sby - OUT_Y0, rows["boss_y_3"]["measured"] - y0)
     row("solid_boss_offset", "solid boss centre from H3 along y", sby - HOLES[2][1], rows["boss_y_3"]["measured"] - sy[2])
-    # the USB-C window
-    s = rod(top, "z", -3.5, USB_WIN_Y)
-    row("window_h", "USB-C window height", USB_WIN_H, gap(s))
-    wz = row("window_z", "USB-C window centre z", USB_WIN_Z, (s[0][1] + s[1][0]) / 2)
-    sill = s[0][1]
-    s = rod(top, "y", -3.5, USB_WIN_Z)
-    row("window_w", "USB-C window width", USB_WIN_W, gap(s))
-    wy = row("window_y", "USB-C window centre y", USB_WIN_Y, (s[0][1] + s[1][0]) / 2)
+    # the USB-C window and the plug recess, both split by the seam
+    xw = (USB_RECESS_X + CAV_X0) / 2  # inside the wall left under the recess
+    sill = row("window_sill_z", "USB-C window sill z (bottom half)", USB_WIN_Z0, rod(bottom, "z", xw, USB_WIN_Y)[0][1])
+    head = row("window_head_z", "USB-C window head z (top half)", USB_WIN_Z1, rod(top, "z", xw, USB_WIN_Y)[0][0])
+    row("window_h", "USB-C window height, sill to head", USB_WIN_H, head - sill)
+    row("window_below_seam", "window sill below the seam", PART_Z - USB_WIN_Z0, seam - sill)
+    row("window_above_seam", "window head above the seam", USB_WIN_Z1 - PART_Z, head - seam)
+    g = gap_at(rod(bottom, "y", xw, (USB_WIN_Z0 + PART_Z) / 2), USB_WIN_Y)
+    row("window_w", "USB-C window width (bottom half)", USB_WIN_W, g[1] - g[0])
+    wy = row("window_y", "USB-C window centre y", USB_WIN_Y, (g[0] + g[1]) / 2)
+    g = gap_at(rod(top, "y", xw, (PART_Z + USB_WIN_Z1) / 2), USB_WIN_Y)
+    row("window_w_top", "USB-C window width (top half)", USB_WIN_W, g[1] - g[0])
     row("window_from_back_face", "window centre from the back outside face", USB_WIN_Y - OUT_Y0, wy - y0)
-    row("window_z_from_bottom", "window centre above the outside bottom face", USB_WIN_Z - OUT_Z0, wz - z0)
-    row("window_sill_from_seam", "window sill above the seam", USB_WIN_Z - USB_WIN_H / 2 - PART_Z, sill - seam)
-    # the antenna hole and the E07 pocket
-    s = spans(top, "x", 0, 62.5, 25, 63.5, ANT_Z - 0.01, ANT_Z + 0.01)
-    row("hole_d", "antenna hole diameter (across)", ANT_HOLE_D, gap(s))
-    hx_ = row("hole_x", "antenna hole centre x", SOCKET_MID_X, (s[0][1] + s[1][0]) / 2)
+    row("window_sill_from_bottom", "window sill above the outside bottom face", USB_WIN_Z0 - OUT_Z0, sill - z0)
+    ry = USB_WIN_Y + USB_RECESS_W / 2 - 0.7  # inside the recess, beside the window
+    s = rod(top, "x", ry, PART_Z + 1.0, lo=-10, hi=0)
+    row("recess_floor_x", "plug recess floor x", USB_RECESS_X, s[0][0])
+    row("recess_depth", "plug recess depth into the wall", USB_RECESS_DEPTH, s[0][0] - x0)
+    row("wall_under_recess", "wall left under the recess", CAV_X0 - USB_RECESS_X, s[0][1] - s[0][0])
+    g = gap_at(rod(top, "y", OUT_X0 + 0.5, PART_Z + 1.0), USB_WIN_Y)
+    row("recess_w", "plug recess width", USB_RECESS_W, g[1] - g[0])
+    row("recess_y", "plug recess centre y", USB_WIN_Y, (g[0] + g[1]) / 2)
+    rz0 = row("recess_z0", "plug recess bottom z (bottom half)", USB_RECESS_Z0, rod(bottom, "z", OUT_X0 + 0.5, ry)[0][1])
+    rz1 = row("recess_z1", "plug recess top z (top half)", USB_RECESS_Z1, rod(top, "z", OUT_X0 + 0.5, ry)[0][0])
+    row("recess_h", "plug recess height", USB_RECESS_H, rz1 - rz0)
+    row("recess_from_bottom", "plug recess bottom above the outside bottom face", USB_RECESS_Z0 - OUT_Z0, rz0 - z0)
+    # the antenna hole and the E07 pocket, both split by the seam
     s = spans(top, "z", SOCKET_MID_X - 0.01, 62.5, SOCKET_MID_X + 0.01, 63.5, -5, 15)
-    row("hole_d_z", "antenna hole diameter (up)", ANT_HOLE_D, gap(s))
-    hz = row("hole_z", "antenna hole centre z", ANT_Z, (s[0][1] + s[1][0]) / 2)
+    htop = row("hole_top_z", "antenna hole top z (top half)", ANT_HOLE_Z1, s[0][0])
+    s = spans(bottom, "z", SOCKET_MID_X - 0.01, 62.5, SOCKET_MID_X + 0.01, 63.5, -5, 15)
+    hbot = row("hole_bottom_z", "antenna hole bottom z (bottom half)", ANT_HOLE_Z0, s[0][1])
+    row("hole_d_z", "antenna hole diameter (up)", ANT_HOLE_D, htop - hbot)
+    hz = row("hole_z", "antenna hole centre z", ANT_Z, (htop + hbot) / 2)
+    row("hole_z_on_seam", "hole centre on the seam", 0.0, hz - seam)
+    dz = 0.5  # chord across the hole this far below the seam, in the bottom half
+    chord = 2 * math.sqrt((ANT_HOLE_D / 2) ** 2 - dz ** 2)
+    s = spans(bottom, "x", 0, 62.5, 25, 63.5, ANT_Z - dz - 0.01, ANT_Z - dz + 0.01)
+    row("hole_chord", f"antenna hole chord {dz} below the seam", chord, gap(s))
+    hx_ = row("hole_x", "antenna hole centre x", SOCKET_MID_X, (s[0][1] + s[1][0]) / 2)
     row("hole_from_usb_face", "hole centre from the USB-C wall's outside face", SOCKET_MID_X - OUT_X0, hx_ - x0)
     row("hole_from_plain_face", "hole centre from the plain wall's outside face", OUT_X1 - SOCKET_MID_X, x1 - hx_)
     row("hole_z_from_bottom", "hole centre above the outside bottom face", ANT_Z - OUT_Z0, hz - z0)
-    row("hole_z_from_seam", "hole centre above the seam", ANT_Z - PART_Z, hz - seam)
-    row("above_hole", "top of the hole to the outside top face", OUT_Z1 - ANT_HOLE_Z1, z1 - s[1][0])
-    s = rod(top, "y", SOCKET_MID_X, ANT_HOLE_Z1 + 0.2, lo=55, hi=70)  # just above the hole: the pocket's back
+    row("above_hole", "top of the hole to the outside top face", OUT_Z1 - ANT_HOLE_Z1, z1 - htop)
+    row("below_hole", "bottom of the hole to the outside bottom face", ANT_HOLE_Z0 - OUT_Z0, hbot - z0)
+    # The pocket is a feature of the bottom half only: in the top half the
+    # rebate band (REBATE deep, to SKIRT_H above the seam) already removes
+    # more of the wall's inner face than the pocket would.
+    s = rod(bottom, "y", SOCKET_MID_X - E07_POCKET / 2 + 0.1, ANT_Z - 0.5, lo=55, hi=70)  # beside the hole, inside the pocket
     row("pocket_depth", "E07 pocket depth into the front wall", E07_POCKET_DEPTH, s[0][0] - CAV_Y1)
-    s = spans(top, "x", 0, CAV_Y1 + 0.3, 25, CAV_Y1 + 0.32, ANT_HOLE_Z1 + 0.15, ANT_HOLE_Z1 + 0.17)
+    s = spans(bottom, "x", 0, CAV_Y1 + 0.3, 25, CAV_Y1 + 0.32, POCKET_Z0 + 0.19, POCKET_Z0 + 0.21)  # below the hole
     row("pocket_w", "E07 pocket width", E07_POCKET, gap(s))
-    # The pocket's floor (z -0.4) lies inside the rebate band, which is empty
-    # below the rebate ceiling anyway, so only its top is a face of the part.
-    row("pocket_z1", "E07 pocket top z", POCKET_Z1, rod(top, "z", SOCKET_MID_X, CAV_Y1 + 0.3)[0][0])
+    row("pocket_x", "E07 pocket centre x", SOCKET_MID_X, (s[0][1] + s[1][0]) / 2)
+    row("pocket_z0", "E07 pocket floor z (bottom half)", POCKET_Z0, rod(bottom, "z", SOCKET_MID_X, CAV_Y1 + 0.3)[0][1])
+    row("pocket_floor_below_seam", "E07 pocket floor below the seam", PART_Z - POCKET_Z0, seam - rod(bottom, "z", SOCKET_MID_X, CAV_Y1 + 0.3)[0][1])
     # the pry notch and the corners
     s = rod(top, "z", NOTCH_X, -2.0)
     row("notch_depth", "pry notch height above the seam", NOTCH_DEPTH, s[0][0] - seam)
-    s = rod(top, "x", -2.0, 0.0)
+    s = rod(top, "x", -2.0, PART_Z + NOTCH_DEPTH / 2)
     row("notch_w", "pry notch width", NOTCH_W, gap(s))
     row("notch_from_usb_face", "pry notch centre from the USB-C wall's outside face", NOTCH_X - OUT_X0, (s[0][1] + s[1][0]) / 2 - x0)
-    row("corner_r", "vertical corner radius, bottom half", CORNER_R, corner_radius(bottom, -5.0))
+    row("corner_r", "vertical corner radius, bottom half", CORNER_R, corner_radius(bottom, OUT_Z0 + 0.5))
     row("corner_r_top", "vertical corner radius, top half", CORNER_R, corner_radius(top, 8.0))
+    # the optional J4 slot, on the slotted top half
+    s = rod(top_slot, "x", (J4_SLOT_Y0 + J4_SLOT_Y1) / 2, CAV_Z1 + 1.0)
+    row("slot_len", "J4 slot length", J4_SLOT_X1 - J4_SLOT_X0, gap(s))
+    row("slot_x", "J4 slot centre x", (J4_SLOT_X0 + J4_SLOT_X1) / 2, (s[0][1] + s[1][0]) / 2)
+    s = rod(top_slot, "y", (J4_SLOT_X0 + J4_SLOT_X1) / 2, CAV_Z1 + 1.0)
+    row("slot_w", "J4 slot width", J4_SLOT_Y1 - J4_SLOT_Y0, gap(s))
+    row("slot_y", "J4 slot centre y", (J4_SLOT_Y0 + J4_SLOT_Y1) / 2, (s[0][1] + s[1][0]) / 2)
+    row("slot_from_back_face", "J4 slot centre from the back outside face", (J4_SLOT_Y0 + J4_SLOT_Y1) / 2 - OUT_Y0, (s[0][1] + s[1][0]) / 2 - y0)
     if bad:
         raise SystemExit("case measurement failed:\n  " + "\n  ".join(bad))
     print(f"case measurement: {len(rows)} dimensions match case_dims")
@@ -443,17 +513,18 @@ def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--stl", type=pathlib.Path, default=STL_OUT, help="directory for the printable STL files")
     args = ap.parse_args()
-    bottom, top = build_bottom(), build_top()
-    check(bottom, top)
-    measured = measure(bottom, top)
+    bottom, top, top_slot = build_bottom(), build_top(), build_top(slot=True)
+    check(bottom, top, top_slot)
+    measured = measure(bottom, top, top_slot)
     MEASURED.write_text(json.dumps(measured, indent=1) + "\n", encoding="utf-8")
     print(f"wrote {MEASURED.relative_to(ROOT)} ({len(measured)} dimensions)")
     h1 = HOLES[0]
     save("esp32c3-radio-adapter-case-bottom", [("case_bottom", bottom, CASE_BOTTOM)], *h1)
     save("esp32c3-radio-adapter-case-top", [("case_top", top, CASE_TOP)], *h1)
+    save("esp32c3-radio-adapter-case-top-slot", [("case_top_slot", top_slot, CASE_TOP)], *h1)
     args.stl.mkdir(parents=True, exist_ok=True)
-    # Print orientation: each half open side up (the top half turned over).
-    for name, shape in (("bottom", bottom), ("top", top.rotate((0, 0, 0), (1, 0, 0), 180))):
+    # Print orientation: each half open side up (the top halves turned over).
+    for name, shape in (("bottom", bottom), ("top", top.rotate((0, 0, 0), (1, 0, 0), 180)), ("top-slot", top_slot.rotate((0, 0, 0), (1, 0, 0), 180))):
         path = args.stl / f"esp32c3-radio-adapter-case-{name}.stl"
         cq.exporters.export(shape, str(path), tolerance=0.02, angularTolerance=0.2)
         print(f"wrote {path.relative_to(ROOT)} ({path.stat().st_size // 1024} kB)")

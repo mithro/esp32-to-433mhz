@@ -71,7 +71,7 @@ printing (each half in print orientation, open side up) and
 which the `radio-*-case-*` variants of `scripts/render_assemblies.py` put
 on the board: `-case-closed` with both halves snapped together,
 `-case-open` with the bottom half only, and `-case-exploded` with the top
-half lifted 16 mm; `case-bottom` and `case-top` render each half by
+half lifted 12 mm; `case-bottom` and `case-top` render each half by
 itself.  Closed and open come out as one sheet each of the isometric view
 and the six sides (front is the antenna end, back the SuperMini end with
 the pry notch, left the USB-C window); the README's
