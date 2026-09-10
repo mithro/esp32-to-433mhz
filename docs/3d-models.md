@@ -115,8 +115,12 @@ top-left corner, z up from its top surface):
 | Antenna hole | 6.6 mm at x 12.67, z 3.3, with a 7.4 mm square pocket 0.6 mm deep on the inside for the E07 jack's body, which reaches 0.4 mm into the wall |
 | Pry notch | 10&nbsp;x&nbsp;1.2 mm in the top half's skirt at the y = 0 end, on the seam |
 
-The script's constants are the numbers above, and before it writes
-anything it intersects both halves with a solid for every part they have
+The script's constants live in `scripts/case_dims.py`, which
+`scripts/draw_case.py` also draws the [case drawings](case-drawings.md)
+from (six dimensioned sheets: plans of both halves, the section on the
+antenna axis, the end elevations and details of the snap joint and the
+peg stack); the numbers above are the same constants. Before the script
+writes anything it intersects both halves with a solid for every part they have
 to house (the boards, the headers and a jumper cap, the pins under the
 adapter, the back-side resistors, the USB-C receptacle and a plug's
 overmoulding, both radios' antenna connectors and the pigtail's nut), with

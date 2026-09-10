@@ -277,6 +277,8 @@ open) and the exploded views are in
 
 The case is generated from the same dimensions as the boards by
 `scripts/build_case.py`; see [3D models and case design](docs/3d-models.md#the-printed-case).
+Dimensioned drawings of both halves, with a checklist of caliper
+measurements for a printed part, are in [Case drawings](docs/case-drawings.md).
 
 ## Further reading
 

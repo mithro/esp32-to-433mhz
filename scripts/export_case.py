@@ -25,8 +25,8 @@ container.  Before packing it checks that every file exists and is not
 empty, that each STL parses (binary or ASCII) with a sane triangle count,
 and that each STEP file carries the ISO-10303-21 header, and it measures
 the parts from the STL triangles for the README and checks them against
-the case's design numbers.  Running it again over an existing <out>
-replaces its own files and lines, leaving the others alone.
+the case's design numbers (scripts/case_dims.py).  Running it again over
+an existing <out> replaces its own files and lines, leaving the others alone.
 """
 
 from __future__ import annotations
@@ -43,6 +43,7 @@ import sys
 import zipfile
 
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
+import case_dims as cd  # noqa: E402
 from export_manufacturing import git_describe  # noqa: E402
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
@@ -53,31 +54,31 @@ STEP_DIR = ROOT / "hardware" / "3d"
 MIN_TRIANGLES, MAX_TRIANGLES = 100, 5_000_000  # each half is a few thousand
 SECTION = "## Printable case"  # heading of this script's section in RELEASE_NOTES.md
 SECTION_END = "<!-- end printable case -->"  # so a re-run replaces exactly the section
-# The case's design numbers, copied from scripts/build_case.py (which needs
-# CadQuery, so it cannot be imported here).  Keyed by the constant there;
-# change them together.  What can be measured from the STL files is
-# measured, and checked against these, in measure().
-CASE = {
-    "OUT_X1 - OUT_X0": 36.2,  # footprint across the board
-    "OUT_Y1 - OUT_Y0": 66.7,  # footprint along the board
-    "PART_Z - OUT_Z0": 8.5,  # the bottom half's wall, floor to parting line
-    "OUT_Z1 - PART_Z": 12.1,  # the top half
-    "WALL": 2.2,
-    "OUT_Y1 - CAV_Y1": 2.5,  # the antenna wall
-    "FLOOR": 2.0,
-    "TOP_T": 2.0,
-    "PEG_D": 2.15,
-    "HOLE_D": 2.2,  # generate_adapters.CC_HOLE_D, the board's M2 holes
-    "TAB_W": 8.0,
-    "TAB_H": 6.0,
-    "LIP_T": 0.8,  # the tabs' thickness
-    "SLOT": 1.0,
-    "BUMP_R": 0.35,
-    "GROOVE_R": 0.42,
-    "BUMP_R - FIT": 0.2,  # how far the bump stands proud of the skirt's face
-    "ANT_HOLE_D": 6.6,
-    "OUT_Z0": -9.0,  # the bottom half's floor, in the STL's z
-}
+# The case's design numbers, from scripts/case_dims.py (the constants
+# build_case.py builds the solids from; plain Python, so importable without
+# CadQuery).  Keyed by the expression there.  What can be measured from the
+# STL files is measured, and checked against these, in measure().
+CASE = {k: round(v, 4) for k, v in {
+    "OUT_X1 - OUT_X0": cd.OUT_X1 - cd.OUT_X0,  # footprint across the board
+    "OUT_Y1 - OUT_Y0": cd.OUT_Y1 - cd.OUT_Y0,  # footprint along the board
+    "PART_Z - OUT_Z0": cd.PART_Z - cd.OUT_Z0,  # the bottom half's wall, floor to parting line
+    "OUT_Z1 - PART_Z": cd.OUT_Z1 - cd.PART_Z,  # the top half
+    "WALL": cd.WALL,
+    "OUT_Y1 - CAV_Y1": cd.ANT_WALL_T,  # the antenna wall
+    "FLOOR": cd.FLOOR,
+    "TOP_T": cd.TOP_T,
+    "PEG_D": cd.PEG_D,
+    "HOLE_D": cd.HOLE_D,  # generate_adapters.CC_HOLE_D, the board's M2 holes
+    "TAB_W": cd.TAB_W,
+    "TAB_H": cd.TAB_H,
+    "LIP_T": cd.LIP_T,  # the tabs' thickness
+    "SLOT": cd.SLOT,
+    "BUMP_R": cd.BUMP_R,
+    "GROOVE_R": cd.GROOVE_R,
+    "BUMP_R - FIT": cd.BUMP_PROUD,  # how far the bump stands proud of the skirt's face
+    "ANT_HOLE_D": cd.ANT_HOLE_D,
+    "OUT_Z0": cd.OUT_Z0,  # the bottom half's floor, in the STL's z
+}.items()}
 
 
 # ---------------------------------------------------------------------------
