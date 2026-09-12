@@ -273,6 +273,6 @@ Plugged into the socket it is powered correctly and its signals arrive on
 GPIO7 (GDO0), GPIO6 (CSN), GPIO3 (MISO), GPIO4 (GDO2), GPIO10 (MOSI) and
 GPIO1 (SCK), which the firmware's D-Sun pin map absorbs. Its SCK lands on
 position 4, which -- like every socket position -- is a plain, non-strapping
-GPIO. Its reference board is [below](component-boards.md#cc1101-d-sun-green-board).
+GPIO. Its reference board is [hardware/parts/cc1101-dsun](../hardware/parts/cc1101-dsun/).
 
 (Diagram drawn by `scripts/draw_pinouts.py` from the generators' geometry.)
