@@ -1,5 +1,8 @@
 # esp32-to-433mhz
 
+> [!CAUTION]
+> **AI in use, use at own risk.**
+
 A small carrier board that turns an **ESP32-C3 SuperMini** and a cheap
 **433 MHz radio board** into one 29&nbsp;x&nbsp;38 mm unit. It takes any of three
 common 2x4-header radios in the same socket:
