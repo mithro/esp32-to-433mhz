@@ -14,7 +14,7 @@ are for.
 
 | | |
 | --- | --- |
-| Buy | [SX1278 LoRa 433MHz wireless module](https://www.aliexpress.com/w/wholesale-sx1278-lora-433mhz-wireless-module.html) |
+| Buy | [SX1278 long range RF wireless module](https://www.aliexpress.com/w/wholesale-sx1278-long-range-rf-wireless-module.html) -- the unshielded blue module with a spring antenna, not one of the shielded Ra-01 / E32 cans the broader searches return |
 | How to recognise it | Roughly 17&nbsp;x&nbsp;16.5 mm, no carrier board: 12 castellated pads down one long edge, two notches at one corner and ANT / GND at the other. Sold as "SX1278 LoRa 433MHz Wireless Module (PXL1276-D01)". |
 | Antenna | The spring antenna it is sold with solders to the ANT pad. |
 
