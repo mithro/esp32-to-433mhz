@@ -33,8 +33,8 @@ DIR/<adapter>-assembly-<variant>.step and .glb (kicad-cli pcb export step /
 glb) for case design.
 
 The reference boards under hardware/parts/ carry the "-components" model of
-the product they reproduce; `parts` renders each of those as
-docs/images/<name>-model-iso.png.
+the product they reproduce; `parts` renders each of those beside its own
+README, as hardware/parts/<name>/images/model-iso.png.
 """
 
 from __future__ import annotations
@@ -198,7 +198,8 @@ def main() -> None:
             if args.no_render:  # the reference boards have nothing to export
                 continue
             for pcb in sorted((ROOT / "hardware" / "parts").glob("*/*.kicad_pcb")):
-                png = IMAGES / f"{pcb.stem}-model-iso.png"
+                png = pcb.parent / "images" / "model-iso.png"
+                png.parent.mkdir(parents=True, exist_ok=True)
                 run([cli, "pcb", "render", "--output", str(png), "--width", "1200", "--height", "1000", "--quality", "high",
                      "--background", "transparent", "--define-var", "GIT_DESCRIBE=model", "--perspective", "--rotate", "'-55,0,28'", "--zoom", "0.65", str(pcb)])
                 trim(png)

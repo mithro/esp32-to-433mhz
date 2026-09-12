@@ -11,7 +11,7 @@ datasheets; they are not built by CI (pass their names to
 
 | 3D render, top | 3D render, bottom | Layout (copper, silk, fab, outline) |
 | --- | --- | --- |
-| ![3D render of the top side](images/esp32-c3-supermini-3d-top.png) | ![3D render of the bottom side](images/esp32-c3-supermini-3d-bottom.png) | ![2D layout plot](images/esp32-c3-supermini-layout.png) |
+| ![3D render of the top side](../hardware/parts/esp32-c3-supermini/images/3d-top.png) | ![3D render of the bottom side](../hardware/parts/esp32-c3-supermini/images/3d-bottom.png) | ![2D layout plot](../hardware/parts/esp32-c3-supermini/images/layout.png) |
 
 `hardware/parts/esp32-c3-supermini`. The grey half-circles outside the outline in
 the 3D renders are the outer halves of the castellation pads; the PCB fab
@@ -70,7 +70,7 @@ footprints here were generated from scratch and follow the physical board.
 
 | 3D render, top | 3D render, bottom | Layout (copper, silk, fab, outline) |
 | --- | --- | --- |
-| ![3D render of the top side](images/cc1101-e07-m1101d-3d-top.png) | ![3D render of the bottom side](images/cc1101-e07-m1101d-3d-bottom.png) | ![2D layout plot](images/cc1101-e07-m1101d-layout.png) |
+| ![3D render of the top side](../hardware/parts/cc1101-e07-m1101d/images/3d-top.png) | ![3D render of the bottom side](../hardware/parts/cc1101-e07-m1101d/images/3d-bottom.png) | ![2D layout plot](../hardware/parts/cc1101-e07-m1101d/images/layout.png) |
 
 `hardware/parts/cc1101-e07-m1101d`: the Ebyte E07-M1101D-SMA (PCB marked
 "E07-M1101D V2.0"), sold as the "TENSTAR CC1101 433MHz Wireless Module" with
@@ -119,7 +119,7 @@ Sources:
 
 | 3D render, top | 3D render, bottom | Layout (copper, silk, fab, outline) |
 | --- | --- | --- |
-| ![3D render of the top side](images/cc1101-dsun-3d-top.png) | ![3D render of the bottom side](images/cc1101-dsun-3d-bottom.png) | ![2D layout plot](images/cc1101-dsun-layout.png) |
+| ![3D render of the top side](../hardware/parts/cc1101-dsun/images/3d-top.png) | ![3D render of the bottom side](../hardware/parts/cc1101-dsun/images/3d-bottom.png) | ![2D layout plot](../hardware/parts/cc1101-dsun/images/layout.png) |
 
 `hardware/parts/cc1101-dsun`: the green CC1101 board marked "433MHz D-Sun
 CC1101" (EasyEDA lists the same board as "RF1101SE V3.1"): a 2x4 header at
@@ -158,7 +158,7 @@ back carries the original's legend grid.
 
 | 3D render, top | 3D render, bottom | Layout (copper, silk, fab, outline) |
 | --- | --- | --- |
-| ![3D render of the top side](images/sx1278-ra02-breakout-3d-top.png) | ![3D render of the bottom side](images/sx1278-ra02-breakout-3d-bottom.png) | ![2D layout plot](images/sx1278-ra02-breakout-layout.png) |
+| ![3D render of the top side](../hardware/parts/sx1278-ra02-breakout/images/3d-top.png) | ![3D render of the bottom side](../hardware/parts/sx1278-ra02-breakout/images/3d-bottom.png) | ![2D layout plot](../hardware/parts/sx1278-ra02-breakout/images/layout.png) |
 
 `hardware/parts/sx1278-ra02-breakout`: the blue "SX1278 LoRa 433MHz v4.0"
 breakout, an Ai-Thinker Ra-02 LoRa module (IPEX antenna) on a 17.5&nbsp;x&nbsp;22.5 mm
@@ -190,7 +190,7 @@ module lands are drawn 1.4&nbsp;x&nbsp;1.2 mm.
 
 | 3D render, top | 3D render, bottom | Layout (copper, silk, fab, outline) |
 | --- | --- | --- |
-| ![3D render of the top side](images/sx1278-lora-module-3d-top.png) | ![3D render of the bottom side](images/sx1278-lora-module-3d-bottom.png) | ![2D layout plot](images/sx1278-lora-module-layout.png) |
+| ![3D render of the top side](../hardware/parts/sx1278-lora-module/images/3d-top.png) | ![3D render of the bottom side](../hardware/parts/sx1278-lora-module/images/3d-bottom.png) | ![2D layout plot](../hardware/parts/sx1278-lora-module/images/layout.png) |
 
 `hardware/parts/sx1278-lora-module`: the 16-pin castellated 433 MHz SX1278 module
 sold as "SX1278 LoRa 433MHz Wireless Module (PXL1276-D01)" with a spring

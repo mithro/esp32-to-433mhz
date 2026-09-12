@@ -30,14 +30,14 @@ project settings, DRC rules). Verification and rendering with KiCad 9.0
 
 ```sh
 uv run scripts/verify_boards.py      # ERC + DRC with schematic parity, all boards
-uv run scripts/render_boards.py      # docs/images/*.png (bare boards)
+uv run scripts/render_boards.py      # bare-board images: docs/images/*.png (adapters), hardware/parts/*/images/ (reference boards)
 uv run scripts/draw_pinouts.py       # docs/images/pinout-radio-boards.svg
 uv run scripts/draw_wiring.py        # docs/images/wiring-*.svg
 uv run scripts/draw_case.py          # docs/images/case-*.svg, the case's mechanical drawings, and the checklist in docs/case-drawings.md
 uv run scripts/build_3d.py           # hardware/3d/*.step (CadQuery; fetched by uv)
 uv run scripts/build_case.py         # hardware/case/*.stl, the case's STEP models and its measured dimensions (CadQuery)
 uv run scripts/draw_case.py --check  # compares every number on the drawings with the measured solids (no CadQuery)
-uv run scripts/render_assemblies.py  # docs/images/*-assembly-*.png, *-model-iso.png
+uv run scripts/render_assemblies.py  # docs/images/*-assembly-*.png, hardware/parts/*/images/model-iso.png
 uv run scripts/export_case.py        # dist/esp32c3-radio-adapter-case-<rev>.zip from the committed case files
 ```
 
