@@ -1,0 +1,1117 @@
+{
+ "out_x0": {
+  "what": "USB-C wall outside face x",
+  "expected": -4.5,
+  "measured": -4.5
+ },
+ "out_x1": {
+  "what": "plain wall outside face x",
+  "expected": 31.7,
+  "measured": 31.7
+ },
+ "out_y0": {
+  "what": "back (J4 end) outside face y",
+  "expected": -2.7,
+  "measured": -2.7
+ },
+ "out_y1": {
+  "what": "front (antenna) outside face y",
+  "expected": 64.0,
+  "measured": 64.0
+ },
+ "out_z0": {
+  "what": "outside bottom face z",
+  "expected": -5.1,
+  "measured": -5.1
+ },
+ "out_z1": {
+  "what": "outside top face z",
+  "expected": 11.6,
+  "measured": 11.6
+ },
+ "out_x": {
+  "what": "outside width, bottom half",
+  "expected": 36.2,
+  "measured": 36.2
+ },
+ "out_y": {
+  "what": "outside length, bottom half",
+  "expected": 66.7,
+  "measured": 66.7
+ },
+ "out_x_top": {
+  "what": "outside width, top half",
+  "expected": 36.2,
+  "measured": 36.2
+ },
+ "out_y_top": {
+  "what": "outside length, top half",
+  "expected": 66.7,
+  "measured": 66.7
+ },
+ "tab_tips_z": {
+  "what": "highest point of the bottom half (tab tips)",
+  "expected": 8.3,
+  "measured": 8.3
+ },
+ "tab_tips_from_bottom": {
+  "what": "tab tips above the outside bottom face",
+  "expected": 13.4,
+  "measured": 13.4
+ },
+ "seam_z": {
+  "what": "the seam: the bottom half's wall top and the top half's skirt edge",
+  "expected": 3.3,
+  "measured": 3.3
+ },
+ "seam_z_top": {
+  "what": "the top half's skirt edge",
+  "expected": 3.3,
+  "measured": 3.3
+ },
+ "top_lowest": {
+  "what": "the top half's lowest point (the boss faces)",
+  "expected": 0.2,
+  "measured": 0.2
+ },
+ "bottom_h": {
+  "what": "bottom half, outside bottom face to the seam",
+  "expected": 8.4,
+  "measured": 8.4
+ },
+ "top_h": {
+  "what": "top half, seam to the outside top face",
+  "expected": 8.3,
+  "measured": 8.3
+ },
+ "overall_h": {
+  "what": "closed case height",
+  "expected": 16.7,
+  "measured": 16.7
+ },
+ "wall": {
+  "what": "long wall thickness (top half, above the rebate)",
+  "expected": 2.2,
+  "measured": 2.2
+ },
+ "cav_x": {
+  "what": "cavity width",
+  "expected": 31.8,
+  "measured": 31.8
+ },
+ "back_wall": {
+  "what": "back wall thickness",
+  "expected": 2.2,
+  "measured": 2.2
+ },
+ "front_wall": {
+  "what": "front (antenna) wall thickness",
+  "expected": 2.5,
+  "measured": 2.5
+ },
+ "cav_y": {
+  "what": "cavity length",
+  "expected": 62.0,
+  "measured": 62.0
+ },
+ "pcb_edge_from_usb_face": {
+  "what": "PCB x = 0 from the USB-C wall's outside face",
+  "expected": 4.5,
+  "measured": 4.5
+ },
+ "pcb_edge_from_back_face": {
+  "what": "PCB y = 0 from the back outside face",
+  "expected": 2.7,
+  "measured": 2.7
+ },
+ "floor_top_z": {
+  "what": "floor top z",
+  "expected": -3.1,
+  "measured": -3.1
+ },
+ "floor": {
+  "what": "floor thickness",
+  "expected": 2.0,
+  "measured": 2.0
+ },
+ "floor_top_from_bottom": {
+  "what": "floor top above the outside bottom face",
+  "expected": 2.0,
+  "measured": 2.0
+ },
+ "floor_below_seam": {
+  "what": "floor top below the seam",
+  "expected": 6.4,
+  "measured": 6.4
+ },
+ "ceiling_z": {
+  "what": "ceiling underside z",
+  "expected": 9.6,
+  "measured": 9.6
+ },
+ "ceiling": {
+  "what": "ceiling thickness",
+  "expected": 2.0,
+  "measured": 2.0
+ },
+ "ceiling_from_bottom": {
+  "what": "ceiling underside above the outside bottom face",
+  "expected": 14.7,
+  "measured": 14.7
+ },
+ "ceiling_above_seam": {
+  "what": "ceiling underside above the seam",
+  "expected": 6.3,
+  "measured": 6.3
+ },
+ "ceiling_above_pcb": {
+  "what": "ceiling underside above the PCB top (z = 0)",
+  "expected": 9.6,
+  "measured": 9.6
+ },
+ "top_face_from_bottom": {
+  "what": "outside top face above the outside bottom face",
+  "expected": 16.7,
+  "measured": 16.7
+ },
+ "standoff_x_H1": {
+  "what": "standoff H1 centre x",
+  "expected": 2.4,
+  "measured": 2.4
+ },
+ "standoff_d_H1": {
+  "what": "standoff H1 diameter",
+  "expected": 4.0,
+  "measured": 4.0
+ },
+ "standoff_y_H1": {
+  "what": "standoff H1 centre y",
+  "expected": 2.4,
+  "measured": 2.4
+ },
+ "standoff_top_H1": {
+  "what": "standoff H1 top z (PCB underside)",
+  "expected": -1.6,
+  "measured": -1.6
+ },
+ "peg_tip_H1": {
+  "what": "peg H1 tip z",
+  "expected": 0.4,
+  "measured": 0.4
+ },
+ "standoff_x_H2": {
+  "what": "standoff H2 centre x",
+  "expected": 26.6,
+  "measured": 26.6
+ },
+ "standoff_d_H2": {
+  "what": "standoff H2 diameter",
+  "expected": 4.0,
+  "measured": 4.0
+ },
+ "standoff_y_H2": {
+  "what": "standoff H2 centre y",
+  "expected": 2.4,
+  "measured": 2.4
+ },
+ "standoff_top_H2": {
+  "what": "standoff H2 top z (PCB underside)",
+  "expected": -1.6,
+  "measured": -1.6
+ },
+ "peg_tip_H2": {
+  "what": "peg H2 tip z",
+  "expected": 0.4,
+  "measured": 0.4
+ },
+ "standoff_x_H3": {
+  "what": "standoff H3 centre x",
+  "expected": 2.4,
+  "measured": 2.4
+ },
+ "standoff_d_H3": {
+  "what": "standoff H3 diameter",
+  "expected": 4.0,
+  "measured": 4.0
+ },
+ "standoff_y_H3": {
+  "what": "standoff H3 centre y",
+  "expected": 35.6,
+  "measured": 35.6
+ },
+ "standoff_top_H3": {
+  "what": "standoff H3 top z (PCB underside)",
+  "expected": -1.6,
+  "measured": -1.6
+ },
+ "peg_tip_H3": {
+  "what": "peg H3 tip z",
+  "expected": 0.0,
+  "measured": 0.0
+ },
+ "standoff_x_H4": {
+  "what": "standoff H4 centre x",
+  "expected": 26.6,
+  "measured": 26.6
+ },
+ "standoff_d_H4": {
+  "what": "standoff H4 diameter",
+  "expected": 4.0,
+  "measured": 4.0
+ },
+ "standoff_y_H4": {
+  "what": "standoff H4 centre y",
+  "expected": 35.6,
+  "measured": 35.6
+ },
+ "standoff_top_H4": {
+  "what": "standoff H4 top z (PCB underside)",
+  "expected": -1.6,
+  "measured": -1.6
+ },
+ "peg_tip_H4": {
+  "what": "peg H4 tip z",
+  "expected": 0.4,
+  "measured": 0.4
+ },
+ "standoff_h": {
+  "what": "standoff height above the floor",
+  "expected": 1.5,
+  "measured": 1.5
+ },
+ "standoff_top_from_bottom": {
+  "what": "standoff top above the outside bottom face",
+  "expected": 3.5,
+  "measured": 3.5
+ },
+ "standoff_top_below_seam": {
+  "what": "standoff top below the seam",
+  "expected": 4.9,
+  "measured": 4.9
+ },
+ "floor_below_lip": {
+  "what": "floor top below the lip top",
+  "expected": 7.9,
+  "measured": 7.9
+ },
+ "standoff_top_below_lip": {
+  "what": "standoff top below the lip top",
+  "expected": 6.4,
+  "measured": 6.4
+ },
+ "peg_tip_below_lip": {
+  "what": "peg tip below the lip top (H1)",
+  "expected": 4.4,
+  "measured": 4.4
+ },
+ "peg_tip_H3_below_lip": {
+  "what": "peg tip below the lip top (H3, flush)",
+  "expected": 4.8,
+  "measured": 4.8
+ },
+ "hole_pitch_x": {
+  "what": "standoff pitch across",
+  "expected": 24.2,
+  "measured": 24.2
+ },
+ "hole_pitch_y": {
+  "what": "standoff pitch along",
+  "expected": 33.2,
+  "measured": 33.2
+ },
+ "hole_H1_from_usb_face": {
+  "what": "H1 from the USB-C wall's outside face",
+  "expected": 6.9,
+  "measured": 6.9
+ },
+ "hole_H2_from_plain_face": {
+  "what": "H2 from the plain wall's outside face",
+  "expected": 5.1,
+  "measured": 5.1
+ },
+ "hole_H1_from_back_face": {
+  "what": "H1 from the back outside face",
+  "expected": 5.1,
+  "measured": 5.1
+ },
+ "hole_H3_from_front_face": {
+  "what": "H3 from the front outside face",
+  "expected": 28.4,
+  "measured": 28.4
+ },
+ "peg_d": {
+  "what": "peg diameter below the chamfer",
+  "expected": 2.15,
+  "measured": 2.15
+ },
+ "peg_chamfer_d": {
+  "what": "peg diameter 0.25 below the tip, in the chamfer",
+  "expected": 1.85,
+  "measured": 1.85
+ },
+ "peg_chamfer": {
+  "what": "peg tip chamfer, from the diameter 0.02 below the tip",
+  "expected": 0.4,
+  "measured": 0.395
+ },
+ "peg_h": {
+  "what": "peg above the standoff (H1)",
+  "expected": 2.0,
+  "measured": 2.0
+ },
+ "peg_h_H3": {
+  "what": "peg above the standoff (H3, flush with the PCB)",
+  "expected": 1.6,
+  "measured": 1.6
+ },
+ "peg_proud": {
+  "what": "peg tip above the PCB top (H1)",
+  "expected": 0.4,
+  "measured": 0.4
+ },
+ "peg_tip_from_bottom": {
+  "what": "peg tip above the outside bottom face (H1)",
+  "expected": 5.5,
+  "measured": 5.5
+ },
+ "peg_tip_H3_from_bottom": {
+  "what": "peg tip above the outside bottom face (H3)",
+  "expected": 5.1,
+  "measured": 5.1
+ },
+ "pcb_top_from_bottom": {
+  "what": "the PCB's top face (z = 0, where the H3 peg tip is) above the outside bottom face",
+  "expected": 5.1,
+  "measured": 5.1
+ },
+ "lip_t": {
+  "what": "lip thickness",
+  "expected": 0.8,
+  "measured": 0.8
+ },
+ "lip_h": {
+  "what": "lip height above the seam",
+  "expected": 1.5,
+  "measured": 1.5
+ },
+ "lip_gap_w": {
+  "what": "lip gap in the front wall",
+  "expected": 8.4,
+  "measured": 8.4
+ },
+ "lip_gap_from_usb_face": {
+  "what": "lip gap centre from the USB-C wall's outside face",
+  "expected": 17.17,
+  "measured": 17.17
+ },
+ "lip_gap_usb_w": {
+  "what": "lip gap in the USB-C wall (across the plug recess)",
+  "expected": 13.0,
+  "measured": 13.0
+ },
+ "lip_gap_usb_from_back_face": {
+  "what": "USB-C wall lip gap centre from the back outside face",
+  "expected": 17.3,
+  "measured": 17.3
+ },
+ "tab_count_l": {
+  "what": "tabs on the USB-C wall",
+  "expected": 2,
+  "measured": 2
+ },
+ "tab_w_l1": {
+  "what": "tab l1 width",
+  "expected": 8.0,
+  "measured": 8.0
+ },
+ "tab_y_l1": {
+  "what": "tab l1 centre y",
+  "expected": 32.0,
+  "measured": 32.0
+ },
+ "tab_l1_from_back_face": {
+  "what": "tab l1 centre from the back outside face",
+  "expected": 34.7,
+  "measured": 34.7
+ },
+ "tab_w_l2": {
+  "what": "tab l2 width",
+  "expected": 8.0,
+  "measured": 8.0
+ },
+ "tab_y_l2": {
+  "what": "tab l2 centre y",
+  "expected": 50.0,
+  "measured": 50.0
+ },
+ "tab_l2_from_back_face": {
+  "what": "tab l2 centre from the back outside face",
+  "expected": 52.7,
+  "measured": 52.7
+ },
+ "tab_pitch_l": {
+  "what": "tab pitch, l",
+  "expected": 18.0,
+  "measured": 18.0
+ },
+ "tab_h_l": {
+  "what": "tab height above the seam, l",
+  "expected": 5.0,
+  "measured": 5.0
+ },
+ "slot_before_l1": {
+  "what": "slot before tab l1",
+  "expected": 1.0,
+  "measured": 1.0
+ },
+ "slot_after_l1": {
+  "what": "slot after tab l1",
+  "expected": 1.0,
+  "measured": 1.0
+ },
+ "tab_t_at_bump_l": {
+  "what": "tab thickness through the bump, l",
+  "expected": 1.15,
+  "measured": 1.15
+ },
+ "bump_z_l": {
+  "what": "bump centre above the seam, l",
+  "expected": 4.3,
+  "measured": 4.3
+ },
+ "tab_count_r": {
+  "what": "tabs on the plain wall",
+  "expected": 2,
+  "measured": 2
+ },
+ "tab_w_r1": {
+  "what": "tab r1 width",
+  "expected": 8.0,
+  "measured": 8.0
+ },
+ "tab_y_r1": {
+  "what": "tab r1 centre y",
+  "expected": 32.0,
+  "measured": 32.0
+ },
+ "tab_r1_from_back_face": {
+  "what": "tab r1 centre from the back outside face",
+  "expected": 34.7,
+  "measured": 34.7
+ },
+ "tab_w_r2": {
+  "what": "tab r2 width",
+  "expected": 8.0,
+  "measured": 8.0
+ },
+ "tab_y_r2": {
+  "what": "tab r2 centre y",
+  "expected": 50.0,
+  "measured": 50.0
+ },
+ "tab_r2_from_back_face": {
+  "what": "tab r2 centre from the back outside face",
+  "expected": 52.7,
+  "measured": 52.7
+ },
+ "tab_pitch_r": {
+  "what": "tab pitch, r",
+  "expected": 18.0,
+  "measured": 18.0
+ },
+ "tab_h_r": {
+  "what": "tab height above the seam, r",
+  "expected": 5.0,
+  "measured": 5.0
+ },
+ "slot_before_r1": {
+  "what": "slot before tab r1",
+  "expected": 1.0,
+  "measured": 1.0
+ },
+ "slot_after_r1": {
+  "what": "slot after tab r1",
+  "expected": 1.0,
+  "measured": 1.0
+ },
+ "tab_t_at_bump_r": {
+  "what": "tab thickness through the bump, r",
+  "expected": 1.15,
+  "measured": 1.15
+ },
+ "bump_z_r": {
+  "what": "bump centre above the seam, r",
+  "expected": 4.3,
+  "measured": 4.3
+ },
+ "bump_r": {
+  "what": "bump radius (tab thickness through the bump, less the lip)",
+  "expected": 0.35,
+  "measured": 0.35
+ },
+ "skirt_t": {
+  "what": "skirt thickness",
+  "expected": 1.25,
+  "measured": 1.25
+ },
+ "skirt_faces": {
+  "what": "between the skirt's inner faces",
+  "expected": 33.7,
+  "measured": 33.7
+ },
+ "rebate": {
+  "what": "rebate depth (skirt face to cavity wall)",
+  "expected": 0.95,
+  "measured": 0.95
+ },
+ "rebate_h": {
+  "what": "rebate height above the seam",
+  "expected": 5.3,
+  "measured": 5.3
+ },
+ "rebate_over_tab": {
+  "what": "rebate ceiling above the tab tips",
+  "expected": 0.3,
+  "measured": 0.3
+ },
+ "rebate_over_lip": {
+  "what": "rebate ceiling above the lip",
+  "expected": 3.8,
+  "measured": 3.8
+ },
+ "fit": {
+  "what": "lip to skirt clearance (rebate depth less the lip)",
+  "expected": 0.15,
+  "measured": 0.15
+ },
+ "rebate_gap_usb_w": {
+  "what": "no rebate across the plug recess: the full-thickness wall's width",
+  "expected": 13.0,
+  "measured": 13.0
+ },
+ "rebate_gap_usb_from_back_face": {
+  "what": "that full-thickness wall's centre from the back outside face",
+  "expected": 17.3,
+  "measured": 17.3
+ },
+ "groove_depth_l": {
+  "what": "groove depth into the skirt face, l",
+  "expected": 0.42,
+  "measured": 0.4199
+ },
+ "groove_len_l1": {
+  "what": "groove l1 length",
+  "expected": 9.0,
+  "measured": 9.0
+ },
+ "groove_y_l1": {
+  "what": "groove l1 centre y",
+  "expected": 32.0,
+  "measured": 32.0
+ },
+ "groove_l1_from_back_face": {
+  "what": "groove l1 centre from the back outside face",
+  "expected": 34.7,
+  "measured": 34.7
+ },
+ "groove_len_l2": {
+  "what": "groove l2 length",
+  "expected": 9.0,
+  "measured": 9.0
+ },
+ "groove_y_l2": {
+  "what": "groove l2 centre y",
+  "expected": 50.0,
+  "measured": 50.0
+ },
+ "groove_l2_from_back_face": {
+  "what": "groove l2 centre from the back outside face",
+  "expected": 52.7,
+  "measured": 52.7
+ },
+ "groove_pitch_l": {
+  "what": "groove pitch, l",
+  "expected": 18.0,
+  "measured": 18.0
+ },
+ "groove_z_l": {
+  "what": "groove centre above the seam, l",
+  "expected": 4.3,
+  "measured": 4.3
+ },
+ "groove_depth_r": {
+  "what": "groove depth into the skirt face, r",
+  "expected": 0.42,
+  "measured": 0.4199
+ },
+ "groove_len_r1": {
+  "what": "groove r1 length",
+  "expected": 9.0,
+  "measured": 9.0
+ },
+ "groove_y_r1": {
+  "what": "groove r1 centre y",
+  "expected": 32.0,
+  "measured": 32.0
+ },
+ "groove_r1_from_back_face": {
+  "what": "groove r1 centre from the back outside face",
+  "expected": 34.7,
+  "measured": 34.7
+ },
+ "groove_len_r2": {
+  "what": "groove r2 length",
+  "expected": 9.0,
+  "measured": 9.0
+ },
+ "groove_y_r2": {
+  "what": "groove r2 centre y",
+  "expected": 50.0,
+  "measured": 50.0
+ },
+ "groove_r2_from_back_face": {
+  "what": "groove r2 centre from the back outside face",
+  "expected": 52.7,
+  "measured": 52.7
+ },
+ "groove_pitch_r": {
+  "what": "groove pitch, r",
+  "expected": 18.0,
+  "measured": 18.0
+ },
+ "groove_z_r": {
+  "what": "groove centre above the seam, r",
+  "expected": 4.3,
+  "measured": 4.3
+ },
+ "bump_past_skirt": {
+  "what": "bump standing past the skirt face (tab deflection)",
+  "expected": 0.2,
+  "measured": 0.2
+ },
+ "skirt_behind_groove": {
+  "what": "skirt left behind the groove",
+  "expected": 0.83,
+  "measured": 0.8301
+ },
+ "groove_bottom_clear": {
+  "what": "bump tip to the groove bottom",
+  "expected": 0.22,
+  "measured": 0.2199
+ },
+ "boss_x_1": {
+  "what": "boss 1 centre x",
+  "expected": 2.4,
+  "measured": 2.4
+ },
+ "boss_d_1": {
+  "what": "boss 1 diameter",
+  "expected": 4.4,
+  "measured": 4.4
+ },
+ "boss_y_1": {
+  "what": "boss 1 centre y",
+  "expected": 2.4,
+  "measured": 2.4
+ },
+ "boss_face_1": {
+  "what": "boss 1 face z",
+  "expected": 0.2,
+  "measured": 0.2
+ },
+ "bore_d_1": {
+  "what": "boss 1 bore diameter",
+  "expected": 2.6,
+  "measured": 2.5999
+ },
+ "bore_depth_1": {
+  "what": "boss 1 bore depth",
+  "expected": 2.0,
+  "measured": 2.0
+ },
+ "boss_x_2": {
+  "what": "boss 2 centre x",
+  "expected": 26.6,
+  "measured": 26.6
+ },
+ "boss_d_2": {
+  "what": "boss 2 diameter",
+  "expected": 4.4,
+  "measured": 4.4
+ },
+ "boss_y_2": {
+  "what": "boss 2 centre y",
+  "expected": 2.4,
+  "measured": 2.4
+ },
+ "boss_face_2": {
+  "what": "boss 2 face z",
+  "expected": 0.2,
+  "measured": 0.2
+ },
+ "bore_d_2": {
+  "what": "boss 2 bore diameter",
+  "expected": 2.6,
+  "measured": 2.5999
+ },
+ "bore_depth_2": {
+  "what": "boss 2 bore depth",
+  "expected": 2.0,
+  "measured": 2.0
+ },
+ "boss_x_3": {
+  "what": "boss 3 centre x",
+  "expected": 2.2,
+  "measured": 2.2
+ },
+ "boss_d_3": {
+  "what": "boss 3 diameter",
+  "expected": 3.0,
+  "measured": 3.0
+ },
+ "boss_y_3": {
+  "what": "boss 3 centre y",
+  "expected": 36.6,
+  "measured": 36.6
+ },
+ "boss_face_3": {
+  "what": "boss 3 face z",
+  "expected": 0.2,
+  "measured": 0.2
+ },
+ "boss_x_4": {
+  "what": "boss 4 centre x",
+  "expected": 26.6,
+  "measured": 26.6
+ },
+ "boss_d_4": {
+  "what": "boss 4 diameter",
+  "expected": 4.4,
+  "measured": 4.4
+ },
+ "boss_y_4": {
+  "what": "boss 4 centre y",
+  "expected": 35.6,
+  "measured": 35.6
+ },
+ "boss_face_4": {
+  "what": "boss 4 face z",
+  "expected": 0.2,
+  "measured": 0.2
+ },
+ "bore_d_4": {
+  "what": "boss 4 bore diameter",
+  "expected": 2.6,
+  "measured": 2.5999
+ },
+ "bore_depth_4": {
+  "what": "boss 4 bore depth",
+  "expected": 2.0,
+  "measured": 2.0
+ },
+ "boss_gap": {
+  "what": "boss face above the PCB top (z = 0)",
+  "expected": 0.2,
+  "measured": 0.2
+ },
+ "boss_len": {
+  "what": "boss length, ceiling to face",
+  "expected": 9.4,
+  "measured": 9.4
+ },
+ "boss_face_from_bottom": {
+  "what": "boss face above the outside bottom face",
+  "expected": 5.3,
+  "measured": 5.3
+ },
+ "boss_face_below_seam": {
+  "what": "boss face below the skirt edge (seam)",
+  "expected": -3.1,
+  "measured": -3.1
+ },
+ "boss_past_skirt": {
+  "what": "boss face standing past the skirt edge (seam)",
+  "expected": 3.1,
+  "measured": 3.1
+ },
+ "solid_boss_from_usb_face": {
+  "what": "solid boss centre from the USB-C wall's outside face",
+  "expected": 6.7,
+  "measured": 6.7
+ },
+ "solid_boss_from_back_face": {
+  "what": "solid boss centre from the back outside face",
+  "expected": 39.3,
+  "measured": 39.3
+ },
+ "solid_boss_offset": {
+  "what": "solid boss centre from H3 along y",
+  "expected": 1.0,
+  "measured": 1.0
+ },
+ "window_sill_z": {
+  "what": "USB-C window sill z (bottom half)",
+  "expected": 0.7,
+  "measured": 0.7
+ },
+ "window_head_z": {
+  "what": "USB-C window head z (top half)",
+  "expected": 7.0,
+  "measured": 7.0
+ },
+ "window_h": {
+  "what": "USB-C window height, sill to head",
+  "expected": 6.3,
+  "measured": 6.3
+ },
+ "window_below_seam": {
+  "what": "window sill below the seam",
+  "expected": 2.6,
+  "measured": 2.6
+ },
+ "window_above_seam": {
+  "what": "window head above the seam",
+  "expected": 3.7,
+  "measured": 3.7
+ },
+ "window_w": {
+  "what": "USB-C window width (bottom half)",
+  "expected": 10.0,
+  "measured": 10.0
+ },
+ "window_y": {
+  "what": "USB-C window centre y",
+  "expected": 14.6,
+  "measured": 14.6
+ },
+ "window_w_top": {
+  "what": "USB-C window width (top half)",
+  "expected": 10.0,
+  "measured": 10.0
+ },
+ "window_from_back_face": {
+  "what": "window centre from the back outside face",
+  "expected": 17.3,
+  "measured": 17.3
+ },
+ "window_sill_from_bottom": {
+  "what": "window sill above the outside bottom face",
+  "expected": 5.8,
+  "measured": 5.8
+ },
+ "window_head_from_bottom": {
+  "what": "window head above the outside bottom face",
+  "expected": 12.1,
+  "measured": 12.1
+ },
+ "wall_above_window": {
+  "what": "window head to the outside top face",
+  "expected": 4.6,
+  "measured": 4.6
+ },
+ "recess_floor_x": {
+  "what": "plug recess floor x",
+  "expected": -3.5,
+  "measured": -3.5
+ },
+ "recess_depth": {
+  "what": "plug recess depth into the wall",
+  "expected": 1.0,
+  "measured": 1.0
+ },
+ "wall_under_recess": {
+  "what": "wall left under the recess",
+  "expected": 1.2,
+  "measured": 1.2
+ },
+ "recess_w": {
+  "what": "plug recess width",
+  "expected": 13.0,
+  "measured": 13.0
+ },
+ "recess_y": {
+  "what": "plug recess centre y",
+  "expected": 14.6,
+  "measured": 14.6
+ },
+ "recess_z0": {
+  "what": "plug recess bottom z (bottom half)",
+  "expected": -1.15,
+  "measured": -1.15
+ },
+ "recess_z1": {
+  "what": "plug recess top z (top half)",
+  "expected": 8.85,
+  "measured": 8.85
+ },
+ "recess_h": {
+  "what": "plug recess height",
+  "expected": 10.0,
+  "measured": 10.0
+ },
+ "recess_from_bottom": {
+  "what": "plug recess bottom above the outside bottom face",
+  "expected": 3.95,
+  "measured": 3.95
+ },
+ "recess_top_from_bottom": {
+  "what": "plug recess top above the outside bottom face",
+  "expected": 13.95,
+  "measured": 13.95
+ },
+ "hole_top_z": {
+  "what": "antenna hole top z (top half)",
+  "expected": 6.6,
+  "measured": 6.6
+ },
+ "hole_bottom_z": {
+  "what": "antenna hole bottom z (bottom half)",
+  "expected": 0.0,
+  "measured": 0.0
+ },
+ "hole_d_z": {
+  "what": "antenna hole diameter (up)",
+  "expected": 6.6,
+  "measured": 6.6
+ },
+ "hole_z": {
+  "what": "antenna hole centre z",
+  "expected": 3.3,
+  "measured": 3.3
+ },
+ "hole_z_on_seam": {
+  "what": "hole centre on the seam",
+  "expected": 0.0,
+  "measured": 0.0
+ },
+ "hole_below_seam": {
+  "what": "the half-hole in the bottom half: seam to the hole bottom",
+  "expected": 3.3,
+  "measured": 3.3
+ },
+ "hole_above_seam": {
+  "what": "the half-hole in the top half: seam to the hole top",
+  "expected": 3.3,
+  "measured": 3.3
+ },
+ "hole_top_from_bottom": {
+  "what": "top of the hole above the outside bottom face",
+  "expected": 11.7,
+  "measured": 11.7
+ },
+ "hole_chord": {
+  "what": "antenna hole chord 0.5 below the seam",
+  "expected": 6.5238,
+  "measured": 6.5207
+ },
+ "hole_x": {
+  "what": "antenna hole centre x",
+  "expected": 12.67,
+  "measured": 12.67
+ },
+ "hole_from_usb_face": {
+  "what": "hole centre from the USB-C wall's outside face",
+  "expected": 17.17,
+  "measured": 17.17
+ },
+ "hole_from_plain_face": {
+  "what": "hole centre from the plain wall's outside face",
+  "expected": 19.03,
+  "measured": 19.03
+ },
+ "hole_z_from_bottom": {
+  "what": "hole centre above the outside bottom face",
+  "expected": 8.4,
+  "measured": 8.4
+ },
+ "above_hole": {
+  "what": "top of the hole to the outside top face",
+  "expected": 5.0,
+  "measured": 5.0
+ },
+ "below_hole": {
+  "what": "bottom of the hole to the outside bottom face",
+  "expected": 5.1,
+  "measured": 5.1
+ },
+ "pocket_depth": {
+  "what": "E07 pocket depth into the front wall",
+  "expected": 0.6,
+  "measured": 0.6
+ },
+ "pocket_w": {
+  "what": "E07 pocket width",
+  "expected": 7.4,
+  "measured": 7.4
+ },
+ "pocket_x": {
+  "what": "E07 pocket centre x",
+  "expected": 12.67,
+  "measured": 12.67
+ },
+ "pocket_z0": {
+  "what": "E07 pocket floor z (bottom half)",
+  "expected": -0.4,
+  "measured": -0.4
+ },
+ "pocket_floor_below_seam": {
+  "what": "E07 pocket floor below the seam",
+  "expected": 3.7,
+  "measured": 3.7
+ },
+ "notch_depth": {
+  "what": "pry notch height above the seam",
+  "expected": 1.2,
+  "measured": 1.2
+ },
+ "notch_w": {
+  "what": "pry notch width",
+  "expected": 10.0,
+  "measured": 10.0
+ },
+ "notch_from_usb_face": {
+  "what": "pry notch centre from the USB-C wall's outside face",
+  "expected": 19.0,
+  "measured": 19.0
+ },
+ "corner_r": {
+  "what": "vertical corner radius, bottom half",
+  "expected": 2.0,
+  "measured": 2.0
+ },
+ "corner_r_top": {
+  "what": "vertical corner radius, top half",
+  "expected": 2.0,
+  "measured": 2.0
+ },
+ "slot_len": {
+  "what": "J4 slot length",
+  "expected": 18.78,
+  "measured": 18.78
+ },
+ "slot_x": {
+  "what": "J4 slot centre x",
+  "expected": 14.5,
+  "measured": 14.5
+ },
+ "slot_w": {
+  "what": "J4 slot width",
+  "expected": 3.54,
+  "measured": 3.54
+ },
+ "slot_y": {
+  "what": "J4 slot centre y",
+  "expected": 2.55,
+  "measured": 2.55
+ },
+ "slot_from_back_face": {
+  "what": "J4 slot centre from the back outside face",
+  "expected": 5.25,
+  "measured": 5.25
+ },
+ "slot_from_usb_face": {
+  "what": "J4 slot centre from the USB-C wall's outside face",
+  "expected": 19.0,
+  "measured": 19.0
+ }
+}

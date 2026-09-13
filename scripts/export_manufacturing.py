@@ -67,8 +67,11 @@ def run(cmd: list[str]) -> None:
         raise SystemExit(f"command failed ({r.returncode}): {' '.join(cmd)}\n{r.stdout}{r.stderr}")
 
 
-def git_describe() -> str:
-    r = subprocess.run(["git", "-C", str(ROOT), "describe", "--tags", "--dirty", "--always", "--match", "v[0-9]*"], capture_output=True, text=True)
+def git_describe(commit: str | None = None) -> str:
+    """`git describe` of HEAD (with --dirty), or of `commit` (git refuses
+    --dirty for anything but HEAD; draw_case.py adds its own suffix)."""
+    args = ["--dirty"] if commit is None else []
+    r = subprocess.run(["git", "-C", str(ROOT), "describe", "--tags", *args, "--always", "--match", "v[0-9]*", *([commit] if commit else [])], capture_output=True, text=True)
     if r.returncode != 0:
         raise SystemExit(f"git describe failed: {r.stderr}")
     return r.stdout.strip()
@@ -164,7 +167,7 @@ def main() -> None:
         f"Manufacturing packages for `{rev}` (Gerber + Excellon drill), one zip per board and fab, generated",
         "by CI from the committed KiCad files after ERC/DRC passed. Each zip contains a README.txt with the",
         "board size, stack-up and ordering notes. The `.step` / `.glb` files are the assembled adapters (SuperMini,",
-        "radio board, headers, antenna connector) for designing a case; see the README's 3D models section.",
+        "radio board, headers, antenna connector) for designing a case; see docs/3d-models.md.",
         "",
         "| Board | Size (mm) | Rev | JLCPCB | NextPCB |",
         "| --- | --- | --- | --- | --- |",

@@ -41,14 +41,23 @@ jobs:
           echo "describe=$(git describe --tags --dirty --always --match 'v[0-9]*')" >> "$GITHUB_OUTPUT"
           echo "tag=$(git describe --tags --abbrev=0 --match 'v[0-9]*')" >> "$GITHUB_OUTPUT"
 
-      - name: Regenerate the boards and check they match the commit
-        # The STEP models under hardware/3d/ are committed as built by
-        # scripts/build_3d.py (CadQuery) and are not rebuilt here.
+      - name: Regenerate the boards and drawings and check they match the commit
+        # The STEP models under hardware/3d/ and the case under
+        # hardware/case/ are committed as built by scripts/build_3d.py and
+        # scripts/build_case.py (CadQuery) and are not rebuilt here.  The
+        # three SVG drawing scripts are standard-library only and
+        # deterministic (draw_case.py also rewrites the checklist in
+        # docs/case-drawings.md and stamps the sheets with the git describe
+        # of the last commit that touched hardware/case/).
         run: |
           for g in supermini sx1278 cc1101 dsun ra02_breakout adapters; do python3 scripts/generate_$g.py > /dev/null; done
           python3 scripts/fill_zones.py
+          for s in draw_pinouts draw_wiring draw_case; do python3 scripts/$s.py > /dev/null; done
           git status --short
           git diff --exit-code
+
+      - name: Check the case drawings against the measured solids
+        run: python3 scripts/draw_case.py --check
 
       - name: ERC and DRC (with schematic parity)
         run: python3 scripts/verify_boards.py
@@ -58,6 +67,15 @@ jobs:
 
       - name: Export the 3D assemblies (STEP and GLB)
         run: python3 scripts/render_assemblies.py --no-render --export dist
+
+      - name: Package the printable case
+        # The case is built by scripts/build_case.py (CadQuery) and committed
+        # like the STEP models; this checks the committed files, zips them
+        # with a README.txt (print settings, ordering from a 3D-printing
+        # service), copies the STL files loose beside the zip and adds them
+        # all to SHA256SUMS and RELEASE_NOTES.md.  Runs last: it appends to
+        # the files the two steps above write.
+        run: python3 scripts/export_case.py --out dist
 
       - uses: actions/upload-artifact@v4
         with:
@@ -91,7 +109,7 @@ jobs:
             gh release view "$TAG" --repo "$GITHUB_REPOSITORY" --json assets --jq '.assets[].name' \
               | xargs -r -n1 gh release delete-asset "$TAG" --repo "$GITHUB_REPOSITORY" --yes
             gh release edit "$TAG" --repo "$GITHUB_REPOSITORY" --title "$DESCRIBE" --notes-file dist/RELEASE_NOTES.md --latest
-            gh release upload "$TAG" --repo "$GITHUB_REPOSITORY" dist/*.zip dist/*.step dist/*.glb dist/SHA256SUMS
+            gh release upload "$TAG" --repo "$GITHUB_REPOSITORY" dist/*.zip dist/*.step dist/*.glb dist/*.stl dist/SHA256SUMS
           else
-            gh release create "$TAG" --repo "$GITHUB_REPOSITORY" --title "$DESCRIBE" --notes-file dist/RELEASE_NOTES.md --latest dist/*.zip dist/*.step dist/*.glb dist/SHA256SUMS
+            gh release create "$TAG" --repo "$GITHUB_REPOSITORY" --title "$DESCRIBE" --notes-file dist/RELEASE_NOTES.md --latest dist/*.zip dist/*.step dist/*.glb dist/*.stl dist/SHA256SUMS
           fi
