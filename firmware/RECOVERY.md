@@ -1,8 +1,8 @@
 # Reflash & recovery — ESP32-C3 + CC1101 Tasmota node
 
 How to (re)flash this board, reset Tasmota settings, and restore `/cc1101.cfg`. This node is a
-much easier recovery story than the bare-MCU boards in this repo ([ATmega48 bridge](../../atmega-cc1101-firmware/RECOVERY.md),
-[E22 EFM8](../../e22-sx1268-firmware/RECOVERY.md)): the ESP32-C3's **ROM bootloader** is the
+much easier recovery story than a bare-MCU radio board (an ATmega48 bridge, an E22
+EFM8): the ESP32-C3's **ROM bootloader** is the
 unbrickable backstop, reachable over the same USB-C port with just a button press — no C2/HVPP
 adapter, no case-opening.
 
@@ -130,8 +130,7 @@ Device misbehaving?
 ## See also
 
 - [`README.md`](README.md) — build, first flash, OTA, command/MQTT reference, `/cc1101.cfg` fields.
-- [`../../esp32c3-cc1101-node.md`](../../esp32c3-cc1101-node.md) — commissioning runbook, wiring, USB
+- [`docs/esp32c3-cc1101-node.md`](docs/esp32c3-cc1101-node.md) — commissioning runbook, wiring, USB
   device mapping.
-- [ATmega RECOVERY.md](../../atmega-cc1101-firmware/RECOVERY.md) / [E22 RECOVERY.md](../../e22-sx1268-firmware/RECOVERY.md) —
-  the bare-MCU boards' recovery stories, for contrast (this node's ROM bootloader plays the same
-  role as their C2/HVPP: an unbrickable backstop independent of app flash content).
+- The bare-MCU boards' recovery stories, for contrast: this node's ROM bootloader plays the
+  same role as their C2/HVPP, an unbrickable backstop independent of app flash content.

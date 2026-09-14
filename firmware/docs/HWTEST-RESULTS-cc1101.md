@@ -318,7 +318,7 @@ Project name:     radio_pin_probe
 
 ## See also
 
-- [`firmware/README.md`](firmware/README.md) — command reference, build/flash instructions.
+- [`firmware/README.md`](../README.md) — command reference, build/flash instructions.
 - [`esp32c3-cc1101-node.md`](esp32c3-cc1101-node.md) — wiring, commissioning runbook, bench
   bring-up plan (stages 2–4/6 still pending real remotes/WS85/soak).
 
