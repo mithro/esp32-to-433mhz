@@ -187,8 +187,10 @@ The Ra-02 breakout leaves DIO2 unconnected, hence the fly wire to GPIO20.
 **Never put a radio pin on GPIO2, GPIO8 or GPIO9.** They are ESP32-C3 boot
 straps; a radio pin's capacitance makes the strap rise too slowly at reset
 and the chip drops into USB download mode instead of running. This was
-measured on the bench and is not fixable in software, which is why the
-socket uses GPIO1 rather than GPIO9.
+measured on the bench and later confirmed over JTAG -- on an affected board
+the GPIO_STRAP_REG latch reads the download pattern even though the live
+GPIO9 reads high -- and is not fixable in software, which is why the socket
+uses GPIO1 rather than GPIO9.
 
 ## Jumper-wire version (no adapter needed)
 
