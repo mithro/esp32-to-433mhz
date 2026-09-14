@@ -36,17 +36,18 @@ Contents:
 
 Everything is a stock AliExpress / eBay / Amazon part costing a few
 dollars. The "Buy" links are AliExpress searches for the listing names;
-the "Details" links go to the reference drawings in this repository.
+the "Details" links go to that board's page in this repository, with its
+dimensions, pinout and sources.
 
 ### Boards
 
 | Board | Buy | How to recognise it | Details |
 | --- | --- | --- | --- |
-| **ESP32-C3 SuperMini** | [ESP32-C3 SuperMini](https://www.aliexpress.com/w/wholesale-esp32-c3-supermini.html) | 18&nbsp;x&nbsp;22.5 mm, USB-C, 8 castellated pins per side, ceramic antenna at the far end from the USB-C. Usually ships with two 1x8 pin headers. | [dimensions and pinout](docs/component-boards.md#esp32-c3-supermini) |
+| **ESP32-C3 SuperMini** | [ESP32-C3 SuperMini](https://www.aliexpress.com/w/wholesale-esp32-c3-supermini.html) | 18&nbsp;x&nbsp;22.5 mm, USB-C, 8 castellated pins per side, ceramic antenna at the far end from the USB-C. Usually ships with two 1x8 pin headers. | [dimensions and pinout](hardware/parts/esp32-c3-supermini/) |
 | **One radio board**, any of: | | | |
-| Ebyte E07-M1101D-SMA (CC1101) | [E07-M1101D](https://www.aliexpress.com/w/wholesale-e07-m1101d.html), also sold as "TENSTAR CC1101 433MHz wireless module" | Blue, 15&nbsp;x&nbsp;30 mm, 2x4 header at one end, SMA jack at the other, PCB marked "E07-M1101D V2.0". Needs a 433 MHz SMA antenna (often included). | [Ebyte product page](https://www.cdebyte.com/products/E07-M1101D-SMA), [drawing](docs/component-boards.md#cc1101-e07-m1101d-sma) |
-| D-Sun CC1101 (green) | [CC1101 433MHz module](https://www.aliexpress.com/w/wholesale-cc1101-433mhz-module.html), pick the green one | Green, 14.4&nbsp;x&nbsp;30 mm, silk "433MHz D-Sun CC1101", 2x4 header, SMA jack. Needs a 433 MHz SMA antenna. | [drawing](docs/component-boards.md#cc1101-d-sun-green-board) |
-| SX1278 Ra-02 breakout | [SX1278 LoRa 433MHz Ra-02](https://www.aliexpress.com/w/wholesale-sx1278-lora-433mhz-ra-02.html) | Blue 17.5&nbsp;x&nbsp;22.5 mm carrier with the Ai-Thinker Ra-02 can on top, 2x4 header underneath, silk "SX1278 LoRa 433MHz v4.0". Needs a [U.FL (IPEX) to SMA pigtail](https://www.aliexpress.com/w/wholesale-ipex-to-sma-pigtail.html) plus a 433 MHz SMA antenna. | [Ai-Thinker Ra-02 page](https://docs.ai-thinker.com/en/Ra-02/index.html), [drawing](docs/component-boards.md#sx1278-ra-02-breakout) |
+| Ebyte E07-M1101D-SMA (CC1101) | [E07-M1101D](https://www.aliexpress.com/w/wholesale-e07-m1101d.html), also sold as "TENSTAR CC1101 433MHz wireless module" | Blue, 15&nbsp;x&nbsp;30 mm, 2x4 header at one end, SMA jack at the other, PCB marked "E07-M1101D V2.0". Needs a 433 MHz SMA antenna (often included). | [Ebyte product page](https://www.cdebyte.com/products/E07-M1101D-SMA), [part page](hardware/parts/cc1101-e07-m1101d/) |
+| D-Sun CC1101 (green) | [CC1101 433MHz module](https://www.aliexpress.com/w/wholesale-cc1101-433mhz-module.html), pick the green one | Green, 14.4&nbsp;x&nbsp;30 mm, silk "433MHz D-Sun CC1101", 2x4 header, SMA jack. Needs a 433 MHz SMA antenna. | [part page](hardware/parts/cc1101-dsun/) |
+| SX1278 Ra-02 breakout | [SX1278 LoRa 433MHz Ra-02](https://www.aliexpress.com/w/wholesale-sx1278-lora-433mhz-ra-02.html) | Blue 17.5&nbsp;x&nbsp;22.5 mm carrier with the Ai-Thinker Ra-02 can on top, 2x4 header underneath, silk "SX1278 LoRa 433MHz v4.0". Needs a [U.FL (IPEX) to SMA pigtail](https://www.aliexpress.com/w/wholesale-ipex-to-sma-pigtail.html) plus a 433 MHz SMA antenna. | [Ai-Thinker Ra-02 page](https://docs.ai-thinker.com/en/Ra-02/index.html), [part page](hardware/parts/sx1278-ra02-breakout/) |
 
 Get a [433 MHz SMA antenna](https://www.aliexpress.com/w/wholesale-433mhz-sma-antenna.html),
 not the 868/915 MHz one many listings bundle with the same radio.
@@ -297,9 +298,9 @@ measurements for a printed part, are in [Case drawings](docs/case-drawings.md).
 * [Design notes](docs/design-notes.md): why the GPIOs are what they are,
   how everything routes on one layer, the expansion header J4, the DIO2
   header J5, the mechanical keep-outs and the radio-type strap.
-* [Component boards](docs/component-boards.md): KiCad reproductions of
-  the SuperMini and the radio boards (outline, header, castellations,
-  mounting holes), with dimensions and sources, under `hardware/parts/`.
+* [Component boards](hardware/parts/): a page per board -- the SuperMini
+  and each radio -- with its dimensions, pinout, where to buy it and the
+  KiCad reproduction its footprints were checked against.
 * [3D models and case design](docs/3d-models.md): STEP/GLB assemblies on
   every release, the dimensions a case needs, and the printed case.
 * [SX1278 castellated module adapter](docs/sx1278-module-adapter.md): a

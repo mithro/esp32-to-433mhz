@@ -143,4 +143,4 @@ The reference boards render with the products' parts on them:
 
 | ESP32-C3 SuperMini | CC1101 E07-M1101D-SMA | CC1101 D-Sun | SX1278 Ra-02 breakout | SX1278 module |
 | --- | --- | --- | --- | --- |
-| ![SuperMini model](images/esp32-c3-supermini-model-iso.png) | ![E07-M1101D model](images/cc1101-e07-m1101d-model-iso.png) | ![D-Sun model](images/cc1101-dsun-model-iso.png) | ![Ra-02 breakout model](images/sx1278-ra02-breakout-model-iso.png) | ![SX1278 module model](images/sx1278-lora-module-model-iso.png) |
+| ![SuperMini model](../hardware/parts/esp32-c3-supermini/images/model-iso.png) | ![E07-M1101D model](../hardware/parts/cc1101-e07-m1101d/images/model-iso.png) | ![D-Sun model](../hardware/parts/cc1101-dsun/images/model-iso.png) | ![Ra-02 breakout model](../hardware/parts/sx1278-ra02-breakout/images/model-iso.png) | ![SX1278 module model](../hardware/parts/sx1278-lora-module/images/model-iso.png) |

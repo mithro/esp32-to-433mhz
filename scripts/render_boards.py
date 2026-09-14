@@ -5,11 +5,14 @@
 # ///
 """Render every board under hardware/ to PNG images for the README.
 
-For each project <name> this writes, in docs/images/:
-  * <name>-3d-top.png     3D raytraced render of the top side (kicad-cli pcb render)
-  * <name>-3d-bottom.png  3D raytraced render of the bottom side
-  * <name>-layout.png     2D plot of B.Cu, F.Cu, F.SilkS, F.Fab and Edge.Cuts
-                          (kicad-cli pcb export svg, rasterised with inkscape)
+For each project this writes three images:
+  * 3d-top.png     3D raytraced render of the top side (kicad-cli pcb render)
+  * 3d-bottom.png  3D raytraced render of the bottom side
+  * layout.png     2D plot of B.Cu, F.Cu, F.SilkS, F.Fab and Edge.Cuts
+                   (kicad-cli pcb export svg, rasterised with inkscape)
+
+A reference board under hardware/parts/ keeps them beside its own README, in
+hardware/parts/<name>/images/; the adapters write docs/images/<name>-<view>.png.
 
 All three images of a board have the same pixel size and the same scale:
 the frame is the board outline plus MARGIN_MM on every side at SCALE px/mm,
@@ -33,7 +36,7 @@ import numpy as np
 from PIL import Image
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
-OUT = ROOT / "docs" / "images"
+DOCS_IMAGES = ROOT / "docs" / "images"
 SCALE = 36.0  # px per mm
 MARGIN_MM = 1.5
 # KiCad's default plot colours suit a dark editor background; remap the
@@ -94,8 +97,23 @@ def strip_models(text: str) -> str:
     return MODEL_BLOCK.sub("", text)
 
 
-def render(kicad: str, inkscape: str, pcb: pathlib.Path) -> None:
+def image_path(pcb: pathlib.Path, view: str) -> pathlib.Path:
+    """Where this board's <view> image is written.
+
+    The reference boards under hardware/parts/ keep their images next to the
+    README that shows them, unprefixed because the directory already names the
+    part; the adapters write into the shared docs/images/.
+    """
+    if pcb.parent.parent.name == "parts":
+        return pcb.parent / "images" / f"{view}.png"
+    return DOCS_IMAGES / f"{pcb.stem}-{view}.png"
+
+
+def render(kicad: str, inkscape: str, pcb: pathlib.Path) -> list[pathlib.Path]:
     name = pcb.stem
+    out = {view: image_path(pcb, view) for view in ("3d-top", "3d-bottom", "layout")}
+    for path in out.values():
+        path.parent.mkdir(parents=True, exist_ok=True)
     x0, y0, x1, y1 = board_rect(pcb)
     bw, bh = x1 - x0, y1 - y0
     fw, fh = bw + 2 * MARGIN_MM, bh + 2 * MARGIN_MM
@@ -104,7 +122,7 @@ def render(kicad: str, inkscape: str, pcb: pathlib.Path) -> None:
     # The renderer's zoom is relative to its own board fit, so calibrate: render
     # once at zoom 1, measure the board in pixels, then render at the zoom that
     # puts the board at exactly SCALE px/mm (the same scale as the layout plot).
-    with tempfile.TemporaryDirectory(prefix="render-", dir=OUT) as tmp:
+    with tempfile.TemporaryDirectory(prefix="render-", dir=ROOT) as tmp:
         tmpdir = pathlib.Path(tmp)
         bare = tmpdir / pcb.name
         bare.write_text(strip_models(pcb.read_text()))
@@ -121,8 +139,8 @@ def render(kicad: str, inkscape: str, pcb: pathlib.Path) -> None:
         for side in ("top", "bottom"):
             raw = tmpdir / f"{side}.png"
             render3d(side, zoom, raw)
-            fit_canvas(Image.open(raw), size).save(OUT / f"{name}-3d-{side}.png")
-        w, h = board_px(OUT / f"{name}-3d-top.png")
+            fit_canvas(Image.open(raw), size).save(out[f"3d-{side}"])
+        w, h = board_px(out["3d-top"])
         print(f"  {name}: board {bw}x{bh} mm -> {w}x{h} px in 3D ({w / bw:.1f} px/mm), target {SCALE} px/mm")
 
         # 2D plot on the full A4 page so the board position is known exactly,
@@ -141,7 +159,8 @@ def render(kicad: str, inkscape: str, pcb: pathlib.Path) -> None:
         page = Image.open(page_png)
         px_per_mm = page.width / page_w
         box = tuple(round(v * px_per_mm) for v in (x0 - MARGIN_MM, y0 - MARGIN_MM, x1 + MARGIN_MM, y1 + MARGIN_MM))
-        fit_canvas(page.crop(box), size).save(OUT / f"{name}-layout.png")
+        fit_canvas(page.crop(box), size).save(out["layout"])
+    return [out["3d-top"], out["3d-bottom"], out["layout"]]
 
 
 def main() -> None:
@@ -151,13 +170,13 @@ def main() -> None:
     ap.add_argument("boards", nargs="*", help="project names to render (default: all under hardware/)")
     args = ap.parse_args()
     kicad = find_kicad_cli(args.kicad_cli)
-    OUT.mkdir(parents=True, exist_ok=True)
     pcbs = sorted(ROOT.glob("hardware/**/*.kicad_pcb"))
     if args.boards:
         pcbs = [p for p in pcbs if p.stem in args.boards]
+    written = []
     for pcb in pcbs:
-        render(kicad, args.inkscape, pcb)
-    for p in sorted(OUT.glob("*.png")):
+        written += render(kicad, args.inkscape, pcb)
+    for p in written:
         with Image.open(p) as im:
             print(f"wrote {p.relative_to(ROOT)} {im.size[0]}x{im.size[1]}")
 
