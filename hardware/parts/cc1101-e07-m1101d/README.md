@@ -13,7 +13,7 @@ reproductions are for.
 
 | | |
 | --- | --- |
-| Buy | [E07-M1101D](https://www.aliexpress.com/w/wholesale-e07-m1101d.html), also sold as "TENSTAR CC1101 433MHz wireless module" |
+| Buy | [E07-M1101D](https://www.aliexpress.com/w/wholesale-e07-m1101d.html), also sold as "TENSTAR CC1101 433MHz wireless module". Ebyte make two: take the **-SMA**, which this page documents, not the -TH, whose spring antenna solders straight to the board -- that search leads with the -TH |
 | Product page | [Ebyte E07-M1101D-SMA](https://www.cdebyte.com/products/E07-M1101D-SMA) |
 | How to recognise it | Blue, 15&nbsp;x&nbsp;30 mm, 2x4 header at one end, SMA jack at the other, PCB marked "E07-M1101D V2.0" |
 | Also needs | A [433 MHz SMA antenna](https://www.aliexpress.com/w/wholesale-433mhz-sma-antenna.html) (often included). Not the 868/915 MHz one many listings bundle with the same radio. |

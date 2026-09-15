@@ -147,9 +147,7 @@ leaves it unconnected on the module edge, so the raw-OOK path needs one
 wire: from the breakout's DIO2 pad (its exposed land sticks 0.8 mm out past
 the module edge, on the right-hand side about 9 mm down from the header) to
 J5 pin 2 (the pad is marked on the
-[pinout diagrams](#why-one-socket-fits-all-three-boards), and
-[**Adding the DIO2 wire**](https://github.com/mithro/433mhz/blob/worktree-ra02-dio2-wire-diagram/hardware/devices/sx1278-ra02-dio2-wire.md)
-covers the radio end and how to verify it). In the
+[pinout diagrams](#why-one-socket-fits-all-three-boards)). In the
 [jumper-wire build](../README.md#jumper-wire-version-no-adapter-needed) the same wire goes straight to
 GPIO20. Nothing is given up by sharing the pin with J4:
 it is one net brought out twice, so only one of the two may be used at a

@@ -351,8 +351,10 @@ add-on path remains an alternative for estates already running the add-on, but i
 required now that the node self-publishes discovery. Full captures are in
 [`HWTEST-RESULTS-cc1101.md`](HWTEST-RESULTS-cc1101.md) ("MQTT round-trip" section).
 
-**Production rollout** (connecting to the real HA broker) is **done for blue + sx** (see Live
-validation above). The same two inputs are needed to commission each additional node:
+### Production rollout
+
+Connecting to the real HA broker is **done for blue + sx** (the runs above). The same
+two inputs are needed to commission each additional node:
 
 1. **WiFi** — SSID + passphrase for the `ansells-iot` network the node joins.
 2. **MQTT broker credential** — the per-device `tas-<node_id>` Mosquitto login on

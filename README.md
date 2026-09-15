@@ -45,7 +45,7 @@ dimensions, pinout and sources.
 | --- | --- | --- | --- |
 | **ESP32-C3 SuperMini** | [ESP32-C3 SuperMini](https://www.aliexpress.com/w/wholesale-esp32-c3-supermini.html) | 18&nbsp;x&nbsp;22.5 mm, USB-C, 8 castellated pins per side, ceramic antenna at the far end from the USB-C. Usually ships with two 1x8 pin headers. | [dimensions and pinout](hardware/parts/esp32-c3-supermini/) |
 | **One radio board**, any of: | | | |
-| Ebyte E07-M1101D-SMA (CC1101) | [E07-M1101D](https://www.aliexpress.com/w/wholesale-e07-m1101d.html), also sold as "TENSTAR CC1101 433MHz wireless module" | Blue, 15&nbsp;x&nbsp;30 mm, 2x4 header at one end, SMA jack at the other, PCB marked "E07-M1101D V2.0". Needs a 433 MHz SMA antenna (often included). | [Ebyte product page](https://www.cdebyte.com/products/E07-M1101D-SMA), [part page](hardware/parts/cc1101-e07-m1101d/) |
+| Ebyte E07-M1101D-SMA (CC1101) | [E07-M1101D](https://www.aliexpress.com/w/wholesale-e07-m1101d.html), also sold as "TENSTAR CC1101 433MHz wireless module" | Blue, 15&nbsp;x&nbsp;30 mm, 2x4 header at one end, SMA jack at the other, PCB marked "E07-M1101D V2.0". Take the -SMA, not the -TH spring-antenna variant that search leads with. Needs a 433 MHz SMA antenna (often included). | [Ebyte product page](https://www.cdebyte.com/products/E07-M1101D-SMA), [part page](hardware/parts/cc1101-e07-m1101d/) |
 | D-Sun CC1101 (green) | [CC1101 433MHz module](https://www.aliexpress.com/w/wholesale-cc1101-433mhz-module.html), pick the green one | Green, 14.4&nbsp;x&nbsp;30 mm, silk "433MHz D-Sun CC1101", 2x4 header, SMA jack. Needs a 433 MHz SMA antenna. | [part page](hardware/parts/cc1101-dsun/) |
 | SX1278 Ra-02 breakout | [SX1278 LoRa 433MHz Ra-02](https://www.aliexpress.com/w/wholesale-sx1278-lora-433mhz-ra-02.html) | Blue 17.5&nbsp;x&nbsp;22.5 mm carrier with the Ai-Thinker Ra-02 can on top, 2x4 header underneath, silk "SX1278 LoRa 433MHz v4.0". Needs a [U.FL (IPEX) to SMA pigtail](https://www.aliexpress.com/w/wholesale-ipex-to-sma-pigtail.html) plus a 433 MHz SMA antenna. | [Ai-Thinker Ra-02 page](https://docs.ai-thinker.com/en/Ra-02/index.html), [part page](hardware/parts/sx1278-ra02-breakout/) |
 
@@ -121,9 +121,7 @@ come out mirrored), and R1 sits on the copper side. Use the `.GBL`,
    breakout's DIO2 land to J5 pin 2 (GPIO20). DIO2 is not on the 2x4
    header: it is the Ra-02 module's pin 7, whose land sticks 0.8 mm out
    past the module's edge on the right-hand side, about 9 mm down from the
-   header edge. The pinout diagram below marks it, and
-   [Adding the DIO2 wire](https://github.com/mithro/433mhz/blob/worktree-ra02-dio2-wire-diagram/hardware/devices/sx1278-ra02-dio2-wire.md)
-   shows the radio end and how to check it landed.
+   header edge. The pinout diagram below marks it.
 6. **Antenna.** Screw it on the E07 or D-Sun's SMA jack; for the Ra-02,
    clip the pigtail's U.FL plug onto the module and screw the antenna on
    the pigtail. The DIO2 wire and the pigtail both want strain relief:
