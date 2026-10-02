@@ -121,7 +121,9 @@ come out mirrored), and R1 sits on the copper side. Use the `.GBL`,
    breakout's DIO2 land to J5 pin 2 (GPIO20). DIO2 is not on the 2x4
    header: it is the Ra-02 module's pin 7, whose land sticks 0.8 mm out
    past the module's edge on the right-hand side, about 9 mm down from the
-   header edge. The pinout diagram below marks it.
+   header edge. The pinout diagram below marks it, and
+   [Adding the DIO2 wire](hardware/parts/sx1278-ra02-breakout/dio2-wire.md)
+   shows the radio end and how to check it landed.
 6. **Antenna.** Screw it on the E07 or D-Sun's SMA jack; for the Ra-02,
    clip the pigtail's U.FL plug onto the module and screw the antenna on
    the pigtail. The DIO2 wire and the pigtail both want strain relief:

@@ -20,7 +20,8 @@ GPIO20.  It is not a header pin -- the carrier brings out DIO0 and nothing
 else of the SX1278's six DIO lines -- so it is soldered to the module's pin-7
 castellation, or to the carrier land just outside it, on the face away from
 the header.  Continuous mode puts the raw bitstream on DIO2 alone, so OOK
-receive and transmit need it.
+receive and transmit need it; see
+hardware/parts/sx1278-ra02-breakout/dio2-wire.md
 
 Boards: the blue E07-M1101D and the green D-Sun CC1101 boards, and the Ra-02
 breakout.  All three plug into the same socket positions; only the names of

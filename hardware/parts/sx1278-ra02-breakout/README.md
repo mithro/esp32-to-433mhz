@@ -25,7 +25,10 @@ It plugs into the [radio socket](../../esp32c3-radio-adapter) on the adapter
 board, sharing it with the [E07-M1101D](../cc1101-e07-m1101d) and the
 [D-Sun CC1101](../cc1101-dsun). For raw OOK its demodulated bitstream is only
 on DIO2, which the adapter brings out on a fly-wire header; see the
-[design notes](../../../docs/design-notes.md).
+[design notes](../../../docs/design-notes.md). DIO2 is not on this board's
+header at all, so it needs a wire soldered to the module:
+[Adding the DIO2 wire](dio2-wire.md) says which pad and how to prove the wire
+landed on it.
 
 ## Dimensions and pinout
 
